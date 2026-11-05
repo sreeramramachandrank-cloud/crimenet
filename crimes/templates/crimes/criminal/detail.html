@@ -1,0 +1,364 @@
+{% extends 'crimes/base.html' %}
+
+{% block title %}Criminal {{ criminal.criminal_id }} - {{ criminal.name }}{% endblock %}
+
+{% block content %}
+<style>
+/* ==================================================
+   POLICE CRIMINAL PROFILE – OFFICIAL STYLE
+================================================== */
+
+:root {
+    --police-navy: #0b1f3a;
+    --police-blue: #1e3a8a;
+    --police-gold: #c9a227;
+    --police-gray: #f1f5f9;
+    --police-border: #cbd5e1;
+    --danger-red: #7f1d1d;
+}
+
+/* ---------- PAGE HEADER ---------- */
+h1.h2 {
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--police-navy);
+}
+
+/* ---------- BREADCRUMB ---------- */
+.breadcrumb {
+    background: transparent;
+    font-weight: 600;
+}
+
+.breadcrumb a {
+    color: var(--police-blue);
+    text-decoration: none;
+}
+
+/* ---------- CARDS ---------- */
+.card {
+    border: 1px solid var(--police-border);
+    border-radius: 4px;
+    box-shadow: none;
+}
+
+.card-header {
+    background: #f8fafc;
+    border-bottom: 2px solid var(--police-gold);
+    font-weight: 800;
+    color: var(--police-navy);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ---------- PROFILE PHOTO ---------- */
+.card-body img {
+    border: 2px solid var(--police-border);
+    background: #ffffff;
+}
+
+/* ---------- STATUS BADGES ---------- */
+.badge {
+    font-weight: 900;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+}
+
+.bg-danger {
+    background: var(--danger-red) !important;
+}
+
+.bg-success {
+    background: #14532d !important;
+}
+
+.bg-secondary {
+    background: #374151 !important;
+}
+
+/* ---------- TABLES ---------- */
+.table th {
+    background: var(--police-gray);
+    color: var(--police-navy);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+}
+
+.table td {
+    font-weight: 600;
+    color: #111827;
+}
+
+/* ---------- CODE HASH ---------- */
+code {
+    background: #f1f5f9;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+/* ---------- PROGRESS BAR (MATCH CONFIDENCE) ---------- */
+.progress {
+    background: #e5e7eb;
+    border-radius: 2px;
+}
+
+.progress-bar {
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+/* ---------- ACTION BUTTONS ---------- */
+.btn {
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    border-radius: 4px;
+}
+
+.btn-police {
+    background: var(--police-blue);
+    color: #ffffff;
+    border: none;
+}
+
+.btn-police:hover {
+    background: #102a5c;
+    color: #ffffff;
+}
+
+.btn-outline-secondary {
+    border: 2px solid var(--police-border);
+    font-weight: 700;
+}
+
+.btn-outline-primary {
+    border: 2px solid var(--police-blue);
+    color: var(--police-blue);
+    font-weight: 700;
+}
+
+.btn-outline-primary:hover {
+    background: var(--police-blue);
+    color: #ffffff;
+}
+
+/* ---------- EMPTY STATE ---------- */
+.text-muted h5 {
+    color: var(--police-navy);
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+/* ---------- REMOVE SOFT UI EFFECTS ---------- */
+* {
+    animation: none !important;
+    transition: none !important;
+}
+</style>
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <div>
+        <h1 class="h2">{{ criminal.criminal_id }} - {{ criminal.name }}</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'crimes:dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'crimes:criminal_list' %}">Criminal Database</a></li>
+                <li class="breadcrumb-item active">{{ criminal.criminal_id }}</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'crimes:criminal_list' %}" class="btn btn-sm btn-outline-secondary me-2">
+            <i class="fas fa-arrow-left"></i> Back to List
+        </a>
+        <a href="{% url 'crimes:edit_criminal' criminal.id %}" class="btn btn-sm btn-police">
+            <i class="fas fa-edit"></i> Edit
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <!-- Criminal Photo -->
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                {% if criminal.front_photo %}
+                <img src="{{ criminal.front_photo.url }}" alt="{{ criminal.name }}" 
+                     class="img-fluid rounded mb-3" style="max-height: 200px;">
+                {% else %}
+                <div class="text-muted py-5">
+                    <i class="fas fa-user-secret fa-5x mb-3"></i>
+                    <p>No photo available</p>
+                </div>
+                {% endif %}
+                
+                <div class="mt-3">
+                    {% if criminal.is_wanted %}
+                    <span class="badge bg-danger">WANTED</span>
+                    {% endif %}
+                    {% if criminal.is_active %}
+                    <span class="badge bg-success">ACTIVE</span>
+                    {% else %}
+                    <span class="badge bg-secondary">INACTIVE</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Criminal Status -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">Criminal Status</h6>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <tr>
+                        <th>Criminal ID:</th>
+                        <td>{{ criminal.criminal_id }}</td>
+                    </tr>
+                    <tr>
+                        <th>Added On:</th>
+                        <td>{{ criminal.created_at|date:"d/m/Y" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Added By:</th>
+                        <td>{{ criminal.created_by.get_full_name|default:criminal.created_by.username }}</td>
+                    </tr>
+                    <tr>
+                        <th>Last Updated:</th>
+                        <td>{{ criminal.updated_at|date:"d/m/Y H:i" }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <!-- Criminal Details -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Personal Details</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table table-sm">
+                            <tr>
+                                <th width="40%">Full Name:</th>
+                                <td>{{ criminal.name }}</td>
+                            </tr>
+                            <tr>
+                                <th>Alias:</th>
+                                <td>{{ criminal.alias|default:"None" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Father's Name:</th>
+                                <td>{{ criminal.father_name }}</td>
+                            </tr>
+                            <tr>
+                                <th>Aadhaar Number:</th>
+                                <td>
+                                    {% if criminal.aadhaar_number %}
+                                    {{ criminal.aadhaar_number|slice:"0:4" }}****{{ criminal.aadhaar_number|slice:"8:12" }}
+                                    {% else %}
+                                    Not provided
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-sm">
+                            <tr>
+                                <th width="40%">Photo Hash:</th>
+                                <td><code class="small">{{ criminal.photo_hash|truncatechars:30 }}</code></td>
+                            </tr>
+                            <tr>
+                                <th>Fingerprint Hash:</th>
+                                <td>
+                                    {% if criminal.fingerprint_hash %}
+                                    <code class="small">{{ criminal.fingerprint_hash|truncatechars:30 }}</code>
+                                    {% else %}
+                                    Not captured
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="mt-3">
+                    <h6>Distinguishing Marks</h6>
+                    <p>{{ criminal.distinguishing_marks|default:"None recorded"|linebreaks }}</p>
+                </div>
+                
+                <div class="mt-3">
+                    <h6>Permanent Address</h6>
+                    <p>{{ criminal.permanent_address|default:"Not provided"|linebreaks }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Matched FIRs -->
+        {% if matched_firs %}
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Matched FIRs ({{ matched_firs.count }})</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>FIR Number</th>
+                                <th>Informant</th>
+                                <th>Crime</th>
+                                <th>Station</th>
+                                <th>Match Date</th>
+                                <th>Confidence</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for fir in matched_firs %}
+                            <tr>
+                                <td>{{ fir.fir_number }}</td>
+                                <td>{{ fir.informant_name }}</td>
+                                <td>{{ fir.crime_category.section }}</td>
+                                <td>{{ fir.police_station.code }}</td>
+                                <td>{{ fir.date_registered|date:"d/m/Y" }}</td>
+                                <td>
+                                    <div class="progress" style="height: 20px; width: 100px;">
+                                        <div class="progress-bar bg-{{ fir.match_confidence|confidence_color }}" 
+                                             style="width: {{ fir.match_confidence }}%">
+                                            {{ fir.match_confidence }}%
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <a href="{% url 'crimes:fir_detail' fir.id %}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="card">
+            <div class="card-body text-center text-muted py-5">
+                <i class="fas fa-search fa-3x mb-3"></i>
+                <h5>No FIR Matches Found</h5>
+                <p>This criminal has not been matched with any FIR yet.</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

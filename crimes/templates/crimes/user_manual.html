@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Manual – CrimeNET | Police Department</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+            line-height: 1.7;
+        }
+
+        /* Header Section */
+        .header {
+            background: white;
+            color: #0a1f44;
+            padding: 25px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-bottom: 3px solid #1a4d8f;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .badge {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #0a1f44, #1a4d8f);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 24px;
+            border: 3px solid #ffd700;
+            box-shadow: 0 4px 12px rgba(26, 77, 143, 0.3);
+        }
+
+        .header-text h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #0a1f44;
+        }
+
+        .header-text p {
+            font-size: 14px;
+            color: #666;
+            font-weight: 400;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 30px;
+        }
+
+        /* Meta Information */
+        .meta-card {
+            background: linear-gradient(135deg, #1a4d8f, #0a1f44);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(26, 77, 143, 0.2);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .meta-label {
+            font-size: 12px;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+        .meta-value {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        /* Table of Contents */
+        .toc-card {
+            background: white;
+            padding: 25px 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-left: 4px solid #1a4d8f;
+        }
+
+        .toc-card h2 {
+            color: #0a1f44;
+            font-size: 18px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .toc-list {
+            list-style: none;
+        }
+
+        .toc-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #e8edf2;
+        }
+
+        .toc-list li:last-child {
+            border-bottom: none;
+        }
+
+        .toc-list a {
+            color: #1a4d8f;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .toc-list a:hover {
+            color: #0a1f44;
+            text-decoration: underline;
+        }
+
+        /* Content Sections */
+        .section-card {
+            background: white;
+            padding: 30px;
+            margin-bottom: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            scroll-margin-top: 20px;
+        }
+
+        .section-card h2 {
+            color: #0a1f44;
+            font-size: 22px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e8edf2;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-number {
+            background: #1a4d8f;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .section-card p {
+            color: #333;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .section-card ul {
+            margin-left: 20px;
+            color: #333;
+        }
+
+        .section-card ul li {
+            margin-bottom: 12px;
+            padding-left: 10px;
+        }
+
+        .section-card ul li strong {
+            color: #0a1f44;
+            font-weight: 600;
+        }
+
+        .section-card ul li em {
+            color: #1a4d8f;
+            font-style: italic;
+        }
+
+        /* Feature Box */
+        .feature-box {
+            background: #f8f9fb;
+            border-left: 3px solid #1a4d8f;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        .feature-box strong {
+            color: #0a1f44;
+        }
+
+        /* Footer */
+        .footer {
+            background: white;
+            color: #666;
+            text-align: center;
+            padding: 25px;
+            margin-top: 40px;
+            border-top: 3px solid #1a4d8f;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.08);
+        }
+
+        .footer p {
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .footer p:first-child {
+            color: #0a1f44;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        /* Icons */
+        .icon {
+            font-size: 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .meta-card {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+
+            .section-card {
+                padding: 20px;
+            }
+
+            .container {
+                padding: 0 20px;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+            }
+            
+            .header, .footer {
+                box-shadow: none;
+            }
+            
+            .section-card, .toc-card, .meta-card {
+                box-shadow: none;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="badge">📖</div>
+            <div class="header-text">
+                <h1>User Manual</h1>
+                <p>Kerala Police CrimeNET - Official System Documentation</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+
+        <!-- Meta Information -->
+        <div class="meta-card">
+            <div class="meta-item">
+                <div class="meta-label">System Name</div>
+                <div class="meta-value">{{ system_name }}</div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-label">Version</div>
+                <div class="meta-value">{{ version }}</div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-label">Last Updated</div>
+                <div class="meta-value">{{ last_updated }}</div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-label">Document Type</div>
+                <div class="meta-value">Official Manual</div>
+            </div>
+        </div>
+
+        <!-- Table of Contents -->
+        <div class="toc-card">
+            <h2>📑 Table of Contents</h2>
+            <ul class="toc-list">
+                <li><a href="#section-1">1. Introduction</a></li>
+                <li><a href="#section-2">2. User Roles & Responsibilities</a></li>
+                <li><a href="#section-3">3. FIR Management</a></li>
+                <li><a href="#section-4">4. Criminal Database</a></li>
+                <li><a href="#section-5">5. Crime Analytics & Reports</a></li>
+                <li><a href="#section-6">6. System Features</a></li>
+                <li><a href="#section-7">7. Best Practices</a></li>
+                <li><a href="#section-8">8. Support & Contact</a></li>
+            </ul>
+        </div>
+
+        <!-- Section 1: Introduction -->
+        <div class="section-card" id="section-1">
+            <h2>
+                <span class="section-number">1</span>
+                <span class="icon">🎯</span> Introduction
+            </h2>
+            <p>
+                The <strong>Kerala Police CrimeNET</strong> system is a centralized digital
+                platform designed to streamline the registration, management, and analysis of 
+                First Information Reports (FIRs), criminal records, and ongoing investigations. 
+                This comprehensive system enables law enforcement personnel to efficiently handle 
+                crime data, track investigations, and generate analytical reports for informed 
+                decision-making.
+            </p>
+            <div class="feature-box">
+                <strong>Key Objectives:</strong>
+                <ul style="margin-top: 10px;">
+                    <li>Digitize and centralize FIR management</li>
+                    <li>Improve investigation tracking and case resolution</li>
+                    <li>Enable data-driven crime analysis and prevention</li>
+                    <li>Enhance inter-departmental coordination</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Section 2: User Roles -->
+        <div class="section-card" id="section-2">
+            <h2>
+                <span class="section-number">2</span>
+                <span class="icon">👥</span> User Roles & Responsibilities
+            </h2>
+            <p>The CrimeNET system supports multiple user roles, each with specific permissions and responsibilities:</p>
+            
+            <div class="feature-box">
+                <strong>Police Officer</strong>
+                <ul style="margin-top: 10px;">
+                    <li>Register and file new FIRs</li>
+                    <li>Capture biometric details of suspects and complainants</li>
+                    <li>Add and manage evidence documentation</li>
+                    <li>Update case status and investigation notes</li>
+                </ul>
+            </div>
+
+            <div class="feature-box">
+                <strong>Investigator</strong>
+                <ul style="margin-top: 10px;">
+                    <li>Handle active investigation cases</li>
+                    <li>Update investigation progress and findings</li>
+                    <li>Coordinate with forensic and technical teams</li>
+                    <li>Prepare investigation reports</li>
+                </ul>
+            </div>
+
+            <div class="feature-box">
+                <strong>Administrator</strong>
+                <ul style="margin-top: 10px;">
+                    <li>Access system-wide analytics and dashboards</li>
+                    <li>Generate comprehensive reports</li>
+                    <li>Manage user accounts and permissions</li>
+                    <li>Oversee system performance and data integrity</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Section 3: FIR Management -->
+        <div class="section-card" id="section-3">
+            <h2>
+                <span class="section-number">3</span>
+                <span class="icon">📝</span> FIR Management
+            </h2>
+            <p>The FIR Management module provides comprehensive tools for handling First Information Reports throughout their lifecycle:</p>
+            
+            <ul>
+                <li><strong>Create New FIR:</strong> Access the <em>New FIR Registration</em> module from the main dashboard to initiate a new case.</li>
+                <li><strong>Biometric Capture:</strong> After creating the FIR draft, capture and store biometric details including fingerprints and photographs.</li>
+                <li><strong>Status Updates:</strong> Regularly update FIR status as the investigation progresses (Under Investigation, Closed, Court Case, etc.).</li>
+                <li><strong>Evidence Management:</strong> Attach digital evidence, photographs, and supporting documents to the FIR record.</li>
+                <li><strong>Print FIR:</strong> Generate official printed copies of FIRs for documentation and legal purposes.</li>
+                <li><strong>Search & Retrieve:</strong> Quickly locate FIRs using FIR number, date range, or complainant details.</li>
+            </ul>
+        </div>
+
+        <!-- Section 4: Criminal Database -->
+        <div class="section-card" id="section-4">
+            <h2>
+                <span class="section-number">4</span>
+                <span class="icon">🔍</span> Criminal Database
+            </h2>
+            <p>The Criminal Database module maintains comprehensive records of known offenders and suspects:</p>
+            
+            <ul>
+                <li><strong>Add Criminal Records:</strong> Register new criminals with complete details including personal information, physical description, and criminal history.</li>
+                <li><strong>Search Functionality:</strong> Find criminals using multiple parameters:
+                    <ul style="margin-top: 8px;">
+                        <li>Aadhaar number for unique identification</li>
+                        <li>Name or alias for text-based searches</li>
+                        <li>Physical characteristics and distinguishing marks</li>
+                    </ul>
+                </li>
+                <li><strong>Biometric Matching:</strong> Match fingerprints and other biometric data with existing criminal records for identification.</li>
+                <li><strong>Criminal History:</strong> View complete criminal history including past offenses, convictions, and ongoing cases.</li>
+                <li><strong>Photo Gallery:</strong> Maintain and access photographs for visual identification purposes.</li>
+            </ul>
+        </div>
+
+        <!-- Section 5: Analytics & Reports -->
+        <div class="section-card" id="section-5">
+            <h2>
+                <span class="section-number">5</span>
+                <span class="icon">📊</span> Crime Analytics & Reports
+            </h2>
+            <p>Access powerful analytics tools to gain insights into crime patterns and trends:</p>
+            
+            <ul>
+                <li><strong>FIR Statistics:</strong> View comprehensive statistics categorized by:
+                    <ul style="margin-top: 8px;">
+                        <li>Case status (Active, Closed, Under Investigation)</li>
+                        <li>Crime category and IPC sections</li>
+                        <li>Police station jurisdiction</li>
+                        <li>Time period (daily, weekly, monthly, yearly)</li>
+                    </ul>
+                </li>
+                <li><strong>Trend Analysis:</strong> Identify crime patterns and emerging trends in specific areas or categories.</li>
+                <li><strong>Performance Reports:</strong> Generate reports on investigation efficiency and case resolution rates.</li>
+                <li><strong>Custom Reports:</strong> Create customized reports based on specific parameters and date ranges.</li>
+                <li><strong>Export Functionality:</strong> Export reports in PDF, Excel, or CSV formats for further analysis or presentation.</li>
+            </ul>
+        </div>
+
+        <!-- Section 6: System Features -->
+        <div class="section-card" id="section-6">
+            <h2>
+                <span class="section-number">6</span>
+                <span class="icon">⚙️</span> System Features
+            </h2>
+            <p>CrimeNET offers advanced features to enhance operational efficiency:</p>
+            
+            <div class="feature-box">
+                <strong>🔐 Security Features</strong>
+                <ul style="margin-top: 10px;">
+                    <li>Role-based access control (RBAC)</li>
+                    <li>Encrypted data storage and transmission</li>
+                    <li>Audit trail for all system activities</li>
+                    <li>Multi-factor authentication support</li>
+                </ul>
+            </div>
+
+            <div class="feature-box">
+                <strong>🔔 Notifications & Alerts</strong>
+                <ul style="margin-top: 10px;">
+                    <li>Automated case status notifications</li>
+                    <li>Deadline reminders for investigations</li>
+                    <li>Alert system for matching criminal records</li>
+                </ul>
+            </div>
+
+            <div class="feature-box">
+                <strong>📱 Mobile Accessibility</strong>
+                <ul style="margin-top: 10px;">
+                    <li>Responsive design for tablet and mobile access</li>
+                    <li>Field reporting capabilities</li>
+                    <li>Real-time data synchronization</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Section 7: Best Practices -->
+        <div class="section-card" id="section-7">
+            <h2>
+                <span class="section-number">7</span>
+                <span class="icon">✅</span> Best Practices
+            </h2>
+            <p>Follow these best practices to ensure optimal use of the CrimeNET system:</p>
+            
+            <ul>
+                <li><strong>Data Accuracy:</strong> Always verify and double-check information before submitting FIRs or criminal records.</li>
+                <li><strong>Timely Updates:</strong> Update case status and investigation progress regularly to maintain current records.</li>
+                <li><strong>Complete Documentation:</strong> Attach all relevant evidence and supporting documents to each case file.</li>
+                <li><strong>Biometric Quality:</strong> Ensure high-quality biometric captures for accurate matching and identification.</li>
+                <li><strong>Secure Access:</strong> Never share login credentials and always log out after completing your session.</li>
+                <li><strong>Regular Backups:</strong> System administrators should ensure regular data backups are performed.</li>
+                <li><strong>Training:</strong> Participate in regular training sessions to stay updated on new features and procedures.</li>
+            </ul>
+        </div>
+
+        <!-- Section 8: Support -->
+        <div class="section-card" id="section-8">
+            <h2>
+                <span class="section-number">8</span>
+                <span class="icon">📞</span> Support & Contact
+            </h2>
+            <p>For technical support, assistance, or queries regarding the CrimeNET system:</p>
+            
+            <div class="feature-box">
+                <strong>Technical Support</strong>
+                <ul style="margin-top: 10px;">
+                    <li>Email: support@crimenet.kerala.gov.in</li>
+                    <li>Phone: 1800-XXX-XXXX (Toll-Free)</li>
+                    <li>Help Desk: Available 24/7</li>
+                </ul>
+            </div>
+
+            <div class="feature-box">
+                <strong>Training & Documentation</strong>
+                <ul style="margin-top: 10px;">
+                    <li>Online Training Portal: training.crimenet.kerala.gov.in</li>
+                    <li>Video Tutorials: Available in the system help section</li>
+                    <li>Quick Reference Guides: Downloadable from the dashboard</li>
+                </ul>
+            </div>
+
+            <p style="margin-top: 15px; font-style: italic; color: #666;">
+                For urgent system issues or critical bugs, please contact the system administrator immediately.
+            </p>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>© 2024 Kerala Police Department | CrimeNET System Documentation | For Official Use Only</p>
+        <p>Confidential Information - Authorized Personnel Only | Version {{ version }}</p>
+    </div>
+
+</body>
+</html>

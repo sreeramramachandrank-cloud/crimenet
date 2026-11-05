@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+:root {
+    --police-blue: #0b1f3a;
+    --police-gold: #c9a227;
+    --border: #d1d5db;
+    --bg-light: #f4f6f9;
+    --text-dark: #111827;
+    --text-muted: #6b7280;
+}
+
+body {
+    background: var(--bg-light);
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+}
+
+/* ===== DASHBOARD CARD ===== */
+.dashboard-card {
+    max-width: 900px;
+    margin: 3rem auto;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    padding: 2rem;
+}
+
+/* ===== HEADER ===== */
+.dashboard-card h2 {
+    font-size: 1.1rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--police-blue);
+    border-bottom: 3px solid var(--police-gold);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* ===== STATS ===== */
+.stat-box {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-item {
+    border: 1px solid var(--border);
+    padding: 1rem;
+    background: #fafafa;
+}
+
+.stat-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--police-blue);
+    margin-top: 0.25rem;
+}
+
+/* ===== ACTION LIST ===== */
+.action-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.action-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid var(--border);
+    padding: 0.9rem 1rem;
+    margin-bottom: 0.75rem;
+    background: #ffffff;
+}
+
+.action-text {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.action-warning {
+    color: #b91c1c;
+    font-weight: 700;
+    font-size: 0.75rem;
+}
+
+/* ===== FOOTER NOTE ===== */
+.dashboard-note {
+    margin-top: 1.5rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    border-left: 4px solid var(--police-gold);
+    padding-left: 0.75rem;
+}
+</style>
+<div class="dashboard-card">
+
+    <h2>Forensic Biometric Dashboard</h2>
+
+    <div class="stat-box">
+        <div class="stat-item">
+            <div class="stat-label">Total Biometric Records</div>
+            <div class="stat-value">{{ total_records }}</div>
+        </div>
+    </div>
+
+    <ul class="action-list">
+        <li>
+            <span class="action-text">Enroll New Biometrics</span>
+        </li>
+
+        <li>
+            <span class="action-text">Search Biometrics</span>
+            <span class="action-warning">Warrant Required</span>
+        </li>
+
+        <li>
+            <span class="action-text">Audit Access Logs</span>
+        </li>
+    </ul>
+
+    <div class="dashboard-note">
+        All biometric operations are logged and monitored. Unauthorized access or misuse
+        may result in disciplinary and legal action.
+    </div>
+
+</div>
+{% endblock %}

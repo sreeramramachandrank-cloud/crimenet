@@ -1,0 +1,239 @@
+# Create fir/list.html
+@'
+{% extends "crimes/base.html" %}
+
+{% block title %}FIR List - CrimeNET{% endblock %}
+
+{% block content %}
+<style>
+/* ==================================================
+   POLICE FIR LIST – OFFICIAL GOVERNMENT UI
+================================================== */
+
+:root {
+    --police-navy: #0b1f3a;
+    --police-blue: #1e3a8a;
+    --police-gold: #c9a227;
+    --police-bg: #f8fafc;
+    --police-border: #cbd5e1;
+}
+
+/* ---------- PAGE HEADER ---------- */
+h1.h2 {
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--police-navy);
+}
+
+/* ---------- CARD ---------- */
+.card {
+    border: 1.5px solid var(--police-border);
+    border-radius: 4px;
+    box-shadow: none;
+}
+
+.card-header {
+    background: var(--police-bg);
+    border-bottom: 2px solid var(--police-gold);
+    font-weight: 900;
+    text-transform: uppercase;
+    color: var(--police-navy);
+    letter-spacing: 0.6px;
+}
+
+/* ---------- TABLE ---------- */
+.table {
+    font-size: 0.9rem;
+}
+
+.table thead th {
+    background: #e2e8f0;
+    font-weight: 900;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.6px;
+    color: var(--police-navy);
+    border-bottom: 2px solid var(--police-border);
+}
+
+.table tbody td {
+    font-weight: 600;
+    vertical-align: middle;
+}
+
+.table-hover tbody tr:hover {
+    background: #f1f5f9;
+}
+
+/* ---------- FIR NUMBER ---------- */
+.table td strong {
+    color: var(--police-blue);
+    font-weight: 900;
+}
+
+/* ---------- STATUS BADGES ---------- */
+.badge {
+    font-weight: 900;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    border-radius: 3px;
+}
+
+.bg-success {
+    background: #14532d !important;
+}
+
+.bg-warning {
+    background: #92400e !important;
+    color: #fff !important;
+}
+
+.bg-secondary {
+    background: #334155 !important;
+}
+
+/* ---------- ACTION BUTTON ---------- */
+.btn-outline-primary {
+    border: 2px solid var(--police-blue);
+    color: var(--police-blue);
+    font-weight: 800;
+}
+
+.btn-outline-primary:hover {
+    background: var(--police-blue);
+    color: #fff;
+}
+
+/* ---------- NEW FIR BUTTON ---------- */
+.btn-police {
+    background: var(--police-blue);
+    color: #fff;
+    font-weight: 900;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+}
+
+.btn-police:hover {
+    background: #0b1f3a;
+    color: #fff;
+}
+
+/* ---------- PAGINATION ---------- */
+.pagination .page-link {
+    font-weight: 700;
+    color: var(--police-blue);
+    border-radius: 3px;
+}
+
+.pagination .active .page-link {
+    background: var(--police-blue);
+    border-color: var(--police-blue);
+    color: #fff;
+}
+
+/* ---------- EMPTY STATE ---------- */
+.text-muted {
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+/* ---------- HARDEN UI ---------- */
+* {
+    animation: none !important;
+    transition: none !important;
+}
+</style>
+
+</style>
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">FIR List</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'crimes:fir_create' %}" class="btn btn-sm btn-police">
+            <i class="fas fa-plus-circle"></i> New FIR
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">All FIRs</h5>
+    </div>
+    <div class="card-body">
+        {% if firs %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>FIR Number</th>
+                        <th>Informant</th>
+                        <th>Crime</th>
+                        <th>Station</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fir in firs %}
+                    <tr>
+                        <td><strong>{{ fir.fir_number }}</strong></td>
+                        <td>{{ fir.informant_name }}</td>
+                        <td>{{ fir.crime_category.section }}</td>
+                        <td>{{ fir.police_station.code }}</td>
+                        <td>
+                            <span class="badge bg-{% if fir.status == 'REGISTERED' %}success{% elif fir.status == 'INVESTIGATION' %}warning{% else %}secondary{% endif %}">
+                                {{ fir.get_status_display }}
+                            </span>
+                        </td>
+                        <td>{{ fir.date_registered|date:"d/m/Y" }}</td>
+                        <td>
+                            <a href="{% url 'crimes:fir_detail' fir.id %}" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                </li>
+                {% endif %}
+                
+                {% for num in page_obj.paginator.page_range %}
+                <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                </li>
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+        
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
+            <h5>No FIRs Found</h5>
+            <p class="text-muted">No FIRs have been registered yet.</p>
+            <a href="{% url 'crimes:fir_create' %}" class="btn btn-police">
+                <i class="fas fa-plus-circle"></i> Create First FIR
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+'@ | Out-File -FilePath crimes\templates\crimes\fir\list.html -Encoding UTF8

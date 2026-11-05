@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+:root {
+    --police-blue: #0b1f3a;
+    --police-gold: #c9a227;
+    --border: #d1d5db;
+    --bg-light: #f4f6f9;
+    --text-dark: #111827;
+    --text-muted: #6b7280;
+}
+
+body {
+    background: var(--bg-light);
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+}
+
+/* ===== MAIN CARD ===== */
+.complaints-card {
+    max-width: 900px;
+    margin: 3rem auto;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    padding: 2rem;
+}
+
+/* ===== HEADER ===== */
+.complaints-card h2 {
+    font-size: 1.1rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--police-blue);
+    border-bottom: 3px solid var(--police-gold);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* ===== TABLE ===== */
+.complaints-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.complaints-table th {
+    background: #e5e7eb;
+    color: var(--police-blue);
+    padding: 0.7rem;
+    border: 1px solid var(--border);
+    text-transform: uppercase;
+    font-weight: 800;
+    text-align: left;
+}
+
+.complaints-table td {
+    padding: 0.7rem;
+    border: 1px solid var(--border);
+}
+
+/* ===== STATUS BADGES ===== */
+.status {
+    font-weight: 800;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+}
+
+.status-pending {
+    color: #92400e;
+}
+
+.status-accepted {
+    color: #14532d;
+}
+
+.status-rejected {
+    color: #7f1d1d;
+}
+
+.status-closed {
+    color: #374151;
+}
+
+/* ===== REMARK ===== */
+.remark {
+    font-size: 0.8rem;
+    color: var(--text-dark);
+}
+
+/* ===== EMPTY ===== */
+.no-complaints {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-style: italic;
+}
+</style>
+<div class="complaints-card">
+
+    <h2>My Complaints</h2>
+
+    {% if complaints %}
+    <table class="complaints-table">
+        <tr>
+            <th>Subject</th>
+            <th>Status</th>
+            <th>Police Remark</th>
+        </tr>
+
+        {% for c in complaints %}
+        <tr>
+            <td>{{ c.subject }}</td>
+            <td>
+                <span class="status status-{{ c.status|lower }}">
+                    {{ c.status }}
+                </span>
+            </td>
+            <td class="remark">
+                {{ c.police_remark|default:"-" }}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+        <p class="no-complaints">
+            No complaints have been registered under your account.
+        </p>
+    {% endif %}
+
+</div>
+{% endblock %}

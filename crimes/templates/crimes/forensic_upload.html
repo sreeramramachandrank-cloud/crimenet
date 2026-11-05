@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block title %}Forensic Upload | CrimeNet{% endblock %}
+
+{% block content %}
+<style>
+/* ===============================
+   OFFICIAL FORENSIC PAGE (WHITE)
+================================ */
+
+.forensic-wrapper {
+    max-width: 1100px;
+    margin: 2rem auto;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+}
+
+/* Header */
+.forensic-header {
+    padding: 1.5rem 2rem;
+    border-bottom: 4px solid #0b1f47;
+    background: #f8fafc;
+}
+
+.forensic-header h1 {
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: #0b1f47;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.forensic-header p {
+    margin-top: 0.3rem;
+    font-size: 0.9rem;
+    color: #4b5563;
+}
+
+/* Body */
+.forensic-body {
+    padding: 2rem;
+}
+
+/* Form */
+label {
+    font-weight: 700;
+    color: #1f2933;
+    display: block;
+    margin-bottom: 0.3rem;
+}
+
+input[type="text"],
+input[type="file"],
+select,
+textarea {
+    width: 100%;
+    padding: 0.6rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    margin-bottom: 1.2rem;
+    font-size: 0.9rem;
+}
+
+/* Buttons */
+.btn-primary {
+    background: #0b1f47;
+    color: #ffffff;
+    border: none;
+    padding: 0.6rem 1.6rem;
+    font-weight: 700;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-secondary {
+    margin-left: 1rem;
+    color: #0b1f47;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+/* Notice */
+.notice {
+    background: #fef3c7;
+    border-left: 5px solid #f59e0b;
+    padding: 1rem 1.2rem;
+    margin-bottom: 2rem;
+    font-size: 0.85rem;
+    color: #78350f;
+}
+</style>
+
+<div class="forensic-wrapper">
+
+    <!-- HEADER -->
+    <div class="forensic-header">
+        <h1>Upload DNA / Fingerprint Reports</h1>
+        <p>Forensic Division – Secure Evidence Submission</p>
+    </div>
+
+    <!-- BODY -->
+    <div class="forensic-body">
+
+        <div class="notice">
+            ⚠️ All uploaded forensic reports are logged and audited.
+            Unauthorized uploads are punishable under departmental policy.
+        </div>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <label>FIR Number</label>
+            <input type="text" name="fir_number" required>
+
+            <label>Type of Evidence</label>
+            <select name="evidence_type" required>
+                <option value="">Select</option>
+                <option value="DNA">DNA Report</option>
+                <option value="FINGERPRINT">Fingerprint Report</option>
+            </select>
+
+            <label>Upload Report File</label>
+            <input type="file" name="report_file" required>
+
+            <label>Remarks (Optional)</label>
+            <textarea name="remarks" rows="4"></textarea>
+
+            <button type="submit" class="btn-primary">
+                Upload Report
+            </button>
+
+            <a href="{% url 'dashboard' %}" class="btn-secondary">
+                Cancel
+            </a>
+        </form>
+
+    </div>
+</div>
+{% endblock %}

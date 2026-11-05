@@ -1,0 +1,375 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+<style>
+:root {
+    --police-blue: #0b1f3a;
+    --police-blue-dark: #08162b;
+    --police-gold: #c9a227;
+    --border: #d1d5db;
+    --bg-light: #f1f5f9;
+    --text-dark: #111827;
+    --text-muted: #6b7280;
+
+    --success-bg: #e6f4ea;
+    --success-text: #065f46;
+
+    --warning-bg: #fff7e6;
+    --warning-text: #92400e;
+
+    --danger-bg: #fdecea;
+    --danger-text: #7f1d1d;
+}
+
+body {
+    background: var(--bg-light);
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+    padding: 1.5rem;
+    color: var(--text-dark);
+}
+
+/* ===== PAGE CONTAINER ===== */
+.container {
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+/* ===== HEADER ===== */
+.page-header {
+    background: white;
+    border: 1px solid var(--border);
+    border-left: 6px solid var(--police-blue);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.page-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--police-blue);
+    text-transform: uppercase;
+}
+
+.user-count {
+    background: var(--police-blue);
+    color: white;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    border-radius: 4px;
+}
+
+.count-number {
+    font-size: 1rem;
+    margin-left: 0.25rem;
+}
+
+/* ===== TABLE ===== */
+.table-container {
+    background: white;
+    border: 1px solid var(--border);
+}
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background: var(--police-blue);
+    color: white;
+}
+
+th {
+    padding: 0.75rem;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: left;
+}
+
+tbody tr {
+    border-bottom: 1px solid var(--border);
+}
+
+tbody tr:hover {
+    background: #f8fafc;
+}
+
+td {
+    padding: 0.75rem;
+    font-size: 0.8rem;
+    vertical-align: middle;
+}
+
+.username {
+    font-weight: 800;
+    color: var(--police-blue);
+}
+
+/* ===== BADGES ===== */
+.badge {
+    padding: 0.25rem 0.6rem;
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    border-radius: 4px;
+    display: inline-block;
+    border: 1px solid var(--border);
+}
+
+.badge-admin,
+.badge-officer,
+.badge-investigator,
+.badge-forensic,
+.badge-judge,
+.badge-auditor {
+    background: #eef2ff;
+    color: var(--police-blue);
+}
+
+.badge-pending {
+    background: var(--warning-bg);
+    color: var(--warning-text);
+}
+
+.badge-verified,
+.badge-yes,
+.badge-active {
+    background: var(--success-bg);
+    color: var(--success-text);
+}
+
+.badge-unverified,
+.badge-blocked {
+    background: var(--danger-bg);
+    color: var(--danger-text);
+}
+
+.badge-no,
+.badge-protected {
+    background: #f3f4f6;
+    color: var(--text-muted);
+}
+
+/* ===== ACTIONS ===== */
+.actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.btn {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    text-align: center;
+    text-decoration: none;
+    border: 1px solid var(--border);
+    background: white;
+    color: var(--police-blue);
+}
+
+.btn:hover {
+    background: #f1f5f9;
+}
+
+.btn-block {
+    color: var(--danger-text);
+}
+
+.btn-unblock {
+    color: var(--success-text);
+}
+
+.btn-approve {
+    color: #1d4ed8;
+}
+
+.btn-grant {
+    color: #6b21a8;
+}
+
+.btn-view {
+    color: #92400e;
+}
+
+/* ===== BACK LINK ===== */
+.back-link {
+    display: inline-block;
+    margin-top: 1.25rem;
+    padding: 0.6rem 1.2rem;
+    background: var(--police-blue);
+    color: white;
+    text-decoration: none;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    border-radius: 4px;
+}
+
+.back-link:hover {
+    opacity: 0.9;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 768px) {
+    body {
+        padding: 0.75rem;
+    }
+
+    th, td {
+        font-size: 0.65rem;
+        padding: 0.5rem;
+    }
+
+    .actions {
+        min-width: 120px;
+    }
+}
+</style>
+
+<div class="container">
+    <div class="page-header">
+        <h2 class="page-title">
+            👥 System Users
+        </h2>
+        <div class="user-count">
+            <span>Total Users:</span>
+            <span class="count-number">{{ user_rows|length }}</span>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th>Requested Role</th>
+                        <th>Verification Status</th>
+                        <th>Investigator Access</th>
+                        <th>Superuser</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in user_rows %}
+                    <tr>
+                        <td class="username">{{ row.user.username }}</td>
+
+                        <td>
+                            {% if row.user.role == 'ADMIN' %}
+                                <span class="badge badge-admin">Admin</span>
+                            {% elif row.user.role == 'OFFICER' %}
+                                <span class="badge badge-officer">Officer</span>
+                            {% elif row.user.role == 'INVESTIGATOR' %}
+                                <span class="badge badge-investigator">Investigator</span>
+                            {% elif row.user.role == 'FORENSIC' %}
+                                <span class="badge badge-forensic">Forensic</span>
+                            {% elif row.user.role == 'JUDGE' %}
+                                <span class="badge badge-judge">Judge</span>
+                            {% elif row.user.role == 'AUDITOR' %}
+                                <span class="badge badge-auditor">Auditor</span>
+                            {% else %}
+                                <span class="badge badge-role">{{ row.user.role|default:"-" }}</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if row.user.requested_role %}
+                                <span class="badge badge-pending">{{ row.user.requested_role }}</span>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if row.verification == 'Verified' %}
+                                <span class="badge badge-verified">Verified</span>
+                            {% elif row.verification == 'Pending' %}
+                                <span class="badge badge-unverified">Pending</span>
+                            {% else %}
+                                {{ row.verification }}
+                            {% endif %}
+                        </td>
+
+                        <td>{{ row.case_access }}</td>
+
+                        <td>
+                            {% if row.user.is_superuser %}
+                                <span class="badge badge-yes">Yes</span>
+                            {% else %}
+                                <span class="badge badge-no">No</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if row.user.is_blocked %}
+                                <span class="badge badge-blocked">Blocked</span>
+                            {% else %}
+                                <span class="badge badge-active">Active</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if row.user.is_superuser or row.user.role == 'ADMIN' %}
+                                <span class="badge badge-protected">🔒 Protected</span>
+                            {% else %}
+                                <div class="actions">
+                                    {% if row.user.is_blocked %}
+                                        <a href="{% url 'admin_unblock_user' row.user.id %}" class="btn btn-unblock">
+                                            🔓 Unblock
+                                        </a>
+                                    {% else %}
+                                        <a href="{% url 'admin_block_user' row.user.id %}" class="btn btn-block">
+                                            🚫 Block
+                                        </a>
+                                    {% endif %}
+
+                                    {% if row.can_approve %}
+                                        <a href="{% url 'admin_approve_role' row.user.id %}" class="btn btn-approve">
+                                            ✅ Approve Role
+                                        </a>
+                                    {% endif %}
+
+                                    {% if row.can_grant_access %}
+                                        <a href="{% url 'admin_grant_investigator_access' row.user.id %}" class="btn btn-grant">
+                                            🕵️ Grant Case Access
+                                        </a>
+                                    {% endif %}
+
+                                    {% if row.user.role in 'OFFICER INVESTIGATOR FORENSIC JUDGE AUDITOR' %}
+                                        <a href="{% url 'admin_view_verification' row.user.id %}" class="btn btn-view">
+                                            🔍 View Verification
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <a href="{% url 'admin_dashboard' %}" class="back-link">
+        ⬅ Back to Admin Dashboard
+    </a>
+</div>
+
+{% endblock %}

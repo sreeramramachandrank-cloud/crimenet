@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>📄 Upload Verification Documents</h2>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <select name="doc_type" required>
+        <option value="">Select Document Type</option>
+        <option value="ID">Government ID</option>
+        <option value="ORDER">Appointment Order</option>
+        <option value="BADGE">Badge Proof</option>
+    </select>
+
+    <input type="file" name="file" required>
+    <button type="submit">Upload</button>
+</form>
+
+<hr>
+
+<h3>Uploaded Documents</h3>
+<ul>
+    {% for d in documents %}
+        <li>
+            {{ d.get_doc_type_display }} —
+            {% if d.verified %}
+                ✅ Verified
+            {% else %}
+                ⏳ Pending
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

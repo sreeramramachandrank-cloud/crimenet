@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+/* ===============================
+   HERO SECTION (POLICE)
+================================ */
+.hero-section {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: #ffffff;
+    border: 2px solid #c9a227; /* Police gold */
+    border-radius: 4px;
+    margin-bottom: 2rem;
+}
+
+.hero-section h2 {
+    font-size: 2.2rem;
+    color: #0b1f3a; /* Police navy */
+    margin-bottom: 0.75rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* ===============================
+   TAGLINE
+================================ */
+.tagline {
+    font-size: 1rem;
+    color: #374151;
+    line-height: 1.6;
+    margin: 1rem 0 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    font-weight: 600;
+}
+
+/* ===============================
+   FEATURE BADGES
+================================ */
+.feature-badge {
+    display: inline-block;
+    padding: 0.45rem 1.1rem;
+    margin: 0.3rem;
+    background: #1e3a8a;
+    color: #ffffff;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+}
+
+/* ===============================
+   DIVIDER
+================================ */
+.divider {
+    border: none;
+    height: 3px;
+    background: #c9a227;
+    margin: 2.5rem 0;
+}
+
+/* ===============================
+   USER INFO CARD
+================================ */
+.user-info-card {
+    background: #ffffff;
+    color: #111827;
+    padding: 2rem;
+    border: 1px solid #d1d5db;
+    border-left: 6px solid #1e3a8a;
+    margin-bottom: 1.5rem;
+}
+
+.user-info-card p {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+    letter-spacing: 0.3px;
+    font-weight: 600;
+}
+
+.user-info-card strong {
+    font-size: 1.1rem;
+    color: #1e3a8a;
+    font-weight: 800;
+}
+
+/* ===============================
+   ROLE BADGE
+================================ */
+.role-badge {
+    background: #f3f4f6;
+    padding: 0.45rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 3px;
+    display: inline-block;
+    font-weight: 800;
+    font-size: 0.8rem;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+    color: #1f2937;
+}
+
+/* ===============================
+   INFO CARD
+================================ */
+.info-card {
+    background: #f9fafb;
+    border-left: 6px solid #c9a227;
+    padding: 1.5rem;
+    border-radius: 3px;
+    margin-top: 1.5rem;
+    border: 1px solid #e5e7eb;
+}
+
+.info-card p {
+    color: #374151;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    font-weight: 600;
+}
+
+/* ===============================
+   CTA SECTION
+================================ */
+.cta-section {
+    text-align: center;
+    padding: 2.5rem;
+    background: #ffffff;
+    border: 2px dashed #1e3a8a;
+    border-radius: 4px;
+    margin-top: 2rem;
+}
+
+.cta-section p {
+    font-size: 1rem;
+    color: #1f2937;
+    letter-spacing: 0.4px;
+    font-weight: 600;
+}
+
+/* ===============================
+   ICONS (SUBTLE)
+================================ */
+.icon {
+    font-size: 2.2rem;
+    margin-bottom: 1rem;
+    color: #1e3a8a;
+}
+
+/* ===============================
+   MOBILE
+================================ */
+@media (max-width: 768px) {
+    .hero-section h2 {
+        font-size: 1.7rem;
+    }
+
+    .tagline {
+        font-size: 0.85rem;
+    }
+
+    .feature-badge {
+        display: block;
+        margin: 0.4rem auto;
+        width: fit-content;
+    }
+}
+</style>
+
+
+<div class="hero-section">
+    <div class="icon">🔒</div>
+    <h2>Welcome to CrimeNet</h2>
+    
+    <p class="tagline">
+        Government Criminal Information System
+    </p>
+    
+    <div style="margin-top: 1.5rem;">
+        <span class="feature-badge">🔐 Secure</span>
+        <span class="feature-badge">📊 Transparent</span>
+        <span class="feature-badge">👥 Role-Based</span>
+    </div>
+</div>
+
+<hr class="divider">
+
+{% if request.user.is_authenticated %}
+
+    <div class="user-info-card">
+        <p>
+            👤 You are logged in as
+            <strong>{{ request.user.username }}</strong>
+        </p>
+        <div class="role-badge">
+            Role: {{ request.user.role }}
+        </div>
+    </div>
+
+    <div class="info-card">
+        <p>
+            ✅ Use the navigation bar to access the dashboard or logout.
+        </p>
+    </div>
+
+{% else %}
+
+    <div class="cta-section">
+        <div class="icon">🚀</div>
+        <p>
+            Please use the navigation bar above to login or register.
+        </p>
+    </div>
+
+{% endif %}
+
+{% endblock %}

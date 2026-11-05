@@ -1,0 +1,427 @@
+<!-- crimes/templates/crimes/fir_create.html -->
+{% extends 'crimes/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h4>Register New FIR</h4>
+        </div>
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data" id="firForm">
+                {% csrf_token %}
+                
+                <div class="alert alert-info">
+                    <strong>Note:</strong> All fields marked with * are required
+                </div>
+                
+                {% if form.errors %}
+                <div class="alert alert-danger">
+                    <strong>Please fix the following errors:</strong>
+                    <ul>
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <li>{{ field.label }}: {{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                        {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                
+                <!-- Section 1: Police Station & Basic Details -->
+                <h5 class="mt-4">1. Police Station & Basic Details</h5>
+                <div class="row">
+                    {% for field in form %}
+                        {% if field.name == "police_station" or field.name == "crime_category" or field.name == "informant_name" or field.name == "informant_father_name" or field.name == "informant_age" or field.name == "informant_gender" %}
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">{{ field.label }}{% if field.field.required %} *{% endif %}</label>
+                            {{ field }}
+                            {% if field.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                            {% endif %}
+                            {% if field.errors %}
+                            <div class="text-danger">
+                                {% for error in field.errors %}
+                                <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                
+                <!-- Section 2: Informant Details -->
+                <h5 class="mt-4">2. Informant Details</h5>
+                <div class="row">
+                    {% for field in form %}
+                        {% if field.name == "informant_occupation" or field.name == "informant_address" or field.name == "informant_district" or field.name == "informant_state" or field.name == "informant_pincode" or field.name == "informant_mobile" or field.name == "informant_email" or field.name == "informant_aadhaar" or field.name == "informant_voter_id" or field.name == "relation_to_case" %}
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">{{ field.label }}{% if field.field.required %} *{% endif %}</label>
+                            {{ field }}
+                            {% if field.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                            {% endif %}
+                            {% if field.errors %}
+                            <div class="text-danger">
+                                {% for error in field.errors %}
+                                <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                
+                <!-- Section 3: Incident Details -->
+                <h5 class="mt-4">3. Incident Details</h5>
+                <div class="row">
+                    {% for field in form %}
+                        {% if field.name == "incident_date" or field.name == "incident_time" or field.name == "incident_location" or field.name == "incident_landmark" or field.name == "other_ipc_sections" or field.name == "local_act" or field.name == "incident_description" or field.name == "sequence_of_events" or field.name == "delay_in_reporting" or field.name == "delay_reason" %}
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">{{ field.label }}{% if field.field.required %} *{% endif %}</label>
+                            {{ field }}
+                            {% if field.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                            {% endif %}
+                            {% if field.errors %}
+                            <div class="text-danger">
+                                {% for error in field.errors %}
+                                <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                
+                <!-- Section 4: Accused Details -->
+                <h5 class="mt-4">4. Accused Details</h5>
+                <div class="row">
+                    {% for field in form %}
+                        {% if field.name == "accused_name" or field.name == "accused_father_name" or field.name == "accused_age" or field.name == "accused_gender" or field.name == "accused_address" or field.name == "accused_occupation" or field.name == "accused_aadhaar" or field.name == "accused_mobile" %}
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">{{ field.label }}{% if field.field.required %} *{% endif %}</label>
+                            {{ field }}
+                            {% if field.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                            {% endif %}
+                            {% if field.errors %}
+                            <div class="text-danger">
+                                {% for error in field.errors %}
+                                <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                
+                <!-- Section 5: Victim Details -->
+                <h5 class="mt-4">5. Victim Details</h5>
+                <div class="row">
+                    {% for field in form %}
+                        {% if field.name == "victim_name" or field.name == "victim_age" or field.name == "victim_gender" or field.name == "victim_address" or field.name == "victim_condition" %}
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">{{ field.label }}{% if field.field.required %} *{% endif %}</label>
+                            {{ field }}
+                            {% if field.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                            {% endif %}
+                            {% if field.errors %}
+                            <div class="text-danger">
+                                {% for error in field.errors %}
+                                <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                
+                <!-- Section 6: Property & Evidence -->
+                <h5 class="mt-4">6. Property & Evidence</h5>
+                <div class="row">
+                    {% for field in form %}
+                        {% if field.name == "property_involved" or field.name == "property_description" or field.name == "property_value" or field.name == "witness_count" or field.name == "witness_details" or field.name == "evidence_available" %}
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">{{ field.label }}{% if field.field.required %} *{% endif %}</label>
+                            {{ field }}
+                            {% if field.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                            {% endif %}
+                            {% if field.errors %}
+                            <div class="text-danger">
+                                {% for error in field.errors %}
+                                <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                
+                <!-- Section 7: Case Flags -->
+                <h5 class="mt-4">7. Case Type Flags</h5>
+                <div class="row">
+                    {% for field in form %}
+                        {% if field.name == "is_sensitive" or field.name == "is_cyber_crime" or field.name == "is_women_related" or field.name == "is_sc_st" or field.name == "is_child_victim" %}
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check">
+                                {{ field }}
+                                <label class="form-check-label" for="{{ field.id_for_label }}">
+                                    {{ field.label }}
+                                </label>
+                            </div>
+                            {% if field.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                            {% endif %}
+                            {% if field.errors %}
+                            <div class="text-danger">
+                                {% for error in field.errors %}
+                                <div>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Save FIR Draft
+                    </button>
+                    <a href="{% url 'crimes:dashboard' %}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+/* ==================================================
+   KERALA POLICE – FIR REGISTRATION THEME
+================================================== */
+:root {
+    --police-primary: #0b2545;
+    --police-secondary: #133e7c;
+    --police-border: #d1d5db;
+    --police-bg: #f8fafc;
+
+    --police-success: #166534;
+    --police-danger: #991b1b;
+    --police-warning: #b45309;
+}
+
+/* ==================================================
+   PAGE BACKGROUND
+================================================== */
+body {
+    background-color: var(--police-bg);
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+/* ==================================================
+   CARD
+================================================== */
+.card {
+    border-radius: 6px;
+    border: 1px solid var(--police-border);
+    box-shadow: none;
+}
+
+.card-header {
+    background-color: var(--police-primary);
+    color: #ffffff;
+    border-radius: 6px 6px 0 0 !important;
+    padding: 14px 20px;
+}
+
+.card-header h4 {
+    margin: 0;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    font-size: 1rem;
+}
+
+/* ==================================================
+   SECTION HEADINGS
+================================================== */
+h5 {
+    font-size: 0.9rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--police-primary);
+    border-bottom: 2px solid var(--police-primary);
+    padding-bottom: 6px;
+    margin-bottom: 16px;
+    margin-top: 30px;
+}
+
+/* ==================================================
+   FORM LABELS
+================================================== */
+.form-label {
+    font-weight: 700;
+    font-size: 0.75rem;
+    color: #1f2937;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+/* ==================================================
+   FORM CONTROLS
+================================================== */
+.form-control,
+.form-select {
+    border-radius: 4px;
+    border: 1px solid var(--police-border);
+    font-size: 0.8rem;
+    padding: 8px 10px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--police-primary);
+    box-shadow: 0 0 0 2px rgba(11, 37, 69, 0.15);
+}
+
+/* ==================================================
+   TEXTAREA
+================================================== */
+textarea.form-control {
+    min-height: 110px;
+    resize: vertical;
+}
+
+/* ==================================================
+   CHECKBOXES (CASE FLAGS)
+================================================== */
+.form-check-input {
+    border: 1px solid var(--police-border);
+}
+
+.form-check-input:checked {
+    background-color: var(--police-primary);
+    border-color: var(--police-primary);
+}
+
+.form-check-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+/* ==================================================
+   ALERTS
+================================================== */
+.alert {
+    font-size: 0.8rem;
+    border-radius: 4px;
+}
+
+.alert-info {
+    background-color: #e0f2fe;
+    border: 1px solid #bae6fd;
+    color: #075985;
+}
+
+.alert-danger {
+    background-color: #fee2e2;
+    border: 1px solid #fecaca;
+    color: #7f1d1d;
+}
+
+/* ==================================================
+   ERROR TEXT
+================================================== */
+.text-danger {
+    font-size: 0.75rem;
+}
+
+/* ==================================================
+   BUTTONS
+================================================== */
+.btn {
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    font-size: 0.75rem;
+    padding: 8px 16px;
+}
+
+.btn-primary {
+    background-color: var(--police-primary);
+    border-color: var(--police-primary);
+}
+
+.btn-primary:hover {
+    background-color: var(--police-secondary);
+    border-color: var(--police-secondary);
+}
+
+.btn-secondary {
+    background-color: #475569;
+    border-color: #475569;
+}
+
+.btn-secondary:hover {
+    background-color: #334155;
+    border-color: #334155;
+}
+
+/* ==================================================
+   HELP TEXT
+================================================== */
+.form-text {
+    font-size: 0.7rem;
+    color: #6b7280;
+}
+
+/* ==================================================
+   RESPONSIVE
+================================================== */
+@media (max-width: 768px) {
+    h5 {
+        font-size: 0.85rem;
+    }
+
+    .btn {
+        width: 100%;
+        margin-bottom: 6px;
+    }
+}
+</style>
+
+
+<script>
+// Add Bootstrap classes to form elements on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Add form-control class to all input, select, textarea
+    const formElements = document.querySelectorAll('input:not([type="checkbox"]):not([type="radio"]), select, textarea');
+    formElements.forEach(el => {
+        el.classList.add('form-control');
+    });
+    
+    // Add form-select class to select elements
+    const selectElements = document.querySelectorAll('select');
+    selectElements.forEach(el => {
+        el.classList.add('form-select');
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,371 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+:root {
+    --police-blue: #0b1f3a;
+    --police-blue-dark: #08162b;
+    --police-gold: #c9a227;
+
+    --success: #065f46;
+    --warning: #92400e;
+    --danger: #7f1d1d;
+
+    --border: #d1d5db;
+    --bg-light: #f1f5f9;
+
+    --text-dark: #111827;
+    --text-muted: #6b7280;
+}
+
+body {
+    background: var(--bg-light);
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+}
+
+/* ===== PAGE LAYOUT ===== */
+.documents-container {
+    min-height: 90vh;
+    padding: 2.5rem 1rem;
+}
+
+.content-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* ===== HEADER ===== */
+.page-header {
+    background: white;
+    border: 1px solid var(--border);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border-left: 6px solid var(--police-blue);
+}
+
+.page-header h2 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--police-blue);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.page-subtitle {
+    margin-top: 0.4rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+/* ===== GRID ===== */
+.documents-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: 1.25rem;
+}
+
+/* ===== DOCUMENT CARD ===== */
+.document-card {
+    background: white;
+    border: 1px solid var(--border);
+}
+
+.card-header {
+    background: var(--police-blue);
+    color: white;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-bottom: 4px solid var(--police-gold);
+}
+
+.doc-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(255,255,255,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+}
+
+.doc-type {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.doc-status-badge {
+    display: inline-block;
+    margin-top: 0.25rem;
+    padding: 0.2rem 0.6rem;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.badge-pending {
+    background: #fff7ed;
+    color: var(--warning);
+    border: 1px solid var(--warning);
+}
+
+.badge-verified {
+    background: #ecfdf5;
+    color: var(--success);
+    border: 1px solid var(--success);
+}
+
+/* ===== BODY ===== */
+.card-body {
+    padding: 1.25rem;
+}
+
+/* ===== VIEW BUTTON ===== */
+.view-doc-btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 0.6rem;
+    margin-bottom: 1rem;
+    border: 1px solid var(--police-blue);
+    background: white;
+    color: var(--police-blue);
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-decoration: none;
+}
+
+.view-doc-btn:hover {
+    background: var(--police-blue);
+    color: white;
+}
+
+/* ===== APPROVAL ===== */
+.approval-section {
+    border: 1px solid var(--border);
+    background: #f9fafb;
+    padding: 1rem;
+}
+
+.approval-title {
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+    color: var(--police-blue);
+}
+
+.approval-form textarea {
+    width: 100%;
+    border: 1px solid var(--border);
+    padding: 0.5rem;
+    font-size: 0.8rem;
+    min-height: 90px;
+    margin-bottom: 0.5rem;
+}
+
+.char-counter {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    text-align: right;
+    margin-bottom: 0.5rem;
+}
+
+.approve-btn {
+    width: 100%;
+    padding: 0.6rem;
+    background: var(--success);
+    color: white;
+    border: none;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+}
+
+.approve-btn:hover {
+    opacity: 0.9;
+}
+
+/* ===== VERIFIED ===== */
+.verified-section {
+    border: 1px solid var(--success);
+    background: #ecfdf5;
+    padding: 1.25rem;
+    text-align: center;
+}
+
+.verified-text {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: var(--success);
+}
+
+.verified-subtext {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* ===== NO DOCS ===== */
+.no-docs-container {
+    background: white;
+    border: 1px solid var(--border);
+    padding: 3rem 2rem;
+    text-align: center;
+}
+
+.no-docs-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--police-blue);
+}
+
+.no-docs-text {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+/* ===== BACK ===== */
+.back-btn {
+    display: inline-block;
+    margin-top: 1.5rem;
+    padding: 0.5rem 1.25rem;
+    border: 1px solid var(--police-blue);
+    background: white;
+    color: var(--police-blue);
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    text-decoration: none;
+}
+
+.back-btn:hover {
+    background: var(--police-blue);
+    color: white;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .documents-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+
+<div class="documents-container">
+    <div class="content-wrapper">
+        <div class="page-header">
+            <div class="header-icon-wrapper">📄</div>
+            <h2>Officer Documents</h2>
+            <p class="page-subtitle">Review and verify submitted officer documentation</p>
+        </div>
+
+        {% if documents %}
+        <div class="documents-grid">
+            {% for d in documents %}
+            <div class="document-card">
+                <div class="card-header">
+                    <div class="doc-icon">📋</div>
+                    <div class="doc-title">
+                        <p class="doc-type">{{ d.get_doc_type_display }}</p>
+                        <span class="doc-status-badge {% if d.verified %}badge-verified{% else %}badge-pending{% endif %}">
+                            {% if d.verified %}Verified{% else %}Pending Review{% endif %}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <a href="{{ d.file.url }}" target="_blank" class="view-doc-btn">
+                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10 12.5C11.3807 12.5 12.5 11.3807 12.5 10C12.5 8.61929 11.3807 7.5 10 7.5C8.61929 7.5 7.5 8.61929 7.5 10C7.5 11.3807 8.61929 12.5 10 12.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2.5 10C2.5 10 5 4 10 4C15 4 17.5 10 17.5 10C17.5 10 15 16 10 16C5 16 2.5 10 2.5 10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        View Document
+                    </a>
+
+                    {% if not d.verified %}
+                    <div class="approval-section">
+                        <div class="approval-title">
+                            <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                                <path d="M9 11L11 13L15 9M20 10C20 15.5228 15.5228 20 10 20C4.47715 20 0 15.5228 0 10C0 4.47715 4.47715 0 10 0C15.5228 0 20 4.47715 20 10Z" fill="#667eea"/>
+                            </svg>
+                            Verification Review
+                        </div>
+                        <form method="post" class="approval-form" onsubmit="return confirmApproval(event)">
+                            {% csrf_token %}
+                            <input type="hidden" name="doc_id" value="{{ d.id }}">
+                            <div class="input-helper">
+                                Provide your verification remarks (optional)
+                            </div>
+                            <textarea 
+                                name="remark" 
+                                placeholder="Enter your admin remarks or verification notes..."
+                                maxlength="500"
+                                id="remark_{{ d.id }}"
+                                oninput="updateCharCount({{ d.id }})"></textarea>
+                            <div class="char-counter">
+                                <span id="charCount_{{ d.id }}">0</span> / 500 characters
+                            </div>
+                            <button type="submit" class="approve-btn">
+                                <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                                    <path d="M16.25 6.25L8.125 14.375L3.75 10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                Approve Document
+                            </button>
+                        </form>
+                    </div>
+                    {% else %}
+                    <div class="verified-section">
+                        <div class="verified-icon">✅</div>
+                        <p class="verified-text">Document Verified</p>
+                        <p class="verified-subtext">This document has been approved</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-docs-container">
+            <div class="no-docs-icon">📭</div>
+            <h3 class="no-docs-title">No Documents Found</h3>
+            <p class="no-docs-text">There are no officer documents to review at this time.</p>
+        </div>
+        {% endif %}
+
+        <a href="javascript:history.back()" class="back-btn">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Back to Previous Page
+        </a>
+    </div>
+</div>
+
+<script>
+    function updateCharCount(docId) {
+        const textarea = document.getElementById(`remark_${docId}`);
+        const counter = document.getElementById(`charCount_${docId}`);
+        counter.textContent = textarea.value.length;
+    }
+
+    function confirmApproval(event) {
+        const confirmed = confirm('Are you sure you want to approve this document?\n\nThis action will mark the document as verified.');
+        if (!confirmed) {
+            event.preventDefault();
+            return false;
+        }
+        return true;
+    }
+</script>
+
+{% endblock %}

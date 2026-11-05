@@ -1,0 +1,497 @@
+{% extends 'base.html' %}
+
+{% block title %}Criminal Details - Kerala Police CrimeNET{% endblock %}
+
+{% block content %}
+<style>
+/* ===============================
+   KERALA POLICE THEME
+================================ */
+:root {
+    --kp-dark: #0b1f3a;
+    --kp-primary: #003366;
+    --kp-secondary: #1e40af;
+    --kp-light: #f1f5f9;
+    --kp-border: #cbd5e1;
+
+    --kp-success: #166534;
+    --kp-warning: #92400e;
+    --kp-danger: #7f1d1d;
+    --kp-info: #1e3a8a;
+}
+
+/* ===============================
+   PAGE TITLE
+================================ */
+h2, h5 {
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--kp-primary);
+}
+
+/* ===============================
+   CARDS
+================================ */
+.card {
+    border-radius: 6px;
+    border: 1px solid var(--kp-border);
+    background: #ffffff;
+}
+
+.card-police {
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+.card-header {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.card-header-police {
+    background: linear-gradient(90deg, var(--kp-dark), var(--kp-primary));
+    color: #ffffff;
+    border-bottom: 3px solid var(--kp-secondary);
+}
+
+/* ===============================
+   FORM-LIKE TEXT DISPLAY
+================================ */
+.form-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #0f172a;
+}
+
+.form-control-plaintext {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #111827;
+    background: transparent;
+}
+
+/* ===============================
+   TABLES
+================================ */
+.table {
+    font-size: 0.85rem;
+}
+
+.table thead {
+    background: var(--kp-light);
+}
+
+.table thead th {
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.4px;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #eef2ff;
+}
+
+/* ===============================
+   BADGES (STATUS)
+================================ */
+.badge {
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.4px;
+}
+
+.bg-danger {
+    background-color: var(--kp-danger) !important;
+}
+
+.bg-warning {
+    background-color: #facc15 !important;
+    color: #000 !important;
+}
+
+.bg-success {
+    background-color: var(--kp-success) !important;
+}
+
+.bg-primary {
+    background-color: var(--kp-primary) !important;
+}
+
+.bg-info {
+    background-color: var(--kp-info) !important;
+}
+
+/* ===============================
+   BUTTONS
+================================ */
+.btn-police {
+    background-color: var(--kp-primary);
+    color: #ffffff;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    border: none;
+}
+
+.btn-police:hover {
+    background-color: var(--kp-secondary);
+    color: #ffffff;
+}
+
+.btn-police-outline {
+    border: 2px solid var(--kp-primary);
+    color: var(--kp-primary);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.btn-police-outline:hover {
+    background-color: var(--kp-primary);
+    color: #ffffff;
+}
+
+/* ===============================
+   PHOTO FRAME
+================================ */
+.photo-frame {
+    border: 2px dashed var(--kp-border);
+    border-radius: 6px;
+    padding: 15px;
+    background-color: var(--kp-light);
+}
+
+/* ===============================
+   ACTION PANEL
+================================ */
+.d-grid .btn {
+    font-size: 0.8rem;
+}
+
+/* ===============================
+   ICON COLORS
+================================ */
+.text-primary {
+    color: var(--kp-primary) !important;
+}
+
+/* ===============================
+   PRINT VIEW
+================================ */
+@media print {
+    .btn, .card-header i {
+        display: none !important;
+    }
+}
+
+/* ===============================
+   MOBILE OPTIMIZATION
+================================ */
+@media (max-width: 768px) {
+    h2 {
+        font-size: 1.3rem;
+    }
+}
+</style>
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-3">
+                <i class="fas fa-user-secret text-primary me-2"></i>
+                Criminal Details
+                <a href="{% url 'crimes:criminal_list' %}" class="btn btn-police-outline btn-sm float-end">
+                    <i class="fas fa-arrow-left me-1"></i> Back to List
+                </a>
+            </h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Criminal Information -->
+        <div class="col-md-8">
+            <div class="card card-police shadow-sm">
+                <div class="card-header card-header-police">
+                    <h5 class="mb-0">
+                        <i class="fas fa-id-card me-2"></i>
+                        Criminal Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Criminal ID:</label>
+                            <p class="form-control-plaintext border-bottom pb-2">{{ criminal.id|default:"N/A" }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Full Name:</label>
+                            <p class="form-control-plaintext border-bottom pb-2">{{ criminal.full_name|default:"N/A" }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Aliases:</label>
+                            <p class="form-control-plaintext border-bottom pb-2">{{ criminal.aliases|default:"N/A" }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Father's Name:</label>
+                            <p class="form-control-plaintext border-bottom pb-2">{{ criminal.father_name|default:"N/A" }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Aadhaar Number:</label>
+                            <p class="form-control-plaintext border-bottom pb-2">{{ criminal.aadhaar|default:"N/A" }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Status:</label>
+                            <p class="form-control-plaintext border-bottom pb-2">
+                                {% if criminal.status == 'WANTED' %}
+                                <span class="badge bg-danger">WANTED</span>
+                                {% elif criminal.status == 'ARRESTED' %}
+                                <span class="badge bg-warning text-dark">ARRESTED</span>
+                                {% elif criminal.status == 'CONVICTED' %}
+                                <span class="badge bg-success">CONVICTED</span>
+                                {% else %}
+                                <span class="badge bg-secondary">{{ criminal.status|default:"UNKNOWN" }}</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Date of Birth:</label>
+                            <p class="form-control-plaintext border-bottom pb-2">{{ criminal.date_of_birth|date:"d/m/Y"|default:"N/A" }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Gender:</label>
+                            <p class="form-control-plaintext border-bottom pb-2">{{ criminal.gender|default:"N/A" }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label fw-bold">Address:</label>
+                            <p class="form-control-plaintext border-bottom pb-2">{{ criminal.address|default:"N/A"|linebreaks }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Contact Number:</label>
+                            <p class="form-control-plaintext border-bottom pb-2">{{ criminal.contact_number|default:"N/A" }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Email:</label>
+                            <p class="form-control-plaintext border-bottom pb-2">{{ criminal.email|default:"N/A" }}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Created On:</label>
+                            <p class="form-control-plaintext border-bottom pb-2">{{ criminal.created_at|date:"d/m/Y H:i"|default:"N/A" }}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Last Updated:</label>
+                            <p class="form-control-plaintext border-bottom pb-2">{{ criminal.updated_at|date:"d/m/Y H:i"|default:"N/A" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Criminal History -->
+            <div class="card card-police shadow-sm mt-4">
+                <div class="card-header card-header-police">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history me-2"></i>
+                        Criminal History / Previous Cases
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if criminal.cases and criminal.cases.all %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>FIR Number</th>
+                                    <th>Crime Type</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Station</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for case in criminal.cases.all %}
+                                <tr>
+                                    <td>
+                                        {% if case.id %}
+                                        <a href="{% url 'crimes:fir_detail' case.id %}">
+                                            {{ case.fir_number|default:"N/A" }}
+                                        </a>
+                                        {% else %}
+                                        {{ case.fir_number|default:"N/A" }}
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ case.crime_type|default:"N/A" }}</td>
+                                    <td>{{ case.date_registered|date:"d/m/Y"|default:"N/A" }}</td>
+                                    <td>
+                                        {% if case.status == 'REGISTERED' %}
+                                        <span class="badge bg-primary">REGISTERED</span>
+                                        {% elif case.status == 'INVESTIGATION' %}
+                                        <span class="badge bg-warning text-dark">INVESTIGATION</span>
+                                        {% elif case.status == 'CHARGESHEET' %}
+                                        <span class="badge bg-info">CHARGESHEET</span>
+                                        {% elif case.status == 'CONVICTED' %}
+                                        <span class="badge bg-success">CONVICTED</span>
+                                        {% elif case.status == 'ACQUITTED' %}
+                                        <span class="badge bg-secondary">ACQUITTED</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">{{ case.status|default:"UNKNOWN" }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ case.station.name|default:"N/A" }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No previous cases found for this criminal.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Photo and Actions -->
+        <div class="col-md-4">
+            <!-- Criminal Photo -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-camera me-2"></i>
+                        Criminal Photo
+                    </h5>
+                </div>
+                <div class="card-body text-center">
+                    <div class="photo-frame mb-3">
+                        {% if criminal.photo and criminal.photo.url %}
+                        <img src="{{ criminal.photo.url }}" alt="{{ criminal.full_name }}" class="img-fluid">
+                        {% else %}
+                        <i class="fas fa-user-secret fa-5x text-muted py-4"></i>
+                        <p class="text-muted mt-2">No photo available</p>
+                        {% endif %}
+                    </div>
+                    
+                    {% if criminal.photo and criminal.photo.url %}
+                    <a href="{{ criminal.photo.url }}" target="_blank" class="btn btn-police-outline btn-sm">
+                        <i class="fas fa-expand me-1"></i> View Full Size
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-cogs me-2"></i>
+                        Actions
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <!-- Edit button with alert -->
+                        <button type="button" class="btn btn-police" onclick="alert('Edit feature coming soon!')">
+                            <i class="fas fa-edit me-1"></i> Edit Criminal
+                        </button>
+                        
+                        <!-- Delete button with alert -->
+                        <button type="button" class="btn btn-outline-danger" onclick="showDeleteAlert()">
+                            <i class="fas fa-trash me-1"></i> Delete Criminal
+                        </button>
+                        
+                        <!-- Print button -->
+                        <button type="button" class="btn btn-outline-warning" onclick="window.print()">
+                            <i class="fas fa-print me-1"></i> Print Details
+                        </button>
+                        
+                        <!-- Download button with alert -->
+                        <button type="button" class="btn btn-outline-info" onclick="alert('Download feature coming soon!')">
+                            <i class="fas fa-download me-1"></i> Download Data
+                        </button>
+                        
+                        <!-- Mark as Wanted button -->
+                        {% if criminal.status != 'WANTED' %}
+                        <button type="button" class="btn btn-outline-danger" onclick="alert('Mark as wanted feature coming soon!')">
+                            <i class="fas fa-exclamation-triangle me-1"></i> Mark as Wanted
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Additional Information -->
+            <div class="card shadow-sm mt-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Additional Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Identifying Marks:</label>
+                        <p class="form-control-plaintext">{{ criminal.identifying_marks|default:"None recorded"|linebreaks }}</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Known Associates:</label>
+                        <p class="form-control-plaintext">{{ criminal.known_associates|default:"None recorded"|linebreaks }}</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Remarks:</label>
+                        <p class="form-control-plaintext">{{ criminal.remarks|default:"None"|linebreaks }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+    
+    // Custom delete confirmation function
+    function showDeleteAlert() {
+        if (confirm('Are you sure you want to delete this criminal record?\n\n' +
+                   'Criminal: {{ criminal.full_name|escapejs }}\n' +
+                   'ID: {{ criminal.id|escapejs }}\n\n' +
+                   'Warning: This action cannot be undone.')) {
+            alert('Delete feature coming soon!');
+            // In the future, you can replace this with actual delete code:
+            // window.location.href = "{% url 'crimes:criminal_delete' criminal.id %}";
+        }
+    }
+</script>
+{% endblock %}
+

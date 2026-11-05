@@ -1,0 +1,1034 @@
+{% extends 'crimes/base.html' %}
+
+{% block title %}Capture Biometrics - FIR {{ fir.fir_number }} - CrimeNET{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <div>
+        <h1 class="h2">Capture Biometrics</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'crimes:dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'crimes:fir_detail' fir.id %}">FIR {{ fir.fir_number }}</a></li>
+                <li class="breadcrumb-item active">Capture Biometrics</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'crimes:fir_detail' fir.id %}" class="btn btn-sm btn-outline-secondary me-2">
+            <i class="fas fa-arrow-left"></i> Back to FIR
+        </a>
+        <a href="{% url 'crimes:dashboard' %}" class="btn btn-sm btn-police">
+            <i class="fas fa-home"></i> Dashboard
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <!-- Biometric Capture Steps -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Biometric Capture Process</h5>
+            </div>
+            <div class="card-body">
+                <!-- Progress Steps -->
+                <div class="steps mb-4">
+                    <div class="step active" data-step="1">
+                        <div class="step-number">1</div>
+                        <div class="step-label">Photo</div>
+                    </div>
+                    <div class="step" data-step="2">
+                        <div class="step-number">2</div>
+                        <div class="step-label">Fingerprint</div>
+                    </div>
+                    <div class="step" data-step="3">
+                        <div class="step-number">3</div>
+                        <div class="step-label">Signature</div>
+                    </div>
+                    <div class="step" data-step="4">
+                        <div class="step-number">4</div>
+                        <div class="step-label">Verification</div>
+                    </div>
+                </div>
+                
+                <!-- Step 1: Photo Capture -->
+                <div class="step-content active" id="step1">
+                    <h4 class="mb-4">Step 1: Capture Photo</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="photo-capture-container text-center mb-4">
+                                <div id="photoPreview" class="photo-frame mb-3">
+                                    {% if fir.informant_photo %}
+                                    <img src="{{ fir.informant_photo.url }}" alt="Current Photo" class="img-fluid rounded" style="max-height: 250px;">
+                                    {% else %}
+                                    <div class="text-muted py-5">
+                                        <i class="fas fa-camera fa-4x mb-3"></i>
+                                        <p>No photo captured yet</p>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-outline-primary" onclick="capturePhoto()">
+                                        <i class="fas fa-camera"></i> Capture Photo
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary" onclick="uploadPhoto()">
+                                        <i class="fas fa-upload"></i> Upload Photo
+                                    </button>
+                                </div>
+                                
+                                <input type="file" id="photoUpload" accept="image/*" class="d-none" onchange="handlePhotoUpload(event)">
+                                
+                                <div class="mt-3">
+                                    <small class="text-muted">Requirements: Passport size (2x2 inch), Clear front face, Plain background</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="photo-guidelines">
+                                <h6>Photo Guidelines</h6>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        Face should be clearly visible
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        Look straight at the camera
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        No hats or sunglasses
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        Plain light-colored background
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        Good lighting, no shadows
+                                    </li>
+                                    <li>
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        Neutral facial expression
+                                    </li>
+                                </ul>
+                                
+                                <div class="alert alert-info mt-4">
+                                    <i class="fas fa-info-circle"></i>
+                                    <strong>Note:</strong> Photo will be used for biometric matching against criminal database.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-end">
+                        <button class="btn btn-police next-step" data-next="2">
+                            Next: Fingerprint <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Step 2: Fingerprint Capture -->
+                <div class="step-content" id="step2">
+                    <h4 class="mb-4">Step 2: Capture Fingerprints</h4>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="fingerprint-capture-container mb-4">
+                                <div class="row text-center">
+                                    <div class="col-4">
+                                        <div class="fingerprint-slot" data-finger="right-thumb" onclick="captureFingerprint('right-thumb')">
+                                            <div class="finger-label">Right Thumb</div>
+                                            <div class="finger-preview" id="rightThumbPreview">
+                                                {% if fir.thumb_impression %}
+                                                <i class="fas fa-fingerprint fa-2x text-success"></i>
+                                                {% else %}
+                                                <i class="fas fa-fingerprint fa-2x text-muted"></i>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="fingerprint-slot" data-finger="right-index" onclick="captureFingerprint('right-index')">
+                                            <div class="finger-label">Right Index</div>
+                                            <div class="finger-preview" id="rightIndexPreview">
+                                                <i class="fas fa-fingerprint fa-2x text-muted"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="fingerprint-slot" data-finger="right-middle" onclick="captureFingerprint('right-middle')">
+                                            <div class="finger-label">Right Middle</div>
+                                            <div class="finger-preview" id="rightMiddlePreview">
+                                                <i class="fas fa-fingerprint fa-2x text-muted"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row text-center mt-4">
+                                    <div class="col-4">
+                                        <div class="fingerprint-slot" data-finger="left-thumb" onclick="captureFingerprint('left-thumb')">
+                                            <div class="finger-label">Left Thumb</div>
+                                            <div class="finger-preview" id="leftThumbPreview">
+                                                <i class="fas fa-fingerprint fa-2x text-muted"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="fingerprint-slot" data-finger="left-index" onclick="captureFingerprint('left-index')">
+                                            <div class="finger-label">Left Index</div>
+                                            <div class="finger-preview" id="leftIndexPreview">
+                                                <i class="fas fa-fingerprint fa-2x text-muted"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="fingerprint-slot" data-finger="left-middle" onclick="captureFingerprint('left-middle')">
+                                            <div class="finger-label">Left Middle</div>
+                                            <div class="finger-preview" id="leftMiddlePreview">
+                                                <i class="fas fa-fingerprint fa-2x text-muted"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="text-center mt-4">
+                                    <button class="btn btn-outline-danger" onclick="captureAllFingers()">
+                                        <i class="fas fa-fingerprint"></i> Capture All Fingers
+                                    </button>
+                                    <button class="btn btn-outline-secondary" onclick="clearFingerprints()">
+                                        <i class="fas fa-redo"></i> Clear All
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="fingerprint-guidelines">
+                                <h6>Fingerprint Guidelines</h6>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        Clean and dry fingers
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        Roll from nail to nail
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        Apply even pressure
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        No smudges or blurs
+                                    </li>
+                                    <li>
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        Capture all 10 fingers if possible
+                                    </li>
+                                </ul>
+                                
+                                <div class="mt-4">
+                                    <h6>Capture Progress</h6>
+                                    <div class="progress" style="height: 20px;">
+                                        <div class="progress-bar" id="fingerprintProgress" role="progressbar" style="width: 10%;">
+                                            1/10
+                                        </div>
+                                    </div>
+                                    <small class="text-muted" id="fingerprintStatus">Right thumb captured</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <button class="btn btn-outline-secondary prev-step" data-prev="1">
+                            <i class="fas fa-arrow-left"></i> Previous: Photo
+                        </button>
+                        <button class="btn btn-police next-step" data-next="3">
+                            Next: Signature <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Step 3: Signature Capture -->
+                <div class="step-content" id="step3">
+                    <h4 class="mb-4">Step 3: Capture Digital Signature</h4>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="signature-capture-container mb-4">
+                                <div class="signature-pad-container">
+                                    <canvas id="signaturePad" width="600" height="200" class="border rounded"></canvas>
+                                </div>
+                                
+                                <div class="btn-group mt-3" role="group">
+                                    <button type="button" class="btn btn-outline-primary" onclick="clearSignature()">
+                                        <i class="fas fa-redo"></i> Clear
+                                    </button>
+                                    <button type="button" class="btn btn-outline-success" onclick="saveSignature()">
+                                        <i class="fas fa-save"></i> Save Signature
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary" onclick="undoSignature()">
+                                        <i class="fas fa-undo"></i> Undo
+                                    </button>
+                                </div>
+                                
+                                <div class="mt-3">
+                                    <div id="signaturePreview" class="d-none">
+                                        <h6>Signature Preview:</h6>
+                                        <div class="signature-display border p-3 bg-light"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="signature-guidelines">
+                                <h6>Signature Guidelines</h6>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        Sign within the box
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        Use normal signing style
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        No scribbles or drawings
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        Match official signature
+                                    </li>
+                                    <li>
+                                        <i class="fas fa-check text-success me-2"></i>
+                                        Clear and legible
+                                    </li>
+                                </ul>
+                                
+                                <div class="alert alert-warning mt-4">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <strong>Legal Notice:</strong> Digital signature carries same legal weight as physical signature.
+                                </div>
+                                
+                                <div class="form-check mt-3">
+                                    <input class="form-check-input" type="checkbox" id="signatureConsent">
+                                    <label class="form-check-label" for="signatureConsent">
+                                        I confirm this is my authentic signature
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <button class="btn btn-outline-secondary prev-step" data-prev="2">
+                            <i class="fas fa-arrow-left"></i> Previous: Fingerprint
+                        </button>
+                        <button class="btn btn-police next-step" data-next="4">
+                            Next: Verification <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Step 4: Verification -->
+                <div class="step-content" id="step4">
+                    <h4 class="mb-4">Step 4: Verification & Database Check</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="verification-summary">
+                                <h6>Biometric Summary</h6>
+                                <table class="table table-sm">
+                                    <tr>
+                                        <th>Photo:</th>
+                                        <td>
+                                            <span id="photoStatus" class="badge bg-success">Captured</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Fingerprints:</th>
+                                        <td>
+                                            <span id="fingerprintStatusSummary" class="badge bg-warning">1/10</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Signature:</th>
+                                        <td>
+                                            <span id="signatureStatus" class="badge bg-danger">Not Captured</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Quality Score:</th>
+                                        <td>
+                                            <div class="progress" style="height: 10px;">
+                                                <div class="progress-bar bg-info" id="qualityScore" style="width: 65%;"></div>
+                                            </div>
+                                            <small>65%</small>
+                                        </td>
+                                    </tr>
+                                </table>
+                                
+                                <div class="mt-4">
+                                    <h6>Database Check</h6>
+                                    <button class="btn btn-outline-primary w-100 mb-2" onclick="checkCriminalDatabase()">
+                                        <i class="fas fa-search"></i> Check Against Criminal Database
+                                    </button>
+                                    <button class="btn btn-outline-success w-100" onclick="checkPreviousRecords()">
+                                        <i class="fas fa-history"></i> Check Previous FIRs
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div id="verificationResults" class="d-none">
+                                <div class="alert alert-success">
+                                    <h6><i class="fas fa-check-circle"></i> No Criminal Matches Found</h6>
+                                    <p class="mb-0">Biometric data does not match any records in criminal database.</p>
+                                </div>
+                                
+                                <div class="alert alert-info">
+                                    <h6><i class="fas fa-info-circle"></i> Previous FIRs Found</h6>
+                                    <ul class="mb-0">
+                                        <li>FIR PS001/2023/0456 - Theft Case (10/01/2023)</li>
+                                        <li>FIR PS001/2022/1234 - Assault Case (15/08/2022)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div id="criminalMatchAlert" class="alert alert-danger d-none">
+                                <h6><i class="fas fa-exclamation-triangle"></i> CRIMINAL MATCH FOUND!</h6>
+                                <p><strong>Criminal ID:</strong> CRIM-00123</p>
+                                <p><strong>Name:</strong> John Doe (Alias: Johnny)</p>
+                                <p><strong>Match Confidence:</strong> 92%</p>
+                                <button class="btn btn-sm btn-danger">
+                                    <i class="fas fa-external-link-alt"></i> View Criminal Record
+                                </button>
+                            </div>
+                            
+                            <div class="mt-4">
+                                <h6>Final Actions</h6>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-success" onclick="markAsVerified()">
+                                        <i class="fas fa-check-circle"></i> Mark Biometrics as Verified
+                                    </button>
+                                    <button class="btn btn-outline-secondary" onclick="saveAndExit()">
+                                        <i class="fas fa-save"></i> Save & Exit
+                                    </button>
+                                    <button class="btn btn-outline-danger" onclick="cancelCapture()">
+                                        <i class="fas fa-times"></i> Cancel & Discard
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <button class="btn btn-outline-secondary prev-step" data-prev="3">
+                            <i class="fas fa-arrow-left"></i> Previous: Signature
+                        </button>
+                        <button class="btn btn-police" onclick="completeBiometricCapture()">
+                            <i class="fas fa-check-double"></i> Complete Biometric Capture
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <!-- Informant Details -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">Informant Details</h6>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    {% if fir.informant_photo %}
+                    <img src="{{ fir.informant_photo.url }}" alt="Informant Photo" class="img-fluid rounded" style="max-height: 100px;">
+                    {% else %}
+                    <div class="avatar-lg mx-auto">
+                        <i class="fas fa-user fa-3x"></i>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <p><strong>Name:</strong> {{ fir.informant_name }}</p>
+                <p><strong>Father:</strong> {{ fir.informant_father_name }}</p>
+                <p><strong>Age:</strong> {{ fir.informant_age }} years</p>
+                <p><strong>Gender:</strong> {{ fir.get_informant_gender_display }}</p>
+                <p><strong>Mobile:</strong> {{ fir.informant_mobile }}</p>
+                <p><strong>Aadhaar:</strong> {{ fir.informant_aadhaar|default:"Not provided" }}</p>
+                
+                <hr>
+                
+                <p><strong>FIR:</strong> {{ fir.fir_number }}</p>
+                <p><strong>Crime:</strong> {{ fir.crime_category.section }}</p>
+                <p><strong>Station:</strong> {{ fir.police_station.code }}</p>
+            </div>
+        </div>
+        
+        <!-- Biometric Status -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">Current Biometric Status</h6>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        Photo Capture
+                        <span class="badge bg-{% if fir.photo_hash %}success{% else %}danger{% endif %}">
+                            {% if fir.photo_hash %}Captured{% else %}Pending{% endif %}
+                        </span>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        Fingerprint
+                        <span class="badge bg-{% if fir.thumb_hash %}success{% else %}danger{% endif %}">
+                            {% if fir.thumb_hash %}Captured{% else %}Pending{% endif %}
+                        </span>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        Signature
+                        <span class="badge bg-{% if fir.digital_signature %}success{% else %}danger{% endif %}">
+                            {% if fir.digital_signature %}Captured{% else %}Pending{% endif %}
+                        </span>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        Database Check
+                        <span class="badge bg-{{ fir.biometric_status|status_color }}">
+                            {{ fir.get_biometric_status_display }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Device Support -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="fas fa-tools"></i> Device Support</h6>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item">
+                        <i class="fas fa-camera text-success me-2"></i>
+                        <strong>Camera:</strong> <span id="cameraStatus">Checking...</span>
+                    </div>
+                    <div class="list-group-item">
+                        <i class="fas fa-fingerprint text-warning me-2"></i>
+                        <strong>Fingerprint Scanner:</strong> <span id="scannerStatus">Not detected</span>
+                    </div>
+                    <div class="list-group-item">
+                        <i class="fas fa-tablet-alt text-info me-2"></i>
+                        <strong>Touch Screen:</strong> <span id="touchStatus">Available</span>
+                    </div>
+                </div>
+                
+                <div class="mt-3">
+                    <button class="btn btn-sm btn-outline-primary w-100" onclick="checkDeviceSupport()">
+                        <i class="fas fa-sync"></i> Re-check Devices
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<!-- Signature Pad Library -->
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        let currentStep = 1;
+        let signaturePad = null;
+        
+        // Initialize steps
+        showStep(currentStep);
+        
+        // Initialize Signature Pad
+        const canvas = document.getElementById('signaturePad');
+        if (canvas) {
+            signaturePad = new SignaturePad(canvas, {
+                backgroundColor: 'rgb(255, 255, 255)',
+                penColor: 'rgb(0, 51, 102)'
+            });
+            
+            // Adjust canvas size on resize
+            function resizeCanvas() {
+                const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                canvas.width = canvas.offsetWidth * ratio;
+                canvas.height = canvas.offsetHeight * ratio;
+                canvas.getContext("2d").scale(ratio, ratio);
+                signaturePad.clear();
+            }
+            
+            window.addEventListener("resize", resizeCanvas);
+            resizeCanvas();
+        }
+        
+        // Next step button
+        $('.next-step').click(function() {
+            const nextStep = parseInt($(this).data('next'));
+            if (validateStep(currentStep)) {
+                currentStep = nextStep;
+                showStep(currentStep);
+                updateProgress();
+            }
+        });
+        
+        // Previous step button
+        $('.prev-step').click(function() {
+            const prevStep = parseInt($(this).data('prev'));
+            currentStep = prevStep;
+            showStep(currentStep);
+            updateProgress();
+        });
+        
+        // Update progress steps
+        function updateProgress() {
+            $('.step').removeClass('active');
+            for (let i = 1; i <= currentStep; i++) {
+                $(`.step[data-step="${i}"]`).addClass('active');
+            }
+        }
+        
+        // Show specific step
+        function showStep(step) {
+            $('.step-content').removeClass('active');
+            $(`#step${step}`).addClass('active');
+        }
+        
+        // Validate step
+        function validateStep(step) {
+            if (step === 1) {
+                if (!$('#photoPreview img').length) {
+                    alert('Please capture or upload a photo first.');
+                    return false;
+                }
+            } else if (step === 3) {
+                if (!signaturePad || signaturePad.isEmpty()) {
+                    alert('Please provide a digital signature.');
+                    return false;
+                }
+                if (!$('#signatureConsent').prop('checked')) {
+                    alert('Please confirm that the signature is authentic.');
+                    return false;
+                }
+            }
+            return true;
+        }
+        
+        // Check device support
+        checkDeviceSupport();
+        
+        // Check fingerprint progress
+        updateFingerprintProgress();
+    });
+    
+    function capturePhoto() {
+        // In real app, this would use WebRTC to capture from camera
+        $('#photoPreview').html(`
+            <div class="text-center py-4">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading camera...</span>
+                </div>
+                <p class="mt-2">Accessing camera...</p>
+            </div>
+        `);
+        
+        setTimeout(() => {
+            // Simulate photo capture
+            $('#photoPreview').html(`
+                <img src="https://via.placeholder.com/300x400/003366/FFFFFF?text=Informant+Photo" 
+                     alt="Captured Photo" class="img-fluid rounded">
+                <div class="mt-2">
+                    <span class="badge bg-success">Photo Captured</span>
+                </div>
+            `);
+            $('#photoStatus').removeClass('bg-danger').addClass('bg-success').text('Captured');
+        }, 2000);
+    }
+    
+    function uploadPhoto() {
+        $('#photoUpload').click();
+    }
+    
+    function handlePhotoUpload(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                $('#photoPreview').html(`
+                    <img src="${e.target.result}" alt="Uploaded Photo" class="img-fluid rounded">
+                    <div class="mt-2">
+                        <span class="badge bg-success">Photo Uploaded</span>
+                    </div>
+                `);
+                $('#photoStatus').removeClass('bg-danger').addClass('bg-success').text('Captured');
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+    
+    function captureFingerprint(finger) {
+        $(`#${finger}Preview`).html(`
+            <div class="spinner-border spinner-border-sm text-primary" role="status">
+                <span class="visually-hidden">Capturing...</span>
+            </div>
+        `);
+        
+        setTimeout(() => {
+            $(`#${finger}Preview`).html(`
+                <i class="fas fa-fingerprint fa-2x text-success"></i>
+                <div class="mt-1">
+                    <small class="badge bg-success">Captured</small>
+                </div>
+            `);
+            updateFingerprintProgress();
+        }, 1500);
+    }
+    
+    function captureAllFingers() {
+        const fingers = ['right-thumb', 'right-index', 'right-middle', 'left-thumb', 'left-index', 'left-middle'];
+        let count = 0;
+        
+        fingers.forEach(finger => {
+            setTimeout(() => {
+                captureFingerprint(finger);
+                count++;
+                if (count === fingers.length) {
+                    updateFingerprintProgress();
+                }
+            }, count * 500);
+        });
+    }
+    
+    function clearFingerprints() {
+        $('.finger-preview').html('<i class="fas fa-fingerprint fa-2x text-muted"></i>');
+        updateFingerprintProgress();
+    }
+    
+    function updateFingerprintProgress() {
+        const captured = $('.finger-preview .fa-success').length;
+        const total = $('.finger-preview').length;
+        const percentage = Math.round((captured / total) * 100);
+        
+        $('#fingerprintProgress')
+            .css('width', percentage + '%')
+            .text(`${captured}/${total}`);
+        
+        $('#fingerprintStatus').text(`${captured} finger(s) captured`);
+        $('#fingerprintStatusSummary').text(`${captured}/${total}`).removeClass('bg-danger bg-warning').addClass(
+            captured === 0 ? 'bg-danger' : captured === total ? 'bg-success' : 'bg-warning'
+        );
+    }
+    
+    function clearSignature() {
+        if (signaturePad) {
+            signaturePad.clear();
+        }
+    }
+    
+    function saveSignature() {
+        if (signaturePad && !signaturePad.isEmpty()) {
+            const signatureData = signaturePad.toDataURL();
+            $('#signaturePreview .signature-display').html(`<img src="${signatureData}" style="max-width: 200px;">`);
+            $('#signaturePreview').removeClass('d-none');
+            $('#signatureStatus').removeClass('bg-danger').addClass('bg-success').text('Captured');
+        } else {
+            alert('Please sign first before saving.');
+        }
+    }
+    
+    function undoSignature() {
+        const data = signaturePad.toData();
+        if (data) {
+            data.pop(); // remove the last dot or line
+            signaturePad.fromData(data);
+        }
+    }
+    
+    function checkCriminalDatabase() {
+        $('#verificationResults').addClass('d-none');
+        $('#criminalMatchAlert').addClass('d-none');
+        
+        // Simulate database check
+        setTimeout(() => {
+            const hasMatch = Math.random() > 0.8; // 20% chance of match for demo
+            
+            if (hasMatch) {
+                $('#criminalMatchAlert').removeClass('d-none');
+            } else {
+                $('#verificationResults').removeClass('d-none');
+            }
+        }, 2000);
+    }
+    
+    function checkPreviousRecords() {
+        alert('Checking previous FIR records...\n\nIn real application, this would query the database for records with matching biometrics.');
+    }
+    
+    function markAsVerified() {
+        if (confirm('Mark biometrics as verified and complete the process?')) {
+            alert('Biometrics marked as verified and saved successfully.');
+            // In real app, update FIR status and redirect
+            window.location.href = "{% url 'crimes:fir_detail' fir.id %}";
+        }
+    }
+    
+    function saveAndExit() {
+        if (confirm('Save current progress and exit?')) {
+            alert('Progress saved. You can continue later.');
+            window.location.href = "{% url 'crimes:fir_detail' fir.id %}";
+        }
+    }
+    
+    function cancelCapture() {
+        if (confirm('Discard all captured biometrics and exit?')) {
+            window.location.href = "{% url 'crimes:fir_detail' fir.id %}";
+        }
+    }
+    
+    function completeBiometricCapture() {
+        if (validateStep(4)) {
+            // Show confirmation
+            $('#completeModal').modal('show');
+        }
+    }
+    
+    function checkDeviceSupport() {
+        // Check camera
+        navigator.mediaDevices.enumerateDevices()
+            .then(devices => {
+                const hasCamera = devices.some(device => device.kind === 'videoinput');
+                $('#cameraStatus').text(hasCamera ? 'Available' : 'Not available')
+                    .removeClass('text-danger text-success')
+                    .addClass(hasCamera ? 'text-success' : 'text-danger');
+            });
+        
+        // Check touch support
+        const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        $('#touchStatus').text(hasTouch ? 'Available' : 'Not available')
+            .removeClass('text-danger text-success')
+            .addClass(hasTouch ? 'text-success' : 'text-danger');
+    }
+</script>
+<style>
+/* ==================================================
+   POLICE BIOMETRIC CAPTURE – OFFICIAL UI
+================================================== */
+
+:root {
+    --police-navy: #0b1f3a;
+    --police-blue: #1e3a8a;
+    --police-gold: #c9a227;
+    --police-gray: #e5e7eb;
+    --police-border: #cbd5e1;
+}
+
+/* ---------- PAGE HEADINGS ---------- */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--police-navy);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ---------- CARDS ---------- */
+.card {
+    border: 1px solid var(--police-border);
+    border-radius: 4px;
+    box-shadow: none;
+}
+
+.card-header {
+    background: #f8fafc;
+    border-bottom: 2px solid var(--police-gold);
+    font-weight: 700;
+    color: var(--police-navy);
+}
+
+/* ---------- STEPS HEADER ---------- */
+.steps {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+.step-number {
+    background: var(--police-gray);
+    color: #374151;
+    font-weight: 800;
+}
+
+.step.active .step-number {
+    background: var(--police-blue);
+    color: #ffffff;
+}
+
+.step.active .step-label {
+    color: var(--police-blue);
+    font-weight: 700;
+}
+
+.step:not(:last-child)::after {
+    background: var(--police-border);
+}
+
+.step.active:not(:last-child)::after {
+    background: var(--police-blue);
+}
+
+/* ---------- PHOTO FRAME ---------- */
+.photo-frame {
+    border: 2px solid var(--police-border);
+    background: #f9fafb;
+    border-radius: 4px;
+}
+
+/* ---------- FINGERPRINT ---------- */
+.fingerprint-slot {
+    border: 2px dashed var(--police-border);
+    border-radius: 4px;
+    background: #ffffff;
+}
+
+.fingerprint-slot:hover {
+    border-color: var(--police-blue);
+    background: #f8fafc;
+}
+
+.finger-label {
+    font-weight: 700;
+    color: #374151;
+}
+
+/* ---------- SIGNATURE PAD ---------- */
+.signature-pad-container {
+    border: 2px solid var(--police-border);
+    background: #ffffff;
+    border-radius: 4px;
+}
+
+#signaturePad {
+    cursor: crosshair;
+}
+
+/* ---------- TABLES ---------- */
+.table th {
+    background: #f1f5f9;
+    color: var(--police-navy);
+    font-weight: 800;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+/* ---------- BADGES ---------- */
+.badge {
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.bg-success {
+    background: #14532d !important;
+}
+
+.bg-danger {
+    background: #7f1d1d !important;
+}
+
+.bg-warning {
+    background: #ca8a04 !important;
+    color: #000 !important;
+}
+
+.bg-info {
+    background: #1e40af !important;
+}
+
+/* ---------- BUTTONS ---------- */
+.btn {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    border-radius: 4px;
+}
+
+.btn-police {
+    background: var(--police-blue);
+    color: #ffffff;
+    border: none;
+}
+
+.btn-police:hover {
+    background: #0f2f66;
+    color: #ffffff;
+}
+
+.btn-outline-secondary {
+    border: 2px solid var(--police-border);
+    color: #374151;
+}
+
+.btn-outline-danger {
+    border: 2px solid #7f1d1d;
+    color: #7f1d1d;
+}
+
+/* ---------- ALERTS ---------- */
+.alert {
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.alert-info {
+    background: #eff6ff;
+    border-left: 6px solid var(--police-blue);
+}
+
+.alert-warning {
+    background: #fffbeb;
+    border-left: 6px solid var(--police-gold);
+}
+
+.alert-danger {
+    background: #fef2f2;
+    border-left: 6px solid #7f1d1d;
+}
+
+/* ---------- PROGRESS ---------- */
+.progress {
+    background: #e5e7eb;
+}
+
+.progress-bar {
+    background: var(--police-blue);
+    font-weight: 800;
+}
+
+/* ---------- AVATAR ---------- */
+.avatar-lg {
+    border: 2px solid var(--police-border);
+    background: #f8fafc;
+}
+
+/* ---------- LIST GROUP ---------- */
+.list-group-item {
+    border-color: var(--police-border);
+    font-weight: 600;
+}
+
+/* ---------- REMOVE ANIMATIONS ---------- */
+* {
+    animation: none !important;
+    transition: none !important;
+}
+</style>
+{% endblock %}
+{% endblock %}

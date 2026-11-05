@@ -1,0 +1,639 @@
+{% extends 'crimes/base.html' %}
+
+{% block title %}Investigator Dashboard - CrimeNET{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Investigator Dashboard</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary">Today</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary active">Week</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary">Month</button>
+        </div>
+        <a href="{% url 'crimes:fir_list' %}" class="btn btn-sm btn-police">
+            <i class="fas fa-search"></i> View All Cases
+        </a>
+    </div>
+</div>
+
+<!-- Investigator Stats -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body text-center">
+                <div class="stat-icon">
+                    <i class="fas fa-briefcase"></i>
+                </div>
+                <div class="stat-number">{{ assigned_firs }}</div>
+                <div class="stat-label">Assigned Cases</div>
+                <small class="stat-sublabel text-muted">Total workload</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body text-center">
+                <div class="stat-icon stat-icon-warning">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-number text-warning">{{ active_investigations }}</div>
+                <div class="stat-label">Active Investigations</div>
+                <small class="stat-sublabel text-muted">In progress</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body text-center">
+                <div class="stat-icon stat-icon-success">
+                    <i class="fas fa-fingerprint"></i>
+                </div>
+                <div class="stat-number text-success">{{ evidence_collected }}</div>
+                <div class="stat-label">Evidence This Month</div>
+                <small class="stat-sublabel text-muted">Collected</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card">
+            <div class="card-body text-center">
+                <div class="stat-icon stat-icon-info">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-number text-primary">85%</div>
+                <div class="stat-label">Clearance Rate</div>
+                <small class="stat-sublabel text-muted">Performance</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <!-- My Active Investigations -->
+        <div class="card content-card mb-4">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-folder-open me-2"></i>My Active Investigations</h5>
+                    <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover custom-table">
+                        <thead>
+                            <tr>
+                                <th>FIR Number</th>
+                                <th>Crime</th>
+                                <th>Informant</th>
+                                <th>Days Open</th>
+                                <th>Last Update</th>
+                                <th>Priority</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for fir in active_cases %}
+                            <tr>
+                                <td><strong class="fir-number">{{ fir.fir_number }}</strong></td>
+                                <td>{{ fir.crime_category.section }}</td>
+                                <td>{{ fir.informant_name }}</td>
+                                <td>
+                                    <span class="badge {% if fir.days_open > 30 %}bg-danger{% elif fir.days_open > 15 %}bg-warning{% else %}bg-success{% endif %}">
+                                        {{ fir.days_open }} days
+                                    </span>
+                                </td>
+                                <td>{{ fir.last_update|date:"d/m" }}</td>
+                                <td>
+                                    <span class="badge bg-{{ fir.priority|lower }}">
+                                        {{ fir.get_priority_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{% url 'crimes:fir_detail' fir.id %}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center text-muted py-4">
+                                    <i class="fas fa-inbox fa-2x mb-2"></i>
+                                    <p class="mb-0">No active investigations assigned</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Investigation Updates -->
+        <div class="card content-card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-history me-2"></i>My Recent Updates</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_updates %}
+                <div class="list-group list-group-flush">
+                    {% for update in recent_updates %}
+                    <div class="list-group-item update-item">
+                        <div class="d-flex w-100 justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="update-badge">{{ update.get_update_type_display }}</span>
+                                    <small class="text-muted ms-2">{{ update.update_date|timesince }} ago</small>
+                                </div>
+                                <p class="mb-1">{{ update.description|truncatechars:100 }}</p>
+                                <small class="text-muted"><i class="fas fa-file-alt me-1"></i>FIR: {{ update.fir.fir_number }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center text-muted py-5">
+                    <i class="fas fa-clipboard-list fa-3x mb-3 opacity-50"></i>
+                    <p class="mb-0">No investigation updates yet</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <!-- Investigation Tools -->
+        <div class="card content-card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-tools me-2"></i>Investigation Tools</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'crimes:search_criminal' %}" class="btn btn-tool btn-outline-primary">
+                        <i class="fas fa-user-secret me-2"></i> Search Criminal DB
+                    </a>
+                    <button class="btn btn-tool btn-outline-success" onclick="evidenceChecklist()">
+                        <i class="fas fa-clipboard-check me-2"></i> Evidence Checklist
+                    </button>
+                    <button class="btn btn-tool btn-outline-warning" onclick="witnessInterview()">
+                        <i class="fas fa-microphone me-2"></i> Witness Interview
+                    </button>
+                    <button class="btn btn-tool btn-outline-info" onclick="forensicRequest()">
+                        <i class="fas fa-microscope me-2"></i> Request Forensic
+                    </button>
+                    <button class="btn btn-tool btn-outline-danger" onclick="chargesheetTemplate()">
+                        <i class="fas fa-file-contract me-2"></i> Chargesheet Template
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upcoming Deadlines -->
+        <div class="card content-card mb-4">
+            <div class="card-header bg-light-warning">
+                <h5 class="mb-0"><i class="fas fa-calendar-day me-2 text-warning"></i>Upcoming Deadlines</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item deadline-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong class="d-block">FIR PS001/2023/0456</strong>
+                                <small class="text-muted">Court hearing</small>
+                            </div>
+                            <span class="badge bg-danger">Tomorrow</span>
+                        </div>
+                    </div>
+                    <div class="list-group-item deadline-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong class="d-block">FIR PS002/2023/0789</strong>
+                                <small class="text-muted">FSL report due</small>
+                            </div>
+                            <span class="badge bg-warning">3 days</span>
+                        </div>
+                    </div>
+                    <div class="list-group-item deadline-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong class="d-block">FIR PS003/2023/0123</strong>
+                                <small class="text-muted">Witness statement</small>
+                            </div>
+                            <span class="badge bg-info">5 days</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Investigation Performance -->
+        <div class="card content-card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>My Performance</h5>
+            </div>
+            <div class="card-body">
+                <div class="performance-item">
+                    <div class="d-flex justify-content-between mb-2">
+                        <small class="text-muted">Case Clearance Rate</small>
+                        <strong>85%</strong>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 85%;" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+                <div class="performance-item">
+                    <div class="d-flex justify-content-between mb-2">
+                        <small class="text-muted">Average Investigation Days</small>
+                        <strong>42 days</strong>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: 60%;" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+                <div class="performance-item">
+                    <div class="d-flex justify-content-between mb-2">
+                        <small class="text-muted">Evidence Collection Rate</small>
+                        <strong>90%</strong>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar bg-info" role="progressbar" style="width: 90%;" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+                <div class="performance-item">
+                    <div class="d-flex justify-content-between mb-2">
+                        <small class="text-muted">Witness Cooperation</small>
+                        <strong>78%</strong>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: 78%;" aria-valuenow="78" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    function evidenceChecklist() {
+        alert('Opening evidence checklist...\n\nThis would open a comprehensive evidence collection checklist.');
+    }
+    
+    function witnessInterview() {
+        alert('Witness interview template...\n\nThis would open a standardized witness interview form.');
+    }
+    
+    function forensicRequest() {
+        alert('Forensic request form...\n\nThis would open a forensic science laboratory request form.');
+    }
+    
+    function chargesheetTemplate() {
+        alert('Chargesheet template...\n\nThis would open a pre-filled chargesheet template based on case details.');
+    }
+</script>
+
+<style>
+/* =====================================
+   CLEAN WHITE THEME - OFFICIAL STYLE
+===================================== */
+
+:root {
+    --primary-blue: #1e40af;
+    --secondary-blue: #3b82f6;
+    --light-blue: #dbeafe;
+    --dark-text: #1f2937;
+    --gray-text: #6b7280;
+    --border-color: #e5e7eb;
+    --bg-light: #f9fafb;
+    --success: #059669;
+    --warning: #d97706;
+    --danger: #dc2626;
+    --info: #0891b2;
+}
+
+/* =====================================
+   BODY & BACKGROUND
+===================================== */
+body {
+    background-color: #f3f4f6;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: var(--dark-text);
+}
+
+/* =====================================
+   PAGE HEADER
+===================================== */
+.border-bottom {
+    border-color: var(--border-color) !important;
+    padding-bottom: 1rem;
+}
+
+h1.h2 {
+    color: var(--primary-blue);
+    font-weight: 700;
+    font-size: 1.75rem;
+    letter-spacing: -0.025em;
+}
+
+/* =====================================
+   STAT CARDS
+===================================== */
+.stat-card {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease-in-out;
+    height: 100%;
+}
+
+.stat-card:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transform: translateY(-2px);
+}
+
+.stat-card .card-body {
+    padding: 1.5rem;
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    background-color: var(--light-blue);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.75rem;
+}
+
+.stat-icon i {
+    font-size: 1.5rem;
+    color: var(--primary-blue);
+}
+
+.stat-icon-warning {
+    background-color: #fef3c7;
+}
+
+.stat-icon-warning i {
+    color: var(--warning);
+}
+
+.stat-icon-success {
+    background-color: #d1fae5;
+}
+
+.stat-icon-success i {
+    color: var(--success);
+}
+
+.stat-icon-info {
+    background-color: #cffafe;
+}
+
+.stat-icon-info i {
+    color: var(--info);
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--dark-text);
+    line-height: 1.2;
+    margin-bottom: 0.25rem;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--gray-text);
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    margin-bottom: 0.25rem;
+}
+
+.stat-sublabel {
+    font-size: 0.75rem;
+    display: block;
+}
+
+/* =====================================
+   CONTENT CARDS
+===================================== */
+.content-card {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.content-card .card-header {
+    background-color: var(--bg-light);
+    border-bottom: 1px solid var(--border-color);
+    padding: 1rem 1.25rem;
+    border-radius: 8px 8px 0 0;
+}
+
+.content-card .card-header h5 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--dark-text);
+    margin: 0;
+}
+
+.content-card .card-header h5 i {
+    color: var(--primary-blue);
+}
+
+.bg-light-warning {
+    background-color: #fffbeb !important;
+}
+
+/* =====================================
+   BUTTONS
+===================================== */
+.btn {
+    font-weight: 600;
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-police {
+    background-color: var(--primary-blue);
+    color: white;
+    border: none;
+}
+
+.btn-police:hover {
+    background-color: #1e3a8a;
+    color: white;
+}
+
+.btn-outline-primary {
+    color: var(--primary-blue);
+    border-color: var(--primary-blue);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-blue);
+    border-color: var(--primary-blue);
+    color: white;
+}
+
+.btn-outline-secondary {
+    color: var(--gray-text);
+    border-color: var(--border-color);
+}
+
+.btn-outline-secondary:hover,
+.btn-outline-secondary.active {
+    background-color: var(--primary-blue);
+    border-color: var(--primary-blue);
+    color: white;
+}
+
+.btn-tool {
+    text-align: left;
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+}
+
+.btn-tool:hover {
+    transform: translateX(3px);
+}
+
+/* =====================================
+   TABLE STYLING
+===================================== */
+.custom-table {
+    margin-bottom: 0;
+}
+
+.custom-table thead th {
+    background-color: var(--bg-light);
+    color: var(--dark-text);
+    font-weight: 700;
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    border-bottom: 2px solid var(--border-color);
+    padding: 0.75rem;
+}
+
+.custom-table tbody tr {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.custom-table tbody tr:hover {
+    background-color: var(--bg-light);
+}
+
+.custom-table tbody td {
+    padding: 1rem 0.75rem;
+    vertical-align: middle;
+    font-size: 0.875rem;
+}
+
+.fir-number {
+    color: var(--primary-blue);
+    font-family: monospace;
+}
+
+/* =====================================
+   BADGES
+===================================== */
+.badge {
+    padding: 0.375rem 0.75rem;
+    font-weight: 600;
+    font-size: 0.75rem;
+    border-radius: 6px;
+}
+
+/* =====================================
+   LIST ITEMS
+===================================== */
+.update-item {
+    border: none;
+    border-bottom: 1px solid var(--border-color);
+    padding: 1rem 0;
+}
+
+.update-item:last-child {
+    border-bottom: none;
+}
+
+.update-badge {
+    display: inline-block;
+    background-color: var(--light-blue);
+    color: var(--primary-blue);
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.deadline-item {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.deadline-item:last-child {
+    border-bottom: none;
+}
+
+.deadline-item strong {
+    color: var(--dark-text);
+    font-size: 0.875rem;
+}
+
+/* =====================================
+   PROGRESS BARS
+===================================== */
+.performance-item {
+    margin-bottom: 1.5rem;
+}
+
+.performance-item:last-child {
+    margin-bottom: 0;
+}
+
+.progress {
+    height: 8px;
+    border-radius: 4px;
+    background-color: var(--bg-light);
+}
+
+.progress-bar {
+    border-radius: 4px;
+}
+
+/* =====================================
+   RESPONSIVE
+===================================== */
+@media (max-width: 768px) {
+    h1.h2 {
+        font-size: 1.5rem;
+    }
+    
+    .stat-number {
+        font-size: 1.75rem;
+    }
+    
+    .btn-toolbar {
+        width: 100%;
+    }
+    
+    .btn-group {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+}
+</style>
+{% endblock %}
+{% endblock %}

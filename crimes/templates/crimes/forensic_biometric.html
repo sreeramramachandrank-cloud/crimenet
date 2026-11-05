@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% block title %}Biometric Matching | CrimeNet{% endblock %}
+
+{% block content %}
+<style>
+/* ===============================
+   FORENSIC BIOMETRIC – OFFICIAL UI
+================================ */
+
+.forensic-wrapper {
+    max-width: 1100px;
+    margin: 2rem auto;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+}
+
+/* Header */
+.forensic-header {
+    padding: 1.5rem 2rem;
+    border-bottom: 4px solid #0b1f47;
+    background: #f8fafc;
+}
+
+.forensic-header h1 {
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: #0b1f47;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.forensic-header p {
+    margin-top: 0.3rem;
+    font-size: 0.9rem;
+    color: #4b5563;
+}
+
+/* Body */
+.forensic-body {
+    padding: 2rem;
+}
+
+/* Warning box */
+.warning {
+    background: #fee2e2;
+    border-left: 5px solid #b91c1c;
+    padding: 1rem 1.2rem;
+    margin-bottom: 2rem;
+    font-size: 0.85rem;
+    color: #7f1d1d;
+    font-weight: 600;
+}
+
+/* Form */
+label {
+    font-weight: 700;
+    color: #1f2933;
+    display: block;
+    margin-bottom: 0.3rem;
+}
+
+input[type="text"],
+input[type="file"],
+select {
+    width: 100%;
+    padding: 0.6rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    margin-bottom: 1.2rem;
+    font-size: 0.9rem;
+}
+
+/* Buttons */
+.btn-primary {
+    background: #0b1f47;
+    color: #ffffff;
+    border: none;
+    padding: 0.6rem 1.6rem;
+    font-weight: 700;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-secondary {
+    margin-left: 1rem;
+    color: #0b1f47;
+    font-weight: 700;
+    text-decoration: none;
+}
+</style>
+
+<div class="forensic-wrapper">
+
+    <!-- HEADER -->
+    <div class="forensic-header">
+        <h1>Biometric Matching</h1>
+        <p>Forensic Division – Restricted Operation</p>
+    </div>
+
+    <!-- BODY -->
+    <div class="forensic-body">
+
+        <div class="warning">
+            🚨 <strong>WARRANT REQUIRED:</strong><br>
+            Biometric matching against the criminal database is permitted
+            only with valid court authorization. All actions are logged
+            and audited.
+        </div>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <label>FIR Number</label>
+            <input type="text" name="fir_number" required>
+
+            <label>Warrant Reference Number</label>
+            <input type="text" name="warrant_number" required>
+
+            <label>Biometric Type</label>
+            <select name="biometric_type" required>
+                <option value="">Select</option>
+                <option value="FINGERPRINT">Fingerprint</option>
+                <option value="DNA">DNA</option>
+            </select>
+
+            <label>Upload Biometric Sample</label>
+            <input type="file" name="biometric_file" required>
+
+            <button type="submit" class="btn-primary">
+                Run Biometric Match
+            </button>
+
+            <a href="{% url 'dashboard' %}" class="btn-secondary">
+                Cancel
+            </a>
+        </form>
+
+    </div>
+</div>
+{% endblock %}

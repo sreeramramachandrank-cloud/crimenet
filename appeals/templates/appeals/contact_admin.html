@@ -1,0 +1,114 @@
+<style>
+:root {
+    --police-blue: #0b1f3a;
+    --police-gold: #c9a227;
+    --border: #d1d5db;
+    --bg-light: #f4f6f9;
+    --text-dark: #111827;
+    --text-muted: #6b7280;
+}
+
+body {
+    background: var(--bg-light);
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+}
+
+/* ===== CARD ===== */
+.contact-card {
+    max-width: 700px;
+    margin: 4rem auto;
+    background: white;
+    border: 1px solid var(--border);
+    padding: 2rem;
+}
+
+/* ===== TITLE ===== */
+.contact-card h2 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--police-blue);
+    text-transform: uppercase;
+    border-bottom: 3px solid var(--police-gold);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* ===== INFO TEXT ===== */
+.contact-info {
+    font-size: 0.85rem;
+    color: var(--text-dark);
+    margin-bottom: 1.5rem;
+}
+
+.contact-info strong {
+    color: var(--police-blue);
+}
+
+/* ===== TEXTAREA ===== */
+.form-group textarea {
+    width: 100%;
+    min-height: 140px;
+    border: 1px solid var(--border);
+    padding: 0.75rem;
+    font-size: 0.85rem;
+    font-family: inherit;
+    resize: vertical;
+}
+
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--police-blue);
+}
+
+/* ===== SUBMIT BUTTON ===== */
+.btn-submit {
+    margin-top: 1.5rem;
+    padding: 0.6rem 2rem;
+    background: var(--police-blue);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.btn-submit:hover {
+    background: #06142b;
+}
+
+/* ===== NOTICE ===== */
+.security-note {
+    margin-top: 1rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+</style>
+
+<<div class="contact-card">
+    <h2>Contact Administrator</h2>
+
+    <div class="contact-info">
+        You are contacting system administrator:
+        <strong>{{ admin.username }}</strong>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <textarea name="message" required
+                placeholder="Enter official communication message here..."></textarea>
+        </div>
+
+        <button type="submit" class="btn-submit">
+            Send Message
+        </button>
+    </form>
+
+    <div class="security-note">
+        All communications are logged and monitored for security and audit purposes.
+    </div>
+</div>
+
+{% endblock %}

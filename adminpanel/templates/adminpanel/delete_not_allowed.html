@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    :root {
+        --police-blue: #0b1f3a;
+        --police-blue-dark: #08162b;
+        --police-gold: #c9a227;
+
+        --danger: #7f1d1d;
+        --warning: #92400e;
+
+        --border: #d1d5db;
+        --bg-light: #f1f5f9;
+
+        --text-dark: #111827;
+        --text-muted: #6b7280;
+    }
+
+    body {
+        background: var(--bg-light);
+        font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+    }
+
+    .error-container {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+    }
+
+    .error-card {
+        background: white;
+        border: 1px solid var(--border);
+        max-width: 620px;
+        width: 100%;
+        padding: 2.5rem;
+    }
+
+    /* ===== HEADER ===== */
+    .error-icon-wrapper {
+        width: 72px;
+        height: 72px;
+        margin: 0 auto 1.5rem;
+        background: var(--danger);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: 800;
+        border-radius: 4px;
+    }
+
+    .error-card h2 {
+        text-align: center;
+        font-size: 1.7rem;
+        font-weight: 800;
+        color: var(--danger);
+        margin-bottom: 0.75rem;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+
+    .error-card p {
+        text-align: center;
+        font-size: 0.95rem;
+        color: var(--text-muted);
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+
+    /* ===== DETAILS ===== */
+    .error-details {
+        border: 1px solid #fecaca;
+        border-left: 6px solid var(--danger);
+        background: #fef2f2;
+        padding: 1.25rem;
+        margin-bottom: 2rem;
+    }
+
+    .error-details-title {
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: var(--danger);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .error-details-text {
+        font-size: 0.85rem;
+        color: var(--text-dark);
+        line-height: 1.5;
+        margin: 0;
+    }
+
+    /* ===== SUGGESTIONS ===== */
+    .suggestions {
+        border-top: 1px solid var(--border);
+        padding-top: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .suggestions-title {
+        font-size: 0.85rem;
+        font-weight: 800;
+        color: var(--police-blue);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.75rem;
+    }
+
+    .suggestion-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .suggestion-item {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        padding: 0.5rem 0;
+        padding-left: 1.25rem;
+        position: relative;
+    }
+
+    .suggestion-item::before {
+        content: "–";
+        position: absolute;
+        left: 0;
+        color: var(--police-blue);
+        font-weight: 700;
+    }
+
+    /* ===== ACTION BUTTON ===== */
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.6rem 1.25rem;
+        background: white;
+        border: 1px solid var(--police-blue);
+        color: var(--police-blue);
+        font-size: 0.8rem;
+        font-weight: 800;
+        text-decoration: none;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .back-button:hover {
+        background: var(--police-blue);
+        color: white;
+    }
+
+    /* ===== ALERT ICON ===== */
+    .alert-icon {
+        width: 10px;
+        height: 10px;
+        background: var(--danger);
+        border-radius: 50%;
+        display: inline-block;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 640px) {
+        .error-card {
+            padding: 2rem 1.5rem;
+        }
+
+        .error-card h2 {
+            font-size: 1.4rem;
+        }
+    }
+</style>
+
+
+<div class="error-container">
+    <div class="error-card">
+        <div class="error-icon-wrapper">
+            <div class="error-icon">🚫</div>
+        </div>
+
+        <h2>Action Not Allowed</h2>
+
+        <p>
+            We're sorry, but this action cannot be completed at this time.
+        </p>
+
+        <div class="error-details">
+            <div class="error-details-title">
+                <span class="alert-icon"></span>
+                Reason for Restriction
+            </div>
+            <p class="error-details-text">
+                You cannot delete your own account. This is a security measure to prevent accidental self-removal. 
+                Please ask another administrator to perform this action if necessary.
+            </p>
+        </div>
+
+        <div class="suggestions">
+            <div class="suggestions-title">What you can do instead:</div>
+            <ul class="suggestion-list">
+                <li class="suggestion-item">Request another administrator to manage your account</li>
+                <li class="suggestion-item">Modify your account permissions or settings</li>
+                <li class="suggestion-item">Contact system support for assistance</li>
+            </ul>
+        </div>
+
+        <a href="{% url 'admin_users_list' %}" class="back-button">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Back to Users List
+        </a>
+    </div>
+</div>
+
+{% endblock %}

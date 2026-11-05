@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+:root {
+    --police-blue: #0b1f3a;
+    --police-gold: #c9a227;
+    --border: #d1d5db;
+    --bg-light: #f4f6f9;
+    --text-dark: #111827;
+    --text-muted: #6b7280;
+}
+
+body {
+    background: var(--bg-light);
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+}
+
+/* ===== CARD ===== */
+.audit-card {
+    max-width: 1100px;
+    margin: 3rem auto;
+    background: white;
+    border: 1px solid var(--border);
+    padding: 2rem;
+}
+
+/* ===== TITLE ===== */
+.audit-card h2 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--police-blue);
+    text-transform: uppercase;
+    border-bottom: 3px solid var(--police-gold);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* ===== TABLE ===== */
+.audit-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+}
+
+.audit-table thead {
+    background: var(--police-blue);
+    color: white;
+}
+
+.audit-table th {
+    padding: 0.75rem;
+    text-align: left;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.7rem;
+}
+
+.audit-table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+}
+
+.audit-table tr:nth-child(even) {
+    background: #f9fafb;
+}
+
+/* ===== TIMESTAMP ===== */
+.audit-time {
+    font-weight: 700;
+    color: var(--police-blue);
+    white-space: nowrap;
+}
+
+/* ===== MUTED ===== */
+.muted {
+    color: var(--text-muted);
+}
+
+/* ===== FOOTER NOTE ===== */
+.audit-note {
+    margin-top: 1rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+</style>
+<div class="audit-card">
+    <h2>Audit Timeline</h2>
+
+    <table class="audit-table">
+        <thead>
+            <tr>
+                <th>Time</th>
+                <th>Actor</th>
+                <th>Action</th>
+                <th>Target</th>
+                <th>Reason</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td class="audit-time">
+                    {{ log.timestamp }}
+                </td>
+                <td>
+                    {{ log.actor }}
+                </td>
+                <td>
+                    {{ log.action }}
+                </td>
+                <td>
+                    {{ log.target_user|default:"-" }}
+                </td>
+                <td class="muted">
+                    {{ log.reason|default:"-" }}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="muted">
+                    No audit records available.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="audit-note">
+        This audit log is immutable. All actions are time-stamped and retained for compliance and legal review.
+    </div>
+</div>

@@ -1,0 +1,383 @@
+<!-- officials/templates/officials/investigator_portal.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+/* =====================================================
+   KERALA POLICE – INVESTIGATOR PORTAL
+===================================================== */
+:root {
+    --kp-primary: #0b2545;
+    --kp-secondary: #133e7c;
+    --kp-border: #d1d5db;
+    --kp-bg: #f8fafc;
+
+    --kp-success: #166534;
+    --kp-warning: #b45309;
+    --kp-danger: #991b1b;
+    --kp-info: #075985;
+}
+
+/* =====================================================
+   GLOBAL
+===================================================== */
+body {
+    background-color: var(--kp-bg);
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+/* =====================================================
+   HEADER CARD
+===================================================== */
+.card-header.bg-primary {
+    background-color: var(--kp-primary) !important;
+}
+
+.card-header h3,
+.card-header h5 {
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    font-size: 0.95rem;
+}
+
+/* =====================================================
+   CARDS
+===================================================== */
+.card {
+    border-radius: 6px;
+    border: 1px solid var(--kp-border);
+    box-shadow: none;
+}
+
+.card.mb-4 {
+    margin-bottom: 1.5rem;
+}
+
+/* =====================================================
+   OFFICER DETAILS
+===================================================== */
+.card-body h4 {
+    font-weight: 800;
+    color: var(--kp-primary);
+}
+
+.card-body p {
+    font-size: 0.8rem;
+    margin-bottom: 0.25rem;
+}
+
+/* =====================================================
+   STATUS ALERT
+===================================================== */
+.alert {
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 4px;
+}
+
+.alert-success {
+    background-color: #dcfce7;
+    color: var(--kp-success);
+}
+
+.alert-warning {
+    background-color: #fef3c7;
+    color: var(--kp-warning);
+}
+
+.alert-info {
+    background-color: #e0f2fe;
+    color: var(--kp-info);
+}
+
+/* =====================================================
+   ACTIVE CASE ACCESS
+===================================================== */
+.card.border-success {
+    border: 2px solid var(--kp-success);
+}
+
+.card-header.bg-success {
+    background-color: var(--kp-success) !important;
+}
+
+.badge {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+}
+
+/* =====================================================
+   BUTTONS
+===================================================== */
+.btn {
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-primary {
+    background-color: var(--kp-primary);
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: var(--kp-secondary);
+}
+
+.btn-outline-primary {
+    border-color: var(--kp-primary);
+    color: var(--kp-primary);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--kp-primary);
+    color: #ffffff;
+}
+
+/* =====================================================
+   TABLE
+===================================================== */
+.table {
+    font-size: 0.78rem;
+}
+
+.table thead th {
+    background-color: #e5e7eb;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 0.6px;
+}
+
+.table tbody tr:hover {
+    background-color: #f1f5f9;
+}
+
+/* =====================================================
+   QUICK ACTION CARDS
+===================================================== */
+.card.text-center {
+    transition: all 0.2s ease;
+}
+
+.card.text-center:hover {
+    transform: translateY(-4px);
+    background-color: #f1f5f9;
+}
+
+.card.text-center h5 {
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--kp-primary);
+}
+
+.card.text-center p {
+    font-size: 0.75rem;
+    color: #475569;
+}
+
+/* =====================================================
+   ICONS
+===================================================== */
+.card-body i {
+    opacity: 0.85;
+}
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+@media (max-width: 768px) {
+    h3 {
+        font-size: 1rem;
+    }
+
+    .btn {
+        width: 100%;
+        margin-bottom: 6px;
+    }
+}
+
+/* =====================================================
+   PRINT MODE (FOR OFFICIAL RECORDS)
+===================================================== */
+@media print {
+    body {
+        background: #ffffff;
+    }
+
+    .btn,
+    .card.text-center,
+    .alert {
+        display: none !important;
+    }
+
+    .card,
+    .table {
+        border: 1px solid #000;
+    }
+}
+</style>
+
+<div class="container mt-4">
+    <!-- Status Header -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h3 class="card-title mb-0">
+                <i class="fas fa-user-shield"></i> Investigator Portal
+            </h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <h4>Welcome, {{ user.get_full_name|default:user.username }}</h4>
+                    <p class="mb-1"><strong>Role:</strong> {{ user.role_verification.get_role_display }}</p>
+                    <p class="mb-1"><strong>Rank:</strong> {{ user.role_verification.rank }}</p>
+                    <p class="mb-0"><strong>Jurisdiction:</strong> {{ user.role_verification.jurisdiction }}</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div class="alert 
+                        {% if status == 'active' %}alert-success
+                        {% elif status == 'expired' %}alert-warning
+                        {% else %}alert-info{% endif %}">
+                        <strong>Status:</strong> {{ status_message }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Active Cases (if any) -->
+    {% if active_accesses %}
+    <div class="card mb-4 border-success">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">
+                <i class="fas fa-check-circle"></i> Active Case Access
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% for access in active_accesses %}
+                <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-header">
+                            <strong>{{ access.case_reference }}</strong>
+                            <a href="{% url 'officials:investigator_case_dashboard' access.id %}" 
+                               class="btn btn-sm btn-primary float-end">
+                                Access Case
+                            </a>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Purpose:</strong> {{ access.purpose|truncatewords:20 }}</p>
+                            <p><strong>Access Period:</strong><br>
+                               From: {{ access.access_start|date:"M d, Y H:i" }}<br>
+                               To: {{ access.access_end|date:"M d, Y H:i" }}</p>
+                            <p class="mb-0">
+                                <span class="badge bg-success">
+                                    Active - {{ access.time_remaining }} remaining
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Access History -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fas fa-history"></i> Access History
+            </h5>
+        </div>
+        <div class="card-body">
+            {% if all_accesses %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Case Reference</th>
+                            <th>Purpose</th>
+                            <th>Access Period</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for access in all_accesses %}
+                        <tr>
+                            <td><strong>{{ access.case_reference }}</strong></td>
+                            <td>{{ access.purpose|truncatewords:10 }}</td>
+                            <td>
+                                {{ access.access_start|date:"M d, Y" }}<br>
+                                to {{ access.access_end|date:"M d, Y" }}
+                            </td>
+                            <td>
+                                {% if access.active and access.access_end > current_time %}
+                                <span class="badge bg-success">Active</span>
+                                {% elif access.active and access.access_end <= current_time %}
+                                <span class="badge bg-warning">Expired</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Inactive</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if access.active and access.access_end > current_time %}
+                                <a href="{% url 'officials:investigator_case_dashboard' access.id %}" 
+                                   class="btn btn-sm btn-outline-primary">
+                                    Access
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-light text-center">
+                <p class="mb-0">No case access records found.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-file-contract fa-2x text-primary mb-3"></i>
+                    <h5>Request Access</h5>
+                    <p>Submit request for new case access</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-book fa-2x text-info mb-3"></i>
+                    <h5>Guidelines</h5>
+                    <p>Investigation protocols & procedures</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="fas fa-chart-line fa-2x text-success mb-3"></i>
+                    <h5>Reports</h5>
+                    <p>View past investigation reports</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

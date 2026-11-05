@@ -1,0 +1,601 @@
+{% extends 'crimes/base.html' %}
+
+{% block title %}Criminal Database - CrimeNET{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Criminal Database</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'crimes:add_criminal_record' %}" class="btn btn-sm btn-police me-2">
+            <i class="fas fa-user-plus"></i> Add Criminal
+        </a>
+        <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+            <i class="fas fa-download"></i> Export
+        </button>
+        <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{% url 'crimes:export_criminals_excel' %}"><i class="fas fa-file-excel"></i> Excel</a></li>
+            <li><a class="dropdown-item" href="{% url 'crimes:export_criminals_pdf' %}"><i class="fas fa-file-pdf"></i> PDF</a></li>
+            <li><a class="dropdown-item" href="{% url 'crimes:export_criminals_csv' %}"><i class="fas fa-file-csv"></i> CSV</a></li>
+        </ul>
+    </div>
+</div>
+
+<!-- Quick Stats -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center py-3">
+                <div class="display-4">{{ total_criminals }}</div>
+                <small class="text-muted">Total Criminals</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center py-3">
+                <div class="display-4 text-danger">{{ wanted_criminals }}</div>
+                <small class="text-muted">Currently Wanted</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center py-3">
+                <div class="display-4 text-success">{{ active_criminals }}</div>
+                <small class="text-muted">Active Criminals</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center py-3">
+                <div class="display-4 text-warning">{{ recent_additions }}</div>
+                <small class="text-muted">Added This Month</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search & Filters -->
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-3">
+                <input type="text" class="form-control form-control-sm" placeholder="Search by name, alias, ID..." id="searchInput">
+            </div>
+            <div class="col-md-2">
+                <select class="form-select form-select-sm" id="statusFilter">
+                    <option value="">All Status</option>
+                    <option value="active">Active Only</option>
+                    <option value="wanted">Wanted Only</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select class="form-select form-select-sm" id="categoryFilter">
+                    <option value="">All Categories</option>
+                    <option value="violent">Violent Crimes</option>
+                    <option value="property">Property Crimes</option>
+                    <option value="cyber">Cyber Crimes</option>
+                    <option value="drug">Drug Related</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <div class="input-group input-group-sm">
+                    <input type="date" class="form-control" id="dateFrom">
+                    <span class="input-group-text">to</span>
+                    <input type="date" class="form-control" id="dateTo">
+                </div>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-sm btn-police w-100" onclick="applyFilters()">
+                    <i class="fas fa-filter"></i> Filter
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Criminal List -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Criminal Records</h5>
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="showPhotos">
+            <label class="form-check-label" for="showPhotos">Show Photos</label>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover data-table" id="criminalsTable">
+                <thead>
+                    <tr>
+                        <th width="60">Photo</th>
+                        <th>Criminal ID</th>
+                        <th>Name</th>
+                        <th>Alias</th>
+                        <th>Father's Name</th>
+                        <th>Aadhaar</th>
+                        <th>Status</th>
+                        <th>Added On</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for criminal in criminals %}
+                    <tr>
+                        <td>
+                            {% if criminal.front_photo %}
+                            <img src="{{ criminal.front_photo.url }}" alt="{{ criminal.name }}" 
+                                 class="rounded-circle" width="40" height="40" style="object-fit: cover;">
+                            {% else %}
+                            <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center" 
+                                 style="width: 40px; height: 40px;">
+                                <i class="fas fa-user text-white"></i>
+                            </div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <strong>{{ criminal.criminal_id }}</strong>
+                        </td>
+                        <td>
+                            <strong>{{ criminal.name }}</strong>
+                        </td>
+                        <td>
+                            {% if criminal.alias %}
+                            <span class="badge bg-info">{{ criminal.alias }}</span>
+                            {% else %}
+                            <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ criminal.father_name }}</td>
+                        <td>
+                            {% if criminal.aadhaar_number %}
+                            <code>{{ criminal.aadhaar_number|slice:"0:4" }}****{{ criminal.aadhaar_number|slice:"8:12" }}</code>
+                            {% else %}
+                            <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if criminal.is_wanted %}
+                            <span class="badge bg-danger">Wanted</span>
+                            {% endif %}
+                            {% if criminal.is_active %}
+                            <span class="badge bg-success">Active</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ criminal.created_at|date:"d/m/Y" }}</td>
+                        <td>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <a href="{% url 'crimes:criminal_detail' criminal.id %}" class="btn btn-outline-primary" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{% url 'crimes:edit_criminal' criminal.id %}" class="btn btn-outline-secondary" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button type="button" class="btn btn-outline-danger" title="Delete" onclick="confirmDelete({{ criminal.id }})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="9" class="text-center py-5">
+                            <i class="fas fa-user-secret fa-3x text-muted mb-3"></i>
+                            <h5>No Criminal Records</h5>
+                            <p class="text-muted">No criminal records found in the database.</p>
+                            <a href="{% url 'crimes:add_criminal' %}" class="btn btn-police">
+                                <i class="fas fa-user-plus"></i> Add First Criminal
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Wanted Criminals Highlight -->
+{% if wanted_criminals_list %}
+<div class="card mt-4 border-danger">
+    <div class="card-header bg-danger text-white">
+        <h5 class="mb-0"><i class="fas fa-exclamation-triangle"></i> Most Wanted Criminals</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            {% for criminal in wanted_criminals_list|slice:":4" %}
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        {% if criminal.front_photo %}
+                        <img src="{{ criminal.front_photo.url }}" alt="{{ criminal.name }}" 
+                             class="rounded-circle mb-3" width="100" height="100" style="object-fit: cover;">
+                        {% else %}
+                        <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center mx-auto mb-3" 
+                             style="width: 100px; height: 100px;">
+                            <i class="fas fa-user text-white fa-3x"></i>
+                        </div>
+                        {% endif %}
+                        <h6>{{ criminal.name }}</h6>
+                        <small class="text-muted">{{ criminal.criminal_id }}</small>
+                        <div class="mt-2">
+                            <span class="badge bg-danger">WANTED</span>
+                        </div>
+                        <a href="{% url 'crimes:criminal_detail' criminal.id %}" class="btn btn-sm btn-outline-danger mt-2">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Recent Matches -->
+<div class="card mt-4">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="fas fa-fingerprint"></i> Recent Biometric Matches</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>FIR Number</th>
+                        <th>Criminal Matched</th>
+                        <th>Match Confidence</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for match in recent_matches %}
+                    <tr>
+                        <td>{{ match.timestamp|date:"d/m/Y" }}</td>
+                        <td>
+                            <a href="{% url 'crimes:fir_detail' match.fir.id %}">
+                                {{ match.fir.fir_number }}
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{% url 'crimes:criminal_detail' match.criminal.id %}">
+                                {{ match.criminal.name }}
+                            </a>
+                        </td>
+                        <td>
+                            <div class="progress" style="height: 20px;">
+                                <div class="progress-bar bg-{{ match.confidence_color }}" 
+                                     role="progressbar" 
+                                     style="width: {{ match.confidence }}%">
+                                    {{ match.confidence }}%
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-{{ match.status_color }}">
+                                {{ match.status }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-3">
+                            No recent biometric matches found.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Initialize DataTable
+        const table = $('#criminalsTable').DataTable({
+            "pageLength": 25,
+            "order": [[1, 'desc']],
+            "columnDefs": [
+                {
+                    "targets": 0,
+                    "orderable": false,
+                    "searchable": false
+                },
+                {
+                    "targets": 8,
+                    "orderable": false,
+                    "searchable": false
+                }
+            ],
+            "language": {
+                "search": "Search criminals:",
+                "lengthMenu": "Show _MENU_ records per page",
+                "zeroRecords": "No matching criminals found",
+                "info": "Showing _START_ to _END_ of _TOTAL_ criminals",
+                "infoEmpty": "No records available",
+                "infoFiltered": "(filtered from _MAX_ total records)"
+            }
+        });
+        
+        // Search functionality
+        $('#searchInput').on('keyup', function() {
+            table.search(this.value).draw();
+        });
+        
+        // Show/hide photos
+        $('#showPhotos').change(function() {
+            if (this.checked) {
+                $('#criminalsTable tbody td:nth-child(1)').show();
+            } else {
+                $('#criminalsTable tbody td:nth-child(1)').hide();
+            }
+        });
+        
+        // Set default dates
+        const today = new Date().toISOString().split('T')[0];
+        const oneYearAgo = new Date();
+        oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+        $('#dateTo').val(today);
+        $('#dateFrom').val(oneYearAgo.toISOString().split('T')[0]);
+    });
+    
+    function applyFilters() {
+        const status = $('#statusFilter').val();
+        const category = $('#categoryFilter').val();
+        const dateFrom = $('#dateFrom').val();
+        const dateTo = $('#dateTo').val();
+        
+        // In a real application, this would make an AJAX call or redirect with parameters
+        alert('Filtering by:\nStatus: ' + status + '\nCategory: ' + category + 
+              '\nDate Range: ' + dateFrom + ' to ' + dateTo);
+    }
+    
+    function confirmDelete(criminalId) {
+        if (confirm('Are you sure you want to delete this criminal record? This action cannot be undone.')) {
+            // In a real application, this would make an AJAX DELETE request
+            alert('Deleting criminal record ID: ' + criminalId);
+        }
+    }
+</script>
+
+<style>
+/* ===============================
+   KERALA POLICE THEME VARIABLES
+================================ */
+:root {
+    --kp-dark: #0b1f3a;
+    --kp-primary: #003366;
+    --kp-secondary: #1e40af;
+    --kp-light: #f1f5f9;
+    --kp-border: #cbd5e1;
+
+    --kp-success: #166534;
+    --kp-danger: #7f1d1d;
+    --kp-warning: #92400e;
+}
+
+/* ===============================
+   PAGE TITLE
+================================ */
+h1.h2 {
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--kp-primary);
+}
+
+/* ===============================
+   STAT CARDS
+================================ */
+.display-4 {
+    font-weight: 800;
+    color: var(--kp-primary);
+}
+
+.card {
+    border-radius: 6px;
+    border: 1px solid var(--kp-border);
+    background-color: #ffffff;
+}
+
+.card-body small {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+/* ===============================
+   POLICE BUTTONS
+================================ */
+.btn-police {
+    background-color: var(--kp-primary);
+    color: #ffffff;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    border: none;
+}
+
+.btn-police:hover {
+    background-color: var(--kp-secondary);
+    color: #ffffff;
+}
+
+.btn-outline-secondary,
+.btn-outline-primary,
+.btn-outline-danger {
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* ===============================
+   FILTER BAR
+================================ */
+.card.mb-4 .form-control,
+.card.mb-4 .form-select {
+    font-size: 0.8rem;
+    border-radius: 4px;
+}
+
+.card.mb-4 {
+    background-color: var(--kp-light);
+}
+
+/* ===============================
+   TABLE (CRIMINAL LIST)
+================================ */
+table.dataTable {
+    font-size: 0.8rem;
+}
+
+table.dataTable thead th {
+    background-color: var(--kp-dark);
+    color: #ffffff;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    font-size: 0.7rem;
+}
+
+table.dataTable tbody tr:hover {
+    background-color: #f1f5f9;
+}
+
+table.dataTable tbody td {
+    vertical-align: middle;
+}
+
+/* ===============================
+   BADGES
+================================ */
+.badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 5px 8px;
+}
+
+.bg-danger {
+    background-color: var(--kp-danger) !important;
+}
+
+.bg-success {
+    background-color: var(--kp-success) !important;
+}
+
+.bg-warning {
+    background-color: var(--kp-warning) !important;
+    color: #ffffff;
+}
+
+.bg-info {
+    background-color: #0369a1 !important;
+}
+
+/* ===============================
+   WANTED SECTION
+================================ */
+.card.border-danger {
+    border: 2px solid var(--kp-danger);
+}
+
+.card-header.bg-danger {
+    background: linear-gradient(90deg, #7f1d1d, #b91c1c);
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+/* ===============================
+   PHOTOS
+================================ */
+.rounded-circle {
+    border: 2px solid var(--kp-border);
+}
+
+/* ===============================
+   DATATABLE CONTROLS
+================================ */
+.dataTables_wrapper .dataTables_filter input,
+.dataTables_wrapper .dataTables_length select {
+    font-size: 0.75rem;
+    border-radius: 4px;
+    border: 1px solid var(--kp-border);
+}
+
+.dataTables_info,
+.dataTables_paginate {
+    font-size: 0.75rem;
+}
+
+/* ===============================
+   BIOMETRIC MATCH PROGRESS
+================================ */
+.progress {
+    height: 18px;
+    border-radius: 10px;
+}
+
+.progress-bar {
+    font-size: 0.65rem;
+    font-weight: 700;
+}
+
+/* ===============================
+   LIGHT STATUS BACKGROUNDS
+================================ */
+.bg-success-light {
+    background-color: #dcfce7 !important;
+    color: #166534;
+}
+
+.bg-danger-light {
+    background-color: #fee2e2 !important;
+    color: #7f1d1d;
+}
+
+.bg-warning-light {
+    background-color: #fff7ed !important;
+    color: #92400e;
+}
+
+/* ===============================
+   MOBILE OPTIMIZATION
+================================ */
+@media (max-width: 768px) {
+    h1.h2 {
+        font-size: 1.2rem;
+    }
+
+    .btn {
+        width: 100%;
+        margin-bottom: 8px;
+    }
+
+    table.dataTable {
+        font-size: 0.75rem;
+    }
+}
+
+/* ===============================
+   PRINT MODE
+================================ */
+@media print {
+    .btn,
+    .dataTables_filter,
+    .dataTables_paginate {
+        display: none !important;
+    }
+}
+</style>
+
+{% endblock %}
+{% endblock %}

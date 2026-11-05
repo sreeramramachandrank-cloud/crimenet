@@ -1,0 +1,507 @@
+<!-- adminpanel/templates/adminpanel/pending_requests.html -->
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+:root {
+    --police-blue: #0b1f3a;
+    --police-blue-dark: #08162b;
+    --police-gold: #c9a227;
+
+    --danger: #7f1d1d;
+    --success: #065f46;
+    --warning: #92400e;
+
+    --border: #d1d5db;
+    --bg-light: #f1f5f9;
+
+    --text-dark: #111827;
+    --text-muted: #6b7280;
+}
+
+body {
+    background: var(--bg-light);
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+}
+
+/* ===== PAGE LAYOUT ===== */
+.pending-requests-container {
+    min-height: 90vh;
+    padding: 2.5rem 1rem;
+}
+
+.content-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* ===== HEADER ===== */
+.page-header {
+    background: white;
+    border: 1px solid var(--border);
+    border-left: 10px solid var(--police-blue);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.header-title h2 {
+    margin: 0 0 0.25rem;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--police-blue);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.header-subtitle {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.back-btn {
+    padding: 0.6rem 1.25rem;
+    background: white;
+    border: 1px solid var(--police-blue);
+    color: var(--police-blue);
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+}
+
+.back-btn:hover {
+    background: var(--police-blue);
+    color: white;
+}
+
+/* ===== STATS ===== */
+.stats-card {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    border: 1px solid var(--border);
+    background: #f9fafb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stats-label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+}
+
+.stats-value {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--police-blue);
+}
+
+/* ===== TABLE ===== */
+.table-container {
+    background: white;
+    border: 1px solid var(--border);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background: var(--police-blue);
+    color: white;
+}
+
+thead th {
+    padding: 0.9rem 1rem;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: left;
+}
+
+tbody td {
+    padding: 0.9rem 1rem;
+    font-size: 0.85rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* ===== ROLE BADGES ===== */
+.role-badge {
+    display: inline-block;
+    padding: 0.25rem 0.6rem;
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 1px solid;
+}
+
+.role-current {
+    border-color: var(--text-muted);
+    color: var(--text-muted);
+}
+
+.role-requested {
+    border-color: var(--police-blue);
+    color: var(--police-blue);
+    background: #eff6ff;
+}
+
+/* ===== DOCUMENT ===== */
+.doc-link {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--police-blue);
+    text-decoration: none;
+}
+
+.doc-link:hover {
+    text-decoration: underline;
+}
+
+.no-doc {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--warning);
+}
+
+/* ===== ACTION BUTTONS ===== */
+.action-buttons {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 1px solid var(--border);
+    background: white;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn-info {
+    border-color: var(--police-blue);
+    color: var(--police-blue);
+}
+
+.btn-info:hover {
+    background: var(--police-blue);
+    color: white;
+}
+
+.btn-success {
+    border-color: var(--success);
+    color: var(--success);
+}
+
+.btn-success:hover {
+    background: var(--success);
+    color: white;
+}
+
+.btn-warning {
+    border-color: var(--danger);
+    color: var(--danger);
+}
+
+.btn-warning:hover {
+    background: var(--danger);
+    color: white;
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+    padding: 3rem 2rem;
+    text-align: center;
+}
+
+.empty-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--police-blue);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+}
+
+.empty-text {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+/* ===== MODAL ===== */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 50;
+}
+
+.rejection-modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border: 1px solid var(--border);
+    width: 420px;
+    z-index: 60;
+}
+
+.modal-header {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+    font-weight: 800;
+    color: var(--danger);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.form-group {
+    padding: 1rem;
+}
+
+textarea {
+    width: 100%;
+    min-height: 100px;
+    border: 1px solid var(--border);
+    padding: 0.6rem;
+    font-size: 0.85rem;
+}
+
+.modal-actions {
+    padding: 1rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+.btn-secondary {
+    padding: 0.4rem 0.75rem;
+    border: 1px solid var(--border);
+    background: white;
+    font-weight: 800;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+}
+
+.btn-danger {
+    padding: 0.4rem 0.75rem;
+    border: 1px solid var(--danger);
+    background: var(--danger);
+    color: white;
+    font-weight: 800;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .header-top {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    table {
+        font-size: 0.8rem;
+    }
+}
+</style>
+
+
+<div class="pending-requests-container">
+    <div class="content-wrapper">
+        <div class="page-header">
+            <div class="header-top">
+                <div class="header-left">
+                    <div class="header-icon">📋</div>
+                    <div class="header-title">
+                        <h2>Pending Role Requests</h2>
+                        <p class="header-subtitle">
+                            Review and manage role verification requests
+                        </p>
+                    </div>
+                </div>
+
+                <a href="{% url 'admin_dashboard' %}" class="back-btn">
+                    ← Back to Dashboard
+                </a>
+            </div>
+
+            <div class="stats-card">
+                <div class="stats-label">Total Pending Requests:</div>
+                <div class="stats-value">{{ total_pending }}</div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            {% if pending_requests %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Current Role</th>
+                        <th>Requested Role</th>
+                        <th>Submitted At</th>
+                        <th>Document</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for request in pending_requests %}
+
+                        {# 🔥 IMPORTANT: hide already-approved users #}
+                        {% if request.user.requested_role or request.type == 'ROLE_VERIFICATION' %}
+
+                        <tr>
+                            <td><strong>{{ request.user.username }}</strong></td>
+
+                            <td>
+                                <span class="role-badge role-current">
+                                    {{ request.user.role }}
+                                </span>
+                            </td>
+
+                            <td>
+                                <span class="role-badge role-requested">
+                                    {% if request.type == 'ROLE_VERIFICATION' %}
+                                        {{ request.verification.get_role_display }}
+                                    {% else %}
+                                        OFFICER
+                                    {% endif %}
+                                </span>
+                            </td>
+
+                            <td>
+                                {{ request.submitted_at|date:"Y-m-d H:i" }}
+                            </td>
+
+                            <td>
+                                {% if request.has_file %}
+                                    <a href="{{ request.file_url }}" target="_blank" class="doc-link">
+                                        📄 View Document
+                                    </a>
+                                {% else %}
+                                    <span class="no-doc">⚠️ No document</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                <div class="action-buttons">
+                                    <a href="{% url 'admin_view_verification' request.user.id %}"
+                                       class="btn btn-info">
+                                        🔍 Details
+                                    </a>
+
+                                    <!-- ✅ SINGLE APPROVE BUTTON -->
+<form method="post" action="{% url 'admin_approve_role' request.user.id %}" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-success">
+        ✅ Approve
+    </button>
+</form>
+
+
+
+                                    <a href="#"
+                                       class="btn btn-warning"
+                                       onclick="return showRejectionForm('{{ request.user.id }}')">
+                                        ❌ Reject
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">✅</div>
+                <h3 class="empty-title">All Caught Up!</h3>
+                <p class="empty-text">
+                    No pending role requests at this time.
+                </p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- REJECTION MODAL (UNCHANGED) -->
+<div id="modalOverlay" class="modal-overlay" onclick="hideRejectionModal()"></div>
+
+<div id="rejectionModal" class="rejection-modal">
+    <div class="modal-header">
+        <div class="modal-icon">❌</div>
+        <h4>Reject Request</h4>
+    </div>
+
+    <form id="rejectionForm" method="post" action="">
+        {% csrf_token %}
+        <div class="form-group">
+            <label>Reason for Rejection</label>
+            <textarea name="rejection_reason" required></textarea>
+        </div>
+
+        <div class="modal-actions">
+            <button type="button" class="btn-secondary"
+                    onclick="hideRejectionModal()">Cancel</button>
+            <button type="submit" class="btn-danger">Reject</button>
+        </div>
+    </form>
+</div>
+
+<script>
+let currentUserId = null;
+
+function showRejectionForm(userId) {
+    currentUserId = userId;
+    document.getElementById('rejectionForm').action =
+        "{% url 'admin_reject_verification' 0 %}".replace('0', userId);
+    document.getElementById('rejectionModal').style.display = 'block';
+    document.getElementById('modalOverlay').style.display = 'block';
+    return false;
+}
+
+function hideRejectionModal() {
+    document.getElementById('rejectionModal').style.display = 'none';
+    document.getElementById('modalOverlay').style.display = 'none';
+    currentUserId = null;
+}
+</script>
+
+{% endblock %}

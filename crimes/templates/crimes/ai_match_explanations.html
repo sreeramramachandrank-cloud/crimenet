@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}AI Match Explanations | CrimeNet{% endblock %}
+
+{% block content %}
+<div class="page-wrapper">
+    <h1>AI Match Explanations</h1>
+    <p class="subtitle">
+        Transparent explanation of AI-assisted biometric matches.
+        Final decisions remain with authorized officers.
+    </p>
+
+    <div class="card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Match ID</th>
+                    <th>Biometric Type</th>
+                    <th>Confidence Score</th>
+                    <th>Matched Record</th>
+                    <th>Reviewed</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>AI-M-221</td>
+                    <td>Fingerprint</td>
+                    <td>92%</td>
+                    <td>CR-1098</td>
+                    <td>Pending</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+.page-wrapper {
+    max-width: 1200px;
+    margin: 2rem auto;
+    background: #ffffff;
+    padding: 2rem;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+h1 {
+    color: #0b1f47;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+.subtitle {
+    color: #4b5563;
+    margin-bottom: 2rem;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+th {
+    background: #0b1f47;
+    color: white;
+    padding: 0.75rem;
+}
+td {
+    padding: 0.75rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+</style>
+{% endblock %}

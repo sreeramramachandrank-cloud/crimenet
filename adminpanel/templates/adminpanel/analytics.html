@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    :root {
+        --police-blue: #8394aa;
+        --police-blue-dark: #08162b;
+        --police-gold: #c9a227;
+        --police-gray: #e5e7eb;
+        --text-dark: #111827;
+        --text-muted: #6b7280;
+        --danger: #b91c1c;
+        --success: #065f46;
+        --warning: #92400e;
+    }
+
+    body {
+        background-color: #f1f5f9;
+        font-family: "Segoe UI", Tahoma, sans-serif;
+    }
+
+    /* ===== PAGE HEADER ===== */
+    h2 {
+        background: var(--police-blue);
+        color: white;
+        padding: 1.5rem 2rem;
+        border-radius: 6px;
+        margin-bottom: 2rem;
+        border-left: 8px solid var(--police-gold);
+        letter-spacing: 0.5px;
+    }
+
+    h3 {
+        color: var(--police-blue);
+        margin: 2rem 0 1rem;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+    }
+
+    /* ===== STATS GRID ===== */
+    ul {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 2rem 0;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.25rem;
+    }
+
+    ul li {
+        background: white;
+        padding: 1.25rem 1.5rem;
+        border-radius: 6px;
+        border: 1px solid var(--police-gray);
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    ul li span {
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+
+    /* ===== COLOR CODING ===== */
+    ul li:nth-child(1) span { color: var(--police-blue); }
+    ul li:nth-child(2) span { color: var(--police-blue-dark); }
+    ul li:nth-child(3) span { color: var(--warning); }
+    ul li:nth-child(4) span { color: var(--success); }
+    ul li:nth-child(5) span { color: var(--danger); }
+    ul li:nth-child(6) span { color: #374151; }
+
+    hr {
+        border: none;
+        border-top: 1px solid var(--police-gray);
+        margin: 2.5rem 0;
+    }
+
+    /* ===== CHART CONTAINER ===== */
+    #complaintChart {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 6px;
+        border: 1px solid var(--police-gray);
+        width: 100% !important;
+        max-height: 420px;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+        h2 {
+            text-align: center;
+        }
+
+        ul {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<h2>System Analytics</h2>
+
+<ul>
+    <li>Total Users: {{ total_users }}</li>
+    <li>Total Complaints: {{ total_complaints }}</li>
+    <li>Pending: {{ pending_complaints }}</li>
+    <li>Accepted: {{ accepted_complaints }}</li>
+    <li>Rejected: {{ rejected_complaints }}</li>
+    <li>Closed: {{ closed_complaints }}</li>
+</ul>
+
+<hr>
+
+<h3>Complaints Overview</h3>
+
+<canvas id="complaintChart" width="400" height="200"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const ctx = document.getElementById('complaintChart');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Pending', 'Accepted', 'Rejected', 'Closed'],
+            datasets: [{
+                label: 'Complaints',
+                data: [
+                    {{ pending_complaints }},
+                    {{ accepted_complaints }},
+                    {{ rejected_complaints }},
+                    {{ closed_complaints }}
+                ],
+                backgroundColor: ['orange', 'green', 'red', 'gray']
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+
+{% endblock %}

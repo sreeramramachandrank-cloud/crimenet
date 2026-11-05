@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Investigating Officer</title>
+<style>
+:root {
+    --police-blue: #0b1f3a;
+    --police-blue-dark: #08162b;
+    --police-gold: #c9a227;
+    --border: #d1d5db;
+    --bg-light: #f1f5f9;
+    --text-dark: #111827;
+    --text-muted: #6b7280;
+
+    --success-bg: #e6f4ea;
+    --success-text: #065f46;
+
+    --warning-bg: #fff7e6;
+    --warning-text: #92400e;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+    background: var(--bg-light);
+    min-height: 100vh;
+    padding: 1.5rem;
+}
+
+/* ===== CONTAINER ===== */
+.container {
+    max-width: 720px;
+    margin: 0 auto;
+    background: white;
+    border: 1px solid var(--border);
+}
+
+/* ===== HEADER ===== */
+.header {
+    background: var(--police-blue);
+    color: white;
+    padding: 1.5rem;
+    border-bottom: 4px solid var(--police-gold);
+    text-align: center;
+}
+
+.header h2 {
+    font-size: 1.3rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ===== CONTENT ===== */
+.content {
+    padding: 1.5rem;
+}
+
+/* ===== INFO SECTION ===== */
+.info-section {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-left: 6px solid var(--police-blue);
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.info-item {
+    display: flex;
+    margin-bottom: 0.75rem;
+}
+
+.info-item:last-child {
+    margin-bottom: 0;
+}
+
+.info-label {
+    min-width: 140px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.info-value {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+/* ===== DOCUMENT LINK ===== */
+.document-link {
+    display: inline-block;
+    padding: 0.6rem 1.2rem;
+    background: var(--police-blue);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 4px;
+    margin-bottom: 1.5rem;
+}
+
+.document-link:hover {
+    opacity: 0.9;
+}
+
+/* ===== FORM ===== */
+.verification-form {
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    background: white;
+}
+
+.form-title {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--police-blue);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+}
+
+/* ===== WARNING NOTE ===== */
+.required-note {
+    background: var(--warning-bg);
+    color: var(--warning-text);
+    border-left: 5px solid #f59e0b;
+    padding: 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+/* ===== CHECKBOXES ===== */
+.checkbox-group {
+    margin-bottom: 1.5rem;
+}
+
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--border);
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    background: #f9fafb;
+}
+
+.checkbox-item input {
+    margin-right: 0.75rem;
+}
+
+.checkbox-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+/* ===== SUBMIT ===== */
+.submit-btn {
+    width: 100%;
+    padding: 0.75rem;
+    background: var(--police-blue);
+    color: white;
+    border: none;
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.submit-btn:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 600px) {
+    body {
+        padding: 0.75rem;
+    }
+
+    .info-item {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .info-label {
+        min-width: auto;
+    }
+}
+</style>
+
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>
+                <span class="header-icon">🕵️</span>
+                Verify Investigating Officer
+            </h2>
+        </div>
+
+        <div class="content">
+            <div class="info-section">
+                <div class="info-item">
+                    <span class="info-label">Name:</span>
+                    <span class="info-value">Detective Sarah Martinez</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Rank:</span>
+                    <span class="info-value">Senior Inspector</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Jurisdiction:</span>
+                    <span class="info-value">District 5, Metropolitan Area</span>
+                </div>
+            </div>
+
+            <a href="#" class="document-link" target="_blank">
+                📄 View Appointment Order
+            </a>
+
+            <form method="post" id="verificationForm">
+                <div class="verification-form">
+                    <div class="form-title">
+                        ✅ Verification Checklist
+                    </div>
+
+                    <div class="required-note">
+                        <span>⚠️</span>
+                        <span><strong>Note:</strong> All verification items must be checked to approve this officer.</span>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="rank_eligible" required>
+                            <span class="checkbox-label">Rank eligible for Investigating Officer</span>
+                        </label>
+
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="appointment_valid" required>
+                            <span class="checkbox-label">Appointment order valid</span>
+                        </label>
+
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="jurisdiction_verified" required>
+                            <span class="checkbox-label">Jurisdiction verified</span>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        ✓ Approve Investigator
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('.checkbox-item input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                if (this.checked) {
+                    this.closest('.checkbox-item').classList.add('checked');
+                } else {
+                    this.closest('.checkbox-item').classList.remove('checked');
+                }
+                updateSubmitButton();
+            });
+        });
+
+        function updateSubmitButton() {
+            const checkboxes = document.querySelectorAll('.checkbox-item input[type="checkbox"]');
+            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+            const submitBtn = document.getElementById('submitBtn');
+            
+            submitBtn.disabled = !allChecked;
+        }
+
+        updateSubmitButton();
+
+        document.getElementById('verificationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const checkboxes = document.querySelectorAll('.checkbox-item input[type="checkbox"]');
+            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+            
+            if (allChecked) {
+                alert('Officer verification approved successfully!');
+            } else {
+                alert('Please complete all verification items before submitting.');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,441 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    :root {
+        --police-blue: #a7bad2;
+        --police-blue-dark: #08162b;
+        --police-gold: #c9a227;
+
+        --border: #d1d5db;
+        --bg-light: #f1f5f9;
+
+        --text-dark: #111827;
+        --text-muted: #6b7280;
+
+        --create: #065f46;
+        --update: #1e40af;
+        --delete: #7f1d1d;
+        --block: #92400e;
+    }
+
+    body {
+        background: var(--bg-light);
+        font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+    }
+
+    .audit-container {
+        max-width: 1400px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    /* ===== HEADER ===== */
+    .audit-header {
+        background: var(--police-blue);
+        color: white;
+        padding: 2rem;
+        border-radius: 6px;
+        border-left: 8px solid var(--police-gold);
+        margin-bottom: 2rem;
+    }
+
+    .audit-header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .audit-title h2 {
+        font-size: 2rem;
+        margin: 0;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+
+    .audit-subtitle {
+        font-size: 0.95rem;
+        color: #d1d5db;
+        margin-top: 0.25rem;
+    }
+
+    .audit-stats {
+        display: flex;
+        gap: 1.5rem;
+    }
+
+    .stat-item {
+        text-align: center;
+        background: var(--police-blue-dark);
+        padding: 0.75rem 1.25rem;
+        border-radius: 4px;
+        border: 1px solid var(--police-gold);
+    }
+
+    .stat-number {
+        font-size: 1.5rem;
+        font-weight: 700;
+        display: block;
+    }
+
+    .stat-label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #e5e7eb;
+    }
+
+    /* ===== CONTROLS ===== */
+    .controls-bar {
+        background: white;
+        padding: 1.25rem 1.5rem;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        margin-bottom: 2rem;
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .search-box {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex: 1;
+        min-width: 260px;
+    }
+
+    .search-input {
+        flex: 1;
+        padding: 0.6rem 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        font-size: 0.85rem;
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: var(--police-blue);
+    }
+
+    .filter-buttons {
+        display: flex;
+        gap: 0.4rem;
+        flex-wrap: wrap;
+    }
+
+    .filter-btn {
+        padding: 0.45rem 0.9rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        border: 1px solid var(--border);
+        background: white;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+
+    .filter-btn.active,
+    .filter-btn:hover {
+        background: var(--police-blue);
+        color: white;
+        border-color: var(--police-blue);
+    }
+
+    /* ===== TABLE ===== */
+    .table-container {
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        overflow: hidden;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    thead {
+        background: var(--police-blue-dark);
+        color: white;
+    }
+
+    thead th {
+        padding: 0.9rem 1.1rem;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    tbody tr {
+        border-bottom: 1px solid var(--border);
+    }
+
+    tbody tr:hover {
+        background: #f8fafc;
+    }
+
+    tbody td {
+        padding: 0.9rem 1.1rem;
+        font-size: 0.85rem;
+        color: var(--text-dark);
+        vertical-align: top;
+    }
+
+    /* ===== CELLS ===== */
+    .actor-cell {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-weight: 600;
+    }
+
+    .actor-avatar {
+        width: 34px;
+        height: 34px;
+        background: var(--police-blue);
+        color: var(--police-gold);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 700;
+    }
+
+    .action-badge {
+        padding: 0.3rem 0.6rem;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        border: 1px solid;
+        display: inline-block;
+    }
+
+    .action-create { color: var(--create); border-color: var(--create); background: #ecfdf5; }
+    .action-update { color: var(--update); border-color: var(--update); background: #eff6ff; }
+    .action-delete { color: var(--delete); border-color: var(--delete); background: #fef2f2; }
+    .action-block  { color: var(--block);  border-color: var(--block);  background: #fffbeb; }
+
+    .target-badge {
+        padding: 0.25rem 0.5rem;
+        background: #f8fafc;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .reason-cell {
+        max-width: 320px;
+        line-height: 1.5;
+        color: var(--text-muted);
+    }
+
+    .timestamp-cell {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        white-space: nowrap;
+    }
+
+    .timestamp-date {
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+
+    .timestamp-time {
+        color: #9ca3af;
+    }
+
+    /* ===== PAGINATION ===== */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 0.35rem;
+        padding: 1.25rem;
+    }
+
+    .page-btn {
+        padding: 0.35rem 0.65rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        border: 1px solid var(--border);
+        background: white;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .page-btn.active,
+    .page-btn:hover {
+        background: var(--police-blue);
+        color: white;
+        border-color: var(--police-blue);
+    }
+
+    /* ===== BACK BUTTON ===== */
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 2rem;
+        padding: 0.6rem 1.25rem;
+        background: white;
+        border: 1px solid var(--police-blue);
+        color: var(--police-blue);
+        text-decoration: none;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 700;
+    }
+
+    .back-button:hover {
+        background: var(--police-blue);
+        color: white;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 900px) {
+        table {
+            min-width: 1000px;
+        }
+
+        .audit-header-content {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+</style>
+
+
+<div class="audit-container">
+    <div class="audit-header">
+        <div class="audit-header-content">
+            <div>
+                <div class="audit-title">
+                    <h2>📜 System Audit Logs</h2>
+                </div>
+                <p class="audit-subtitle">Complete system activity tracking and monitoring</p>
+            </div>
+            <div class="audit-stats">
+                <div class="stat-item">
+                    <span class="stat-number">{{ logs|length }}</span>
+                    <span class="stat-label">Total Logs</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">📊</span>
+                    <span class="stat-label">Live Monitoring</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls-bar">
+        <div class="search-box">
+            <span style="font-size: 1.25rem;">🔍</span>
+            <input type="text" class="search-input" placeholder="Search by actor, action, or target...">
+        </div>
+        <div class="filter-buttons">
+            <button class="filter-btn active">All Actions</button>
+            <button class="filter-btn">Create</button>
+            <button class="filter-btn">Update</button>
+            <button class="filter-btn">Delete</button>
+            <button class="filter-btn">Block</button>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <div class="table-wrapper">
+            {% if logs %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Actor</th>
+                        <th>Action</th>
+                        <th>Target</th>
+                        <th>Reason</th>
+                        <th>Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td>
+                            <div class="actor-cell">
+                                <div class="actor-avatar">
+                                    {{ log.actor.username|first|upper }}
+                                </div>
+                                <span>{{ log.actor.username }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="action-badge 
+                                {% if 'CREATE' in log.action|upper or 'ADD' in log.action|upper %}action-create
+                                {% elif 'UPDATE' in log.action|upper or 'EDIT' in log.action|upper %}action-update
+                                {% elif 'DELETE' in log.action|upper or 'REMOVE' in log.action|upper %}action-delete
+                                {% elif 'BLOCK' in log.action|upper or 'BAN' in log.action|upper %}action-block
+                                {% else %}action-update{% endif %}">
+                                {% if 'CREATE' in log.action|upper or 'ADD' in log.action|upper %}
+                                    <span>✅</span>
+                                {% elif 'DELETE' in log.action|upper or 'REMOVE' in log.action|upper %}
+                                    <span>🗑️</span>
+                                {% elif 'BLOCK' in log.action|upper or 'BAN' in log.action|upper %}
+                                    <span>🚫</span>
+                                {% else %}
+                                    <span>✏️</span>
+                                {% endif %}
+                                <span>{{ log.action }}</span>
+                            </span>
+                        </td>
+                        <td>
+                            <div class="target-cell">
+                                {% if log.target_user %}
+                                    <span>👤</span>
+                                    <span class="target-badge">{{ log.target_user.username }}</span>
+                                {% else %}
+                                    <span style="color: #cbd5e0;">—</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="reason-cell">
+                                {{ log.reason|default:"No reason provided" }}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="timestamp-cell">
+                                <div class="timestamp-date">{{ log.timestamp|date:"M d, Y" }}</div>
+                                <div class="timestamp-time">{{ log.timestamp|date:"g:i A" }}</div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="pagination">
+                <button class="page-btn">←</button>
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <button class="page-btn">→</button>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">📭</div>
+                <div class="empty-title">No Audit Logs Found</div>
+                <div class="empty-text">System audit logs will appear here once actions are performed.</div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <a href="{% url 'admin_dashboard' %}" class="back-button">
+        <span>⬅</span>
+        <span>Back to Admin Dashboard</span>
+    </a>
+</div>
+
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Review Complaint Rejections | CrimeNet{% endblock %}
+
+{% block content %}
+<div class="page-wrapper">
+    <h1>Review Complaint Rejections</h1>
+    <p class="subtitle">
+        Oversight of rejected complaints to ensure procedural fairness
+        and compliance with law.
+    </p>
+
+    <div class="card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Complaint ID</th>
+                    <th>Filed By</th>
+                    <th>Reason for Rejection</th>
+                    <th>Date</th>
+                    <th>Reviewed</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>CMP-9011</td>
+                    <td>Citizen</td>
+                    <td>Insufficient Evidence</td>
+                    <td>26-01-2026</td>
+                    <td>No</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+.page-wrapper {
+    max-width: 1200px;
+    margin: 2rem auto;
+    background: #ffffff;
+    padding: 2rem;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+h1 {
+    color: #0b1f47;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+.subtitle {
+    color: #4b5563;
+    margin-bottom: 2rem;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+th {
+    background: #0b1f47;
+    color: white;
+    padding: 0.75rem;
+}
+td {
+    padding: 0.75rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+</style>
+{% endblock %}

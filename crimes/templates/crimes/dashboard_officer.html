@@ -1,0 +1,702 @@
+<!-- crimes/templates/crimes/dashboard_officer.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Police Officer Dashboard{% endblock %}
+
+{% block content %}
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* ==================================================
+   PROFESSIONAL POLICE DASHBOARD - WHITE THEME
+================================================== */
+
+.dashboard-officer {
+    --color-primary: #1a4d8f;
+    --color-primary-light: #2563eb;
+    --color-accent: #0ea5e9;
+    --color-success: #10b981;
+    --color-warning: #f59e0b;
+    --color-danger: #ef4444;
+    --color-info: #06b6d4;
+    
+    --color-dark: #0f172a;
+    --color-gray-900: #111827;
+    --color-gray-800: #1f2937;
+    --color-gray-700: #374151;
+    --color-gray-600: #4b5563;
+    --color-gray-500: #6b7280;
+    --color-gray-400: #9ca3af;
+    --color-gray-300: #d1d5db;
+    --color-gray-200: #e5e7eb;
+    --color-gray-100: #f3f4f6;
+    --color-gray-50: #f9fafb;
+    
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #f5f7fa;
+    min-height: 100vh;
+    padding: 0;
+    margin: 0;
+}
+
+/* Container */
+.dashboard-container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* Header Section */
+.dashboard-header {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid var(--color-primary);
+}
+
+.dashboard-header-content {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.dashboard-header-icon {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    box-shadow: 0 4px 12px rgba(26, 77, 143, 0.2);
+}
+
+.dashboard-header h1 {
+    color: var(--color-dark);
+    font-size: 2rem;
+    font-weight: 800;
+    margin: 0 0 0.5rem 0;
+    letter-spacing: -0.02em;
+}
+
+.dashboard-header p {
+    color: var(--color-gray-600);
+    font-size: 1rem;
+    margin: 0;
+    font-weight: 500;
+}
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid transparent;
+}
+
+.stat-card.stat-primary { border-left-color: var(--color-primary-light); }
+.stat-card.stat-warning { border-left-color: var(--color-warning); }
+.stat-card.stat-success { border-left-color: var(--color-success); }
+.stat-card.stat-info { border-left-color: var(--color-info); }
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.stat-card-info h3 {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-gray-500);
+    margin: 0 0 0.75rem 0;
+}
+
+.stat-card-info .stat-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--color-dark);
+    line-height: 1;
+    margin: 0;
+}
+
+.stat-card-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover .stat-card-icon {
+    transform: scale(1.1) rotate(-5deg);
+}
+
+.stat-card.stat-primary .stat-card-icon { 
+    background: rgba(37, 99, 235, 0.1); 
+    color: var(--color-primary-light); 
+}
+.stat-card.stat-warning .stat-card-icon { 
+    background: rgba(245, 158, 11, 0.1); 
+    color: var(--color-warning); 
+}
+.stat-card.stat-success .stat-card-icon { 
+    background: rgba(16, 185, 129, 0.1); 
+    color: var(--color-success); 
+}
+.stat-card.stat-info .stat-card-icon { 
+    background: rgba(6, 182, 212, 0.1); 
+    color: var(--color-info); 
+}
+
+/* Quick Actions */
+.quick-actions {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.quick-actions h2 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--color-dark);
+    margin: 0 0 1.5rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    background: var(--color-gray-50);
+    border: 2px solid var(--color-gray-200);
+    border-radius: 10px;
+    color: var(--color-dark);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+    background: white;
+    border-color: var(--color-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(26, 77, 143, 0.15);
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+.action-btn i {
+    font-size: 1.25rem;
+    width: 24px;
+    text-align: center;
+}
+
+.action-btn.btn-primary:hover { 
+    border-color: var(--color-primary); 
+    color: var(--color-primary); 
+}
+.action-btn.btn-secondary:hover { 
+    border-color: var(--color-gray-600); 
+    color: var(--color-gray-600); 
+}
+.action-btn.btn-warning:hover { 
+    border-color: var(--color-warning); 
+    color: var(--color-warning); 
+}
+.action-btn.btn-danger:hover { 
+    border-color: var(--color-danger); 
+    color: var(--color-danger); 
+}
+
+/* Recent FIRs Section */
+.recent-firs {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.recent-firs-header {
+    padding: 1.5rem 2rem;
+    background: var(--color-gray-50);
+    border-bottom: 2px solid var(--color-gray-200);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.recent-firs-header h2 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--color-dark);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.view-all-btn {
+    padding: 0.5rem 1.25rem;
+    background: var(--color-primary);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.view-all-btn:hover {
+    background: var(--color-primary-light);
+    color: white;
+    text-decoration: none;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(26, 77, 143, 0.3);
+}
+
+.firs-table-wrapper {
+    overflow-x: auto;
+}
+
+.firs-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.firs-table thead {
+    background: var(--color-gray-50);
+}
+
+.firs-table th {
+    padding: 1rem 1.5rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-gray-600);
+    border-bottom: 2px solid var(--color-gray-200);
+}
+
+.firs-table td {
+    padding: 1.25rem 1.5rem;
+    color: var(--color-gray-700);
+    border-bottom: 1px solid var(--color-gray-200);
+    font-size: 0.9rem;
+}
+
+.firs-table tbody tr {
+    transition: background-color 0.15s ease;
+}
+
+.firs-table tbody tr:hover {
+    background: var(--color-gray-50);
+}
+
+.firs-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.fir-number {
+    color: var(--color-primary);
+    font-weight: 700;
+    font-family: 'Courier New', monospace;
+}
+
+/* Status Badges */
+.status-badge {
+    display: inline-block;
+    padding: 0.4rem 0.85rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.status-badge.badge-draft { 
+    background: var(--color-gray-100);
+    color: var(--color-gray-700);
+    border: 1px solid var(--color-gray-300);
+}
+
+.status-badge.badge-registered { 
+    background: rgba(37, 99, 235, 0.1);
+    color: var(--color-primary-light);
+    border: 1px solid rgba(37, 99, 235, 0.3);
+}
+
+.status-badge.badge-verified { 
+    background: rgba(6, 182, 212, 0.1);
+    color: var(--color-info);
+    border: 1px solid rgba(6, 182, 212, 0.3);
+}
+
+.status-badge.badge-investigation { 
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--color-warning);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.status-badge.badge-closed { 
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--color-success);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+/* Action Buttons in Table */
+.table-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--color-gray-100);
+    border: 1px solid var(--color-gray-300);
+    border-radius: 6px;
+    color: var(--color-gray-700);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    margin-right: 0.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.table-action-btn:hover {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: white;
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+.table-action-btn.btn-warning {
+    background: rgba(245, 158, 11, 0.1);
+    border-color: rgba(245, 158, 11, 0.3);
+    color: var(--color-warning);
+}
+
+.table-action-btn.btn-warning:hover {
+    background: var(--color-warning);
+    border-color: var(--color-warning);
+    color: white;
+}
+
+.table-action-btn i {
+    font-size: 0.875rem;
+}
+
+/* Empty State */
+.empty-state {
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+.empty-state-icon {
+    font-size: 4rem;
+    color: var(--color-gray-300);
+    margin-bottom: 1.5rem;
+}
+
+.empty-state h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-gray-700);
+    margin: 0 0 0.75rem 0;
+}
+
+.empty-state p {
+    color: var(--color-gray-500);
+    margin: 0 0 2rem 0;
+}
+
+.empty-state-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(26, 77, 143, 0.3);
+}
+
+.empty-state-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(26, 77, 143, 0.4);
+    color: white;
+    text-decoration: none;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .actions-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-container {
+        padding: 1rem;
+    }
+    
+    .dashboard-header {
+        padding: 1.5rem;
+    }
+    
+    .dashboard-header-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .dashboard-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .stats-grid,
+    .actions-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .stat-card-info .stat-value {
+        font-size: 2rem;
+    }
+    
+    .firs-table {
+        font-size: 0.8125rem;
+    }
+    
+    .firs-table th,
+    .firs-table td {
+        padding: 0.875rem 1rem;
+    }
+    
+    .table-action-btn {
+        padding: 0.4rem 0.75rem;
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .recent-firs-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+    
+    .view-all-btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+</style>
+
+<section class="dashboard-officer">
+    <main class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <nav class="dashboard-header-content">
+                <span class="dashboard-header-icon">
+                    👮
+                </span>
+                <hgroup>
+                    <h1>Police Command Center</h1>
+                    <p>Welcome, {{ request.user.get_full_name|default:request.user.username }}</p>
+                </hgroup>
+            </nav>
+        </header>
+
+        <!-- Stats Grid -->
+        <section class="stats-grid">
+            <article class="stat-card stat-primary">
+                <header class="stat-card-content">
+                    <hgroup class="stat-card-info">
+                        <h3>FIRs Registered</h3>
+                        <p class="stat-value">{{ registered_firs }}</p>
+                    </hgroup>
+                    <span class="stat-card-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </span>
+                </header>
+            </article>
+
+            <article class="stat-card stat-warning">
+                <header class="stat-card-content">
+                    <hgroup class="stat-card-info">
+                        <h3>Pending Biometric</h3>
+                        <p class="stat-value">{{ pending_verification }}</p>
+                    </hgroup>
+                    <span class="stat-card-icon">
+                        <i class="fas fa-fingerprint"></i>
+                    </span>
+                </header>
+            </article>
+
+            <article class="stat-card stat-success">
+                <header class="stat-card-content">
+                    <hgroup class="stat-card-info">
+                        <h3>This Week's FIRs</h3>
+                        <p class="stat-value">{{ weekly_firs }}</p>
+                    </hgroup>
+                    <span class="stat-card-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </span>
+                </header>
+            </article>
+
+            <article class="stat-card stat-info">
+                <header class="stat-card-content">
+                    <hgroup class="stat-card-info">
+                        <h3>Investigating</h3>
+                        <p class="stat-value">{{ investigating_firs }}</p>
+                    </hgroup>
+                    <span class="stat-card-icon">
+                        <i class="fas fa-search"></i>
+                    </span>
+                </header>
+            </article>
+        </section>
+
+        <!-- Quick Actions -->
+        <section class="quick-actions">
+            <h2>Quick Actions</h2>
+            <nav class="actions-grid">
+                <a href="{% url 'crimes:fir_create' %}" class="action-btn btn-primary">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Register New FIR</span>
+                </a>
+                <a href="{% url 'crimes:fir_list' %}" class="action-btn btn-secondary">
+                    <i class="fas fa-list"></i>
+                    <span>View All FIRs</span>
+                </a>
+                <a href="{% url 'crimes:fir_list' %}?biometric_status=NOT_CAPTURED" class="action-btn btn-warning">
+                    <i class="fas fa-fingerprint"></i>
+                    <span>Pending Biometric</span>
+                </a>
+                <a href="{% url 'crimes:criminal_list' %}" class="action-btn btn-danger">
+                    <i class="fas fa-user-secret"></i>
+                    <span>Criminal Database</span>
+                </a>
+            </nav>
+        </section>
+
+        <!-- Recent FIRs -->
+        <article class="recent-firs">
+            <header class="recent-firs-header">
+                <h2>Recent FIRs</h2>
+                <a href="{% url 'crimes:fir_list' %}" class="view-all-btn">View All</a>
+            </header>
+            
+            {% if recent_firs %}
+            <section class="firs-table-wrapper">
+                <table class="firs-table">
+                    <thead>
+                        <tr>
+                            <th>FIR No.</th>
+                            <th>Crime Type</th>
+                            <th>Informant</th>
+                            <th>Mobile</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for fir in recent_firs %}
+                        <tr>
+                            <td><span class="fir-number">{{ fir.fir_number }}</span></td>
+                            <td>{{ fir.crime_category.section|default:"Not specified" }}</td>
+                            <td>{{ fir.informant_name|default:"N/A" }}</td>
+                            <td>{{ fir.informant_mobile|default:"N/A" }}</td>
+                            <td>{{ fir.date_registered|date:"d/m/Y"|default:"N/A" }}</td>
+                            <td>
+                                {% if fir.status == 'DRAFT' %}
+                                <span class="status-badge badge-draft">Draft</span>
+                                {% elif fir.status == 'REGISTERED' %}
+                                <span class="status-badge badge-registered">Registered</span>
+                                {% elif fir.status == 'VERIFIED' %}
+                                <span class="status-badge badge-verified">Verified</span>
+                                {% elif fir.status == 'INVESTIGATION' %}
+                                <span class="status-badge badge-investigation">Investigation</span>
+                                {% elif fir.status == 'CLOSED' %}
+                                <span class="status-badge badge-closed">Closed</span>
+                                {% else %}
+                                <span class="status-badge badge-draft">{{ fir.get_status_display }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'crimes:fir_detail' fir.pk %}" class="table-action-btn">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                                {% if fir.biometric_status == 'NOT_CAPTURED' %}
+                                <a href="{% url 'crimes:fir_biometric' fir.pk %}" class="table-action-btn btn-warning">
+                                    <i class="fas fa-fingerprint"></i> Biometric
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+            {% else %}
+            <section class="empty-state">
+                <span class="empty-state-icon">
+                    <i class="fas fa-file-alt"></i>
+                </span>
+                <h3>No FIRs Found</h3>
+                <p>You haven't registered any FIRs yet.</p>
+                <a href="{% url 'crimes:fir_create' %}" class="empty-state-btn">
+                    <i class="fas fa-plus"></i>
+                    Register Your First FIR
+                </a>
+            </section>
+            {% endif %}
+        </article>
+    </main>
+</section>
+{% endblock %}

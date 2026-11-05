@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+:root {
+    --police-blue: #0b1f3a;
+    --police-gold: #c9a227;
+    --border: #d1d5db;
+    --bg-light: #f4f6f9;
+    --text-dark: #111827;
+    --text-muted: #6b7280;
+}
+
+body {
+    background: var(--bg-light);
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+}
+
+/* ===== CARD ===== */
+.enrollment-card {
+    max-width: 800px;
+    margin: 3rem auto;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    padding: 2rem;
+}
+
+/* ===== TITLE ===== */
+.enrollment-card h2 {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--police-blue);
+    text-transform: uppercase;
+    border-bottom: 3px solid var(--police-gold);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* ===== USER INFO ===== */
+.user-info {
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-dark);
+}
+
+.user-info strong {
+    color: var(--police-blue);
+}
+
+/* ===== FORM ===== */
+.enrollment-form {
+    display: grid;
+    gap: 1rem;
+}
+
+.enrollment-form label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+}
+
+.enrollment-form input,
+.enrollment-form select,
+.enrollment-form textarea {
+    width: 100%;
+    padding: 0.55rem 0.65rem;
+    font-size: 0.85rem;
+    border: 1px solid var(--border);
+    background: #fafafa;
+}
+
+.enrollment-form input:focus,
+.enrollment-form select:focus,
+.enrollment-form textarea:focus {
+    outline: none;
+    border-color: var(--police-blue);
+    background: #ffffff;
+}
+
+/* ===== SUBMIT BUTTON ===== */
+.submit-btn {
+    margin-top: 1rem;
+    padding: 0.7rem 1.2rem;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: var(--police-blue);
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.submit-btn:hover {
+    background: #08162a;
+}
+
+/* ===== NOTICE ===== */
+.notice {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 1rem;
+    border-left: 4px solid var(--police-gold);
+    padding-left: 0.75rem;
+}
+</style>
+
+<div class="enrollment-card">
+
+    <h2>Biometric Enrollment</h2>
+
+    <div class="user-info">
+        <strong>User:</strong> {{ target_user.username }}
+    </div>
+
+    <form method="post" class="enrollment-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button type="submit" class="submit-btn">
+            Save Biometric Data
+        </button>
+    </form>
+
+    <div class="notice">
+        Biometric data is sensitive and must be collected, stored, and accessed in
+        accordance with departmental policy and applicable law.
+    </div>
+
+</div>
+{% endblock %}

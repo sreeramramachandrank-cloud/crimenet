@@ -1,0 +1,825 @@
+{% extends 'crimes/base.html' %}
+
+{% block title %}Crime Statistics - CrimeNET{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Crime Statistics & Analytics</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary">Today</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary">This Week</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary active">This Month</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary">This Year</button>
+        </div>
+        <button type="button" class="btn btn-sm btn-police dropdown-toggle" data-bs-toggle="dropdown">
+            <i class="fas fa-download"></i> Export
+        </button>
+        <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#"><i class="fas fa-file-pdf"></i> PDF Report</a></li>
+            <li><a class="dropdown-item" href="#"><i class="fas fa-file-excel"></i> Excel Data</a></li>
+            <li><a class="dropdown-item" href="#"><i class="fas fa-chart-bar"></i> Charts Only</a></li>
+        </ul>
+    </div>
+</div>
+
+<!-- Date Range Selector -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label">Start Date</label>
+                <input type="date" class="form-control" value="{{ start_date|date:'Y-m-d' }}">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">End Date</label>
+                <input type="date" class="form-control" value="{{ end_date|date:'Y-m-d' }}">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Police Station</label>
+                <select class="form-select">
+                    <option value="">All Stations</option>
+                    {% for station in police_stations %}
+                    <option value="{{ station.id }}">{{ station.code }} - {{ station.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">&nbsp;</label>
+                <button type="submit" class="btn btn-police w-100">
+                    <i class="fas fa-filter"></i> Apply Filters
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <div class="display-4">{{ total_firs }}</div>
+                <small class="text-muted">Total FIRs</small>
+                <div class="mt-2">
+                    <small class="text-success">
+                        <i class="fas fa-arrow-up"></i> {{ growth_firs }}% from last period
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <div class="display-4">{{ solved_cases }}</div>
+                <small class="text-muted">Cases Solved</small>
+                <div class="mt-2">
+                    <small class="text-success">
+                        {{ clearance_rate }}% Clearance Rate
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <div class="display-4">{{ pending_investigation }}</div>
+                <small class="text-muted">Under Investigation</small>
+                <div class="mt-2">
+                    <small class="text-warning">
+                        {{ avg_investigation_days }} days average
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <div class="display-4">{{ new_criminals }}</div>
+                <small class="text-muted">New Criminals Added</small>
+                <div class="mt-2">
+                    <small class="text-danger">
+                        {{ wanted_criminals }} currently wanted
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row 1 -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Crime Trends (Last 6 Months)</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="crimeTrendChart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Crime Distribution by Type</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="crimeDistributionChart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row 2 -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">FIR Status Distribution</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="statusDistributionChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Top Police Stations (by FIR count)</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="stationPerformanceChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detailed Statistics -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Time-based Analysis</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Time Slot</th>
+                            <th>FIR Count</th>
+                            <th>Percentage</th>
+                            <th>Trend</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Morning (6AM-12PM)</td>
+                            <td>145</td>
+                            <td>18%</td>
+                            <td><span class="text-success">↓ 5%</span></td>
+                        </tr>
+                        <tr>
+                            <td>Afternoon (12PM-6PM)</td>
+                            <td>230</td>
+                            <td>29%</td>
+                            <td><span class="text-success">↓ 2%</span></td>
+                        </tr>
+                        <tr>
+                            <td>Evening (6PM-12AM)</td>
+                            <td>310</td>
+                            <td>39%</td>
+                            <td><span class="text-danger">↑ 8%</span></td>
+                        </tr>
+                        <tr>
+                            <td>Night (12AM-6AM)</td>
+                            <td>95</td>
+                            <td>12%</td>
+                            <td><span class="text-warning">→ 0%</span></td>
+                        </tr>
+                        <tr class="table-light">
+                            <td><strong>Total</strong></td>
+                            <td><strong>780</strong></td>
+                            <td><strong>100%</strong></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Investigation Performance</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Performance Metric</th>
+                            <th>Current</th>
+                            <th>Previous</th>
+                            <th>Change</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Average Investigation Days</td>
+                            <td>45 days</td>
+                            <td>52 days</td>
+                            <td><span class="text-success">↓ 13%</span></td>
+                        </tr>
+                        <tr>
+                            <td>Cases Solved within 30 days</td>
+                            <td>42%</td>
+                            <td>38%</td>
+                            <td><span class="text-success">↑ 4%</span></td>
+                        </tr>
+                        <tr>
+                            <td>Witness Cooperation Rate</td>
+                            <td>78%</td>
+                            <td>75%</td>
+                            <td><span class="text-success">↑ 3%</span></td>
+                        </tr>
+                        <tr>
+                            <td>Evidence Collection Rate</td>
+                            <td>85%</td>
+                            <td>82%</td>
+                            <td><span class="text-success">↑ 3%</span></td>
+                        </tr>
+                        <tr>
+                            <td>Court Conviction Rate</td>
+                            <td>65%</td>
+                            <td>62%</td>
+                            <td><span class="text-success">↑ 3%</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Geographical Heatmap -->
+<div class="card mt-4">
+    <div class="card-header">
+        <h5 class="mb-0">Crime Hotspots - District Map</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-8">
+                <div id="heatmapContainer" style="height: 400px; background-color: #f8f9fa; border-radius: 8px;">
+                    <div class="d-flex justify-content-center align-items-center h-100">
+                        <div class="text-center">
+                            <i class="fas fa-map-marked-alt fa-4x text-muted mb-3"></i>
+                            <h5>Crime Heatmap</h5>
+                            <p class="text-muted">Geographical distribution of crimes</p>
+                            <div class="heatmap-legend d-inline-block p-3 bg-light rounded">
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="heatmap-color" style="background-color: #d4edda; width: 20px; height: 20px;"></div>
+                                    <small class="ms-2">Low Crime (0-10)</small>
+                                </div>
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="heatmap-color" style="background-color: #ffeaa7; width: 20px; height: 20px;"></div>
+                                    <small class="ms-2">Medium (11-30)</small>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <div class="heatmap-color" style="background-color: #fab1a0; width: 20px; height: 20px;"></div>
+                                    <small class="ms-2">High (31-50)</small>
+                                </div>
+                                <div class="d-flex align-items-center mt-2">
+                                    <div class="heatmap-color" style="background-color: #fd79a8; width: 20px; height: 20px;"></div>
+                                    <small class="ms-2">Very High (50+)</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <h6>Top Crime Hotspots</h6>
+                <div class="list-group list-group-flush">
+                    {% for hotspot in hotspots %}
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <strong>{{ hotspot.district }}</strong>
+                            <span class="badge bg-danger">{{ hotspot.count }} FIRs</span>
+                        </div>
+                        <small class="text-muted">{{ hotspot.trend }}</small>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="mt-4">
+                    <h6>Recommendations</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-lightbulb text-warning me-2"></i>
+                            Increase patrols in high-crime areas
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-lightbulb text-warning me-2"></i>
+                            Focus on evening crime prevention
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-lightbulb text-warning me-2"></i>
+                            Improve public awareness programs
+                        </li>
+                        <li>
+                            <i class="fas fa-lightbulb text-warning me-2"></i>
+                            Enhance CCTV coverage
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Predictive Analytics -->
+<div class="card mt-4">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="fas fa-chart-line"></i> Predictive Analytics</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-8">
+                <canvas id="predictiveChart" height="150"></canvas>
+            </div>
+            <div class="col-md-4">
+                <h6>Forecast for Next Month</h6>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Prediction:</strong> Expected 8-12% increase in property crimes
+                </div>
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Alert:</strong> High probability of cyber crime surge in urban areas
+                </div>
+                <div class="alert alert-success">
+                    <i class="fas fa-thumbs-up"></i>
+                    <strong>Positive:</strong> Violent crimes expected to decrease by 5%
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+<script>
+    $(document).ready(function() {
+        // Crime Trend Chart (Line)
+        const trendCtx = document.getElementById('crimeTrendChart').getContext('2d');
+        new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Total FIRs',
+                    data: [120, 135, 145, 130, 155, 165],
+                    borderColor: '#003366',
+                    backgroundColor: 'rgba(0, 51, 102, 0.1)',
+                    fill: true,
+                    tension: 0.3
+                }, {
+                    label: 'Solved Cases',
+                    data: [85, 95, 100, 90, 110, 115],
+                    borderColor: '#28a745',
+                    backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Number of Cases'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Crime Distribution Chart (Doughnut)
+        const distributionCtx = document.getElementById('crimeDistributionChart').getContext('2d');
+        new Chart(distributionCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Theft', 'Assault', 'Fraud', 'Cyber Crime', 'Property', 'Others'],
+                datasets: [{
+                    data: [35, 25, 15, 10, 8, 7],
+                    backgroundColor: [
+                        '#FF6384',
+                        '#36A2EB',
+                        '#FFCE56',
+                        '#4BC0C0',
+                        '#9966FF',
+                        '#FF9F40'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    }
+                }
+            }
+        });
+        
+        // Status Distribution Chart (Bar)
+        const statusCtx = document.getElementById('statusDistributionChart').getContext('2d');
+        new Chart(statusCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Registered', 'Investigation', 'Chargesheet', 'Court', 'Solved', 'Closed'],
+                datasets: [{
+                    label: 'Number of Cases',
+                    data: [45, 120, 65, 40, 85, 30],
+                    backgroundColor: [
+                        '#17a2b8',
+                        '#ffc107',
+                        '#6610f2',
+                        '#fd7e14',
+                        '#28a745',
+                        '#6c757d'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+        
+        // Station Performance Chart (Horizontal Bar)
+        const stationCtx = document.getElementById('stationPerformanceChart').getContext('2d');
+        new Chart(stationCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Station A', 'Station B', 'Station C', 'Station D', 'Station E'],
+                datasets: [{
+                    label: 'FIR Count',
+                    data: [145, 120, 95, 85, 75],
+                    backgroundColor: '#003366'
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                scales: {
+                    x: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+        
+        // Predictive Chart
+        const predictiveCtx = document.getElementById('predictiveChart').getContext('2d');
+        new Chart(predictiveCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+                datasets: [{
+                    label: 'Historical Data',
+                    data: [120, 135, 145, 130, 155, 165, null, null],
+                    borderColor: '#003366',
+                    borderDash: [5, 5],
+                    fill: false
+                }, {
+                    label: 'Prediction',
+                    data: [null, null, null, null, null, 165, 175, 185],
+                    borderColor: '#dc3545',
+                    backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Expected FIR Count'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Update summary cards with animations
+        $('.display-4').each(function() {
+            const $this = $(this);
+            const target = parseInt($this.text());
+            const duration = 1500;
+            
+            $({ count: 0 }).animate({ count: target }, {
+                duration: duration,
+                easing: 'swing',
+                step: function() {
+                    $this.text(Math.floor(this.count));
+                }
+            });
+        });
+    });
+    
+    // Generate heatmap on click
+    $('#heatmapContainer').click(function() {
+        $(this).html(`
+            <div class="p-4">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="text-center">
+                            <h5>District-wise Crime Distribution</h5>
+                            <div class="mt-4">
+                                <!-- Simple ASCII heatmap for demo -->
+                                <pre style="font-size: 8px; line-height: 8px;">
+██▓▓▓▓▓▓██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+██▓▓▓▓▓▓██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+██▓▓▓▓▓▓██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+██▓▓▓▓▓▓██░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+                                </pre>
+                                <small class="text-muted">▓▓ High Crime | ██ Very High | ░░ Low Crime</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn btn-sm btn-outline-secondary w-100 mb-2" onclick="resetHeatmap()">
+                            <i class="fas fa-redo"></i> Reset View
+                        </button>
+                        <div class="mt-4">
+                            <h6>Legend</h6>
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="heatmap-color" style="background-color: #d4edda; width: 20px; height: 20px;"></div>
+                                <small class="ms-2">0-10 FIRs</small>
+                            </div>
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="heatmap-color" style="background-color: #ffeaa7; width: 20px; height: 20px;"></div>
+                                <small class="ms-2">11-30 FIRs</small>
+                            </div>
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="heatmap-color" style="background-color: #fab1a0; width: 20px; height: 20px;"></div>
+                                <small class="ms-2">31-50 FIRs</small>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <div class="heatmap-color" style="background-color: #fd79a8; width: 20px; height: 20px;"></div>
+                                <small class="ms-2">50+ FIRs</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `);
+    });
+    
+    function resetHeatmap() {
+        $('#heatmapContainer').html(`
+            <div class="d-flex justify-content-center align-items-center h-100">
+                <div class="text-center">
+                    <i class="fas fa-map-marked-alt fa-4x text-muted mb-3"></i>
+                    <h5>Crime Heatmap</h5>
+                    <p class="text-muted">Click to view district-wise crime distribution</p>
+                    <button class="btn btn-police" onclick="viewHeatmap()">
+                        <i class="fas fa-eye"></i> View Heatmap
+                    </button>
+                </div>
+            </div>
+        `);
+    }
+</script>
+
+<style>
+/* =====================================
+   POLICE THEME CORE
+===================================== */
+:root {
+    --police-dark: #0b1f3a;
+    --police-primary: #003366;
+    --police-accent: #1e40af;
+    --police-light: #f1f5f9;
+    --police-border: #cbd5e1;
+
+    --success: #166534;
+    --warning: #92400e;
+    --danger: #7f1d1d;
+}
+
+/* =====================================
+   HEADINGS
+===================================== */
+h1, h2, h5, h6 {
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--police-primary);
+}
+
+/* =====================================
+   PAGE HEADER
+===================================== */
+.border-bottom {
+    border-bottom: 3px solid var(--police-border) !important;
+}
+
+/* =====================================
+   CARDS
+===================================== */
+.card {
+    border: 1px solid var(--police-border);
+    border-radius: 6px;
+    background: #ffffff;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+}
+
+.card-header {
+    background: linear-gradient(90deg, var(--police-dark), var(--police-primary));
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--police-accent);
+}
+
+.card-body {
+    background: #ffffff;
+}
+
+/* =====================================
+   BUTTONS
+===================================== */
+.btn-police {
+    background: var(--police-primary);
+    color: #ffffff;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    border: none;
+}
+
+.btn-police:hover {
+    background: var(--police-accent);
+    color: #ffffff;
+}
+
+.btn-outline-secondary.active {
+    background: var(--police-primary);
+    color: #ffffff;
+    border-color: var(--police-primary);
+}
+
+/* =====================================
+   SUMMARY NUMBERS
+===================================== */
+.display-4 {
+    font-weight: 900;
+    color: var(--police-primary);
+}
+
+/* =====================================
+   TABLES
+===================================== */
+.table {
+    border-color: var(--police-border);
+}
+
+.table thead th {
+    background: var(--police-light);
+    font-weight: 700;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: #0f172a;
+}
+
+.table tbody tr:hover {
+    background: #f8fafc;
+}
+
+/* =====================================
+   BADGES
+===================================== */
+.badge {
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 0.4px;
+}
+
+.badge.bg-danger { background: var(--danger) !important; }
+.badge.bg-success { background: var(--success) !important; }
+.badge.bg-warning { background: var(--warning) !important; color: #fff; }
+
+/* =====================================
+   ALERTS
+===================================== */
+.alert-info {
+    background: #e0ecff;
+    border-left: 5px solid var(--police-accent);
+    color: #0b1f3a;
+}
+
+.alert-warning {
+    background: #fff7ed;
+    border-left: 5px solid var(--warning);
+    color: #78350f;
+}
+
+.alert-success {
+    background: #e6f4ea;
+    border-left: 5px solid var(--success);
+    color: #14532d;
+}
+
+/* =====================================
+   HEATMAP
+===================================== */
+#heatmapContainer {
+    border: 2px dashed var(--police-border);
+    background: #f8fafc;
+}
+
+.heatmap-legend {
+    border: 1px solid var(--police-border);
+    background: #ffffff;
+}
+
+.heatmap-color {
+    border: 1px solid #94a3b8;
+    border-radius: 3px;
+}
+
+/* =====================================
+   CHART CANVAS
+===================================== */
+canvas {
+    background: #ffffff;
+}
+
+/* =====================================
+   DROPDOWN
+===================================== */
+.dropdown-menu {
+    border-radius: 6px;
+    border: 1px solid var(--police-border);
+}
+
+/* =====================================
+   TEXT COLORS
+===================================== */
+.text-success { color: var(--success) !important; }
+.text-danger { color: var(--danger) !important; }
+.text-warning { color: var(--warning) !important; }
+
+/* =====================================
+   MOBILE
+===================================== */
+@media (max-width: 768px) {
+    h1.h2 {
+        font-size: 1.4rem;
+    }
+
+    .display-4 {
+        font-size: 2rem;
+    }
+}
+</style>
+
+
+{% endblock %}
+{% endblock %}

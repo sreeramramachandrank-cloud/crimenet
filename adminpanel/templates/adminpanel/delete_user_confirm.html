@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    :root {
+        --police-blue: #0b1f3a;
+        --police-blue-dark: #08162b;
+        --police-gold: #c9a227;
+
+        --danger: #7f1d1d;
+        --border: #d1d5db;
+        --bg-light: #f1f5f9;
+
+        --text-dark: #111827;
+        --text-muted: #6b7280;
+    }
+
+    body {
+        background: var(--bg-light);
+        font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+    }
+
+    .confirm-container {
+        max-width: 560px;
+        margin: 3rem auto;
+        padding: 0 1rem;
+    }
+
+    .confirm-card {
+        background: white;
+        border: 1px solid var(--border);
+        padding: 2.5rem;
+    }
+
+    /* ===== HEADER ===== */
+    .confirm-header {
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 1.5rem;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .confirm-header h2 {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: var(--danger);
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+    }
+
+    .confirm-header p {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin: 0;
+    }
+
+    /* ===== WARNING BOX ===== */
+    .warning-box {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        border-left: 6px solid var(--danger);
+        padding: 1.25rem;
+        margin-bottom: 2rem;
+        font-size: 0.85rem;
+        color: var(--danger);
+        font-weight: 600;
+        line-height: 1.5;
+    }
+
+    /* ===== USER INFO ===== */
+    .user-info {
+        border: 1px solid var(--border);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        font-size: 0.85rem;
+    }
+
+    .info-label {
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .info-value {
+        font-weight: 800;
+        color: var(--text-dark);
+    }
+
+    /* ===== ACTIONS ===== */
+    .action-buttons {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 2rem;
+    }
+
+    .btn-delete {
+        flex: 1;
+        padding: 0.75rem;
+        background: var(--danger);
+        color: white;
+        border: 1px solid var(--danger);
+        font-size: 0.85rem;
+        font-weight: 800;
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .btn-delete:hover {
+        background: #991b1b;
+    }
+
+    .btn-cancel {
+        flex: 1;
+        padding: 0.75rem;
+        background: white;
+        color: var(--text-dark);
+        border: 1px solid var(--border);
+        font-size: 0.85rem;
+        font-weight: 800;
+        text-decoration: none;
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .btn-cancel:hover {
+        background: #f9fafb;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 640px) {
+        .confirm-card {
+            padding: 2rem 1.5rem;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<div class="confirm-container">
+    <div class="confirm-card">
+        <div class="confirm-header">
+            <h2>Confirm User Deletion</h2>
+            <p>Permanent administrative action</p>
+        </div>
+
+        <div class="warning-box">
+            This action will permanently remove the user account and all associated access rights.
+            This operation is irreversible and will be logged for audit purposes.
+        </div>
+
+        <div class="user-info">
+            <div class="info-row">
+                <span class="info-label">Username</span>
+                <span class="info-value">{{ user.username }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Role</span>
+                <span class="info-value">{{ user.role }}</span>
+            </div>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="action-buttons">
+                <button type="submit" class="btn-delete">
+                    Delete User
+                </button>
+                <a href="{% url 'admin_users_list' %}" class="btn-cancel">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

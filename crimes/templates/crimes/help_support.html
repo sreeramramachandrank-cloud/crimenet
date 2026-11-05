@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help & Support | Kerala Police CrimeNET</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+            line-height: 1.7;
+        }
+
+        /* Header Section */
+        .header {
+            background: white;
+            color: #0a1f44;
+            padding: 25px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-bottom: 3px solid #1a4d8f;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .badge {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #0a1f44, #1a4d8f);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 24px;
+            border: 3px solid #ffd700;
+            box-shadow: 0 4px 12px rgba(26, 77, 143, 0.3);
+        }
+
+        .header-text h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #0a1f44;
+        }
+
+        .header-text p {
+            font-size: 14px;
+            color: #666;
+            font-weight: 400;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 30px;
+        }
+
+        /* Welcome Card */
+        .welcome-card {
+            background: linear-gradient(135deg, #1a4d8f, #0a1f44);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(26, 77, 143, 0.2);
+        }
+
+        .welcome-card h2 {
+            font-size: 22px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .welcome-card p {
+            font-size: 15px;
+            line-height: 1.7;
+            opacity: 0.95;
+        }
+
+        /* Quick Links Grid */
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .quick-link-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-top: 4px solid #1a4d8f;
+            text-align: center;
+        }
+
+        .quick-link-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+
+        .quick-link-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+
+        .quick-link-card h3 {
+            color: #0a1f44;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .quick-link-card p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* FAQ Section */
+        .faq-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .faq-card h2 {
+            color: #0a1f44;
+            font-size: 22px;
+            margin-bottom: 25px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e8edf2;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .faq-item {
+            background: #fafbfc;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #1a4d8f;
+            transition: background 0.3s ease;
+        }
+
+        .faq-item:hover {
+            background: #f0f3f7;
+        }
+
+        .faq-question {
+            color: #0a1f44;
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: start;
+            gap: 10px;
+        }
+
+        .faq-number {
+            background: #1a4d8f;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .faq-answer {
+            color: #555;
+            font-size: 15px;
+            line-height: 1.6;
+            margin-left: 34px;
+        }
+
+        .faq-answer em {
+            color: #1a4d8f;
+            font-weight: 500;
+        }
+
+        /* Contact Section */
+        .contact-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+        }
+
+        .contact-card h2 {
+            color: #0a1f44;
+            font-size: 22px;
+            margin-bottom: 25px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e8edf2;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .contact-item {
+            background: #f8f9fb;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 3px solid #1a4d8f;
+        }
+
+        .contact-label {
+            color: #666;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .contact-value {
+            color: #0a1f44;
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .contact-icon {
+            font-size: 20px;
+        }
+
+        /* Additional Resources */
+        .resources-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+        }
+
+        .resources-card h2 {
+            color: #0a1f44;
+            font-size: 22px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e8edf2;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .resource-list {
+            list-style: none;
+        }
+
+        .resource-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #fafbfc;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: background 0.3s ease;
+        }
+
+        .resource-item:hover {
+            background: #f0f3f7;
+        }
+
+        .resource-item-icon {
+            font-size: 24px;
+        }
+
+        .resource-item-content h3 {
+            color: #0a1f44;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .resource-item-content p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* Emergency Banner */
+        .emergency-banner {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .emergency-icon {
+            font-size: 40px;
+        }
+
+        .emergency-content h3 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .emergency-content p {
+            font-size: 14px;
+            opacity: 0.95;
+        }
+
+        /* Footer */
+        .footer {
+            background: white;
+            color: #666;
+            text-align: center;
+            padding: 25px;
+            margin-top: 40px;
+            border-top: 3px solid #1a4d8f;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.08);
+        }
+
+        .footer p {
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .footer p:first-child {
+            color: #0a1f44;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .quick-links {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .emergency-banner {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .container {
+                padding: 0 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="badge">🆘</div>
+            <div class="header-text">
+                <h1>Help & Support</h1>
+                <p>Kerala Police CrimeNET - Assistance & Guidance Portal</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+
+        <!-- Emergency Banner -->
+        <div class="emergency-banner">
+            <div class="emergency-icon">🚨</div>
+            <div class="emergency-content">
+                <h3>Emergency Support</h3>
+                <p>For urgent technical issues or system emergencies, contact our 24/7 helpline immediately</p>
+            </div>
+        </div>
+
+        <!-- Welcome Card -->
+        <div class="welcome-card">
+            <h2>🏛️ Welcome to CrimeNET Support</h2>
+            <p>
+                Welcome to the <strong>Kerala Police CrimeNET</strong> Help & Support portal.
+                This comprehensive support center provides guidance, resources, and assistance for 
+                officers and authorized personnel using the CrimeNET system. Whether you're looking 
+                for answers to common questions, need technical support, or require training materials, 
+                we're here to help you make the most of the CrimeNET platform.
+            </p>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="quick-links">
+            <div class="quick-link-card">
+                <div class="quick-link-icon">📚</div>
+                <h3>User Manual</h3>
+                <p>Comprehensive guide to using all CrimeNET features and modules</p>
+            </div>
+            <div class="quick-link-card">
+                <div class="quick-link-icon">🎥</div>
+                <h3>Video Tutorials</h3>
+                <p>Step-by-step video instructions for common tasks and workflows</p>
+            </div>
+            <div class="quick-link-card">
+                <div class="quick-link-icon">💬</div>
+                <h3>Live Chat</h3>
+                <p>Connect with our support team for real-time assistance</p>
+            </div>
+            <div class="quick-link-card">
+                <div class="quick-link-icon">📝</div>
+                <h3>Submit Ticket</h3>
+                <p>Report issues or request technical support through our ticketing system</p>
+            </div>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="faq-card">
+            <h2>❓ Frequently Asked Questions</h2>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span class="faq-number">1</span>
+                    <span>How do I register a new FIR in the system?</span>
+                </div>
+                <div class="faq-answer">
+                    Navigate to <em>New FIR Registration</em> from the main dashboard. Fill in all required 
+                    fields including complainant details, incident information, and crime category. After 
+                    completing the form, review the information and submit. You can then capture biometric 
+                    data and attach evidence documents.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span class="faq-number">2</span>
+                    <span>Who can access the Crime Analytics dashboard?</span>
+                </div>
+                <div class="faq-answer">
+                    Crime Analytics features are restricted to authorized police officers with investigator 
+                    or administrator roles. Access permissions are granted based on rank and departmental 
+                    requirements. Contact your system administrator if you require access to analytics features.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span class="faq-number">3</span>
+                    <span>How do I print an official FIR document?</span>
+                </div>
+                <div class="faq-answer">
+                    Open the specific FIR from the <em>FIR Management</em> section, review the details, 
+                    and click the <em>Print FIR</em> button located at the top-right of the page. The system 
+                    will generate a formatted PDF document suitable for official use and legal proceedings.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span class="faq-number">4</span>
+                    <span>How can I update the status of an ongoing investigation?</span>
+                </div>
+                <div class="faq-answer">
+                    Access the FIR details page, locate the <em>Status Update</em> section, select the 
+                    appropriate status from the dropdown menu (Under Investigation, Closed, Court Case, etc.), 
+                    add relevant notes or remarks, and click <em>Save Changes</em>. All status updates are 
+                    logged with timestamps for audit purposes.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span class="faq-number">5</span>
+                    <span>What should I do if I encounter a system error?</span>
+                </div>
+                <div class="faq-answer">
+                    Take a screenshot of the error message, note the time and action you were performing, 
+                    and contact technical support immediately via email or phone. For critical errors affecting 
+                    operations, use the emergency helpline. Include your user ID and station details when 
+                    reporting issues.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span class="faq-number">6</span>
+                    <span>How do I search for existing criminal records?</span>
+                </div>
+                <div class="faq-answer">
+                    Navigate to the <em>Criminal Database</em> section and use the search filters. You can 
+                    search by Aadhaar number for unique identification, name or alias for text-based searches, 
+                    or physical characteristics. The system also supports biometric matching for fingerprint 
+                    identification.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span class="faq-number">7</span>
+                    <span>Is training available for new users?</span>
+                </div>
+                <div class="faq-answer">
+                    Yes, comprehensive training programs are available. Access online training modules through 
+                    the training portal, attend scheduled in-person training sessions at your regional training 
+                    center, or watch video tutorials available in the <em>Resources</em> section of the dashboard.
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span class="faq-number">8</span>
+                    <span>How is my data secured in the system?</span>
+                </div>
+                <div class="faq-answer">
+                    CrimeNET employs bank-level encryption for data storage and transmission, role-based 
+                    access controls to limit data visibility, comprehensive audit trails tracking all system 
+                    activities, and regular security audits. All data is backed up daily and stored in secure, 
+                    redundant locations.
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Contact Support -->
+        <div class="contact-card">
+            <h2>📞 Contact Support</h2>
+            
+            <div class="contact-grid">
+                <div class="contact-item">
+                    <div class="contact-label">Email Support</div>
+                    <div class="contact-value">
+                        <span class="contact-icon">📧</span>
+                        <span>{{ support_email }}</span>
+                    </div>
+                </div>
+
+                <div class="contact-item">
+                    <div class="contact-label">Phone Support</div>
+                    <div class="contact-value">
+                        <span class="contact-icon">📱</span>
+                        <span>{{ support_phone }}</span>
+                    </div>
+                </div>
+
+                <div class="contact-item">
+                    <div class="contact-label">Office Hours</div>
+                    <div class="contact-value">
+                        <span class="contact-icon">🕐</span>
+                        <span>{{ office_hours }}</span>
+                    </div>
+                </div>
+
+                <div class="contact-item">
+                    <div class="contact-label">Emergency Helpline</div>
+                    <div class="contact-value">
+                        <span class="contact-icon">🚨</span>
+                        <span>1800-XXX-XXXX (24/7)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Resources -->
+        <div class="resources-card">
+            <h2>📖 Additional Resources</h2>
+            
+            <ul class="resource-list">
+                <li class="resource-item">
+                    <div class="resource-item-icon">📄</div>
+                    <div class="resource-item-content">
+                        <h3>Quick Start Guide</h3>
+                        <p>Essential guide for first-time users to get started with CrimeNET</p>
+                    </div>
+                </li>
+
+                <li class="resource-item">
+                    <div class="resource-item-icon">🎓</div>
+                    <div class="resource-item-content">
+                        <h3>Training Portal</h3>
+                        <p>Access online courses, certifications, and training materials</p>
+                    </div>
+                </li>
+
+                <li class="resource-item">
+                    <div class="resource-item-icon">🔧</div>
+                    <div class="resource-item-content">
+                        <h3>Troubleshooting Guide</h3>
+                        <p>Common issues and their solutions for quick problem resolution</p>
+                    </div>
+                </li>
+
+                <li class="resource-item">
+                    <div class="resource-item-icon">📊</div>
+                    <div class="resource-item-content">
+                        <h3>Reports & Analytics Guide</h3>
+                        <p>Learn how to generate and interpret system reports and analytics</p>
+                    </div>
+                </li>
+
+                <li class="resource-item">
+                    <div class="resource-item-icon">🔐</div>
+                    <div class="resource-item-content">
+                        <h3>Security Best Practices</h3>
+                        <p>Guidelines for maintaining data security and system integrity</p>
+                    </div>
+                </li>
+
+                <li class="resource-item">
+                    <div class="resource-item-icon">📢</div>
+                    <div class="resource-item-content">
+                        <h3>System Updates & Announcements</h3>
+                        <p>Stay informed about new features, updates, and system maintenance</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>© 2024 Kerala Police Department | CrimeNET Help & Support | For Official Use Only</p>
+        <p>For technical assistance, contact our support team during office hours or use the emergency helpline for urgent issues</p>
+    </div>
+
+</body>
+</html>

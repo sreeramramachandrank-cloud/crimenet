@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+:root {
+    --police-blue: #0b1f3a;
+    --police-gold: #c9a227;
+    --border: #d1d5db;
+    --bg-light: #f4f6f9;
+    --text-dark: #111827;
+    --text-muted: #6b7280;
+    --info-bg: #e8f1fb;
+}
+
+body {
+    background: var(--bg-light);
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+}
+
+/* ===== PAGE CONTAINER ===== */
+.appeal-status-card {
+    max-width: 600px;
+    margin: 4rem auto;
+    background: white;
+    border: 1px solid var(--border);
+    padding: 2rem;
+}
+
+/* ===== HEADER ===== */
+.appeal-status-card h2 {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--police-blue);
+    text-transform: uppercase;
+    border-bottom: 3px solid var(--police-gold);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.25rem;
+}
+
+/* ===== MESSAGE ===== */
+.appeal-status-message {
+    background: var(--info-bg);
+    border-left: 5px solid var(--police-blue);
+    padding: 1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    line-height: 1.6;
+}
+
+/* ===== FOOT NOTE ===== */
+.appeal-note {
+    margin-top: 1rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+</style>
+
+<div class="appeal-status-card">
+    <h2>Appeal Already Submitted</h2>
+
+    <div class="appeal-status-message">
+        Your appeal has been successfully submitted and is currently under official review.
+        Please wait for further communication from the authority.
+    </div>
+
+    <div class="appeal-note">
+        Note: Multiple appeals for the same action are not permitted.
+    </div>
+</div>
+{% endblock %}

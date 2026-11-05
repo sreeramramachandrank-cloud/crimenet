@@ -1,0 +1,385 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+:root {
+    --police-blue: #0b1f3a;
+    --police-blue-dark: #08162b;
+    --police-gold: #c9a227;
+
+    --success: #065f46;
+    --warning: #92400e;
+    --danger: #7f1d1d;
+
+    --border: #d1d5db;
+    --bg-light: #f1f5f9;
+
+    --text-dark: #111827;
+    --text-muted: #6b7280;
+}
+
+body {
+    background: var(--bg-light);
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+}
+
+/* ===== PAGE ===== */
+.sla-container {
+    min-height: 90vh;
+    padding: 2.5rem 1rem;
+}
+
+.content-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* ===== HEADER ===== */
+.sla-header {
+    background: white;
+    border: 1px solid var(--border);
+    border-left: 6px solid var(--police-blue);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.sla-header h2 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--police-blue);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.header-subtitle {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+/* ===== METRICS ===== */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+.metric-card {
+    background: white;
+    border: 1px solid var(--border);
+    padding: 1.75rem;
+}
+
+.metric-card.breached {
+    border-left: 6px solid var(--danger);
+}
+
+.metric-card.compliant {
+    border-left: 6px solid var(--success);
+}
+
+.metric-card.warning {
+    border-left: 6px solid var(--warning);
+}
+
+.metric-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+}
+
+.metric-value {
+    font-size: 2.6rem;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin-top: 0.5rem;
+}
+
+.metric-description {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 0.75rem;
+    line-height: 1.5;
+}
+
+/* ===== STATUS ===== */
+.status-indicator {
+    display: inline-block;
+    margin-top: 0.75rem;
+    padding: 0.25rem 0.6rem;
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    border: 1px solid;
+}
+
+.status-critical {
+    color: var(--danger);
+    border-color: var(--danger);
+}
+
+.status-good {
+    color: var(--success);
+    border-color: var(--success);
+}
+
+.status-warning {
+    color: var(--warning);
+    border-color: var(--warning);
+}
+
+/* ===== DETAILS ===== */
+.details-card {
+    background: white;
+    border: 1px solid var(--border);
+    padding: 2rem;
+}
+
+.details-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--police-blue);
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+}
+
+/* ===== INFO GRID ===== */
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+}
+
+.info-item {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    padding: 1rem;
+}
+
+.info-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.info-value {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin-top: 0.3rem;
+}
+
+/* ===== PROGRESS ===== */
+.progress-bar-container {
+    margin-top: 1.5rem;
+}
+
+.progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin-bottom: 0.4rem;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #e5e7eb;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--danger);
+}
+
+/* ===== ACTIONS ===== */
+.action-buttons {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 0.55rem 1.25rem;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn-primary {
+    background: var(--police-blue);
+    color: white;
+}
+
+.btn-secondary {
+    background: white;
+    color: var(--police-blue);
+    border: 1px solid var(--police-blue);
+}
+
+.btn:hover {
+    opacity: 0.9;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 768px) {
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+</style>
+
+<div class="sla-container">
+    <div class="content-wrapper">
+        <div class="sla-header">
+            <div class="header-icon-wrapper">⏱️</div>
+            <h2>SLA Monitoring Dashboard</h2>
+            <p class="header-subtitle">Service Level Agreement compliance tracking and analysis</p>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card breached">
+                <div class="metric-header">
+                    <div class="metric-icon breached">🚨</div>
+                    <div class="metric-content">
+                        <div class="metric-label">SLA Breached</div>
+                        <div class="metric-value">{{ breached }}</div>
+                    </div>
+                </div>
+                <div class="metric-description">
+                    Complaints that have exceeded the service level agreement timeframe
+                </div>
+                <span class="status-indicator status-critical">
+                    ⚠️ Critical
+                </span>
+            </div>
+
+            <div class="metric-card compliant">
+                <div class="metric-header">
+                    <div class="metric-icon compliant">✅</div>
+                    <div class="metric-content">
+                        <div class="metric-label">Within SLA</div>
+                        <div class="metric-value">
+                            {% widthratio breached 1 3 %}
+                        </div>
+                    </div>
+                </div>
+                <div class="metric-description">
+                    Complaints being processed within acceptable timeframes
+                </div>
+                <span class="status-indicator status-good">
+                    ✓ On Track
+                </span>
+            </div>
+
+            <div class="metric-card warning">
+                <div class="metric-header">
+                    <div class="metric-icon warning">⚡</div>
+                    <div class="metric-content">
+                        <div class="metric-label">At Risk</div>
+                        <div class="metric-value">
+                            {% widthratio breached 2 1 %}
+                        </div>
+                    </div>
+                </div>
+                <div class="metric-description">
+                    Complaints approaching SLA deadline and require attention
+                </div>
+                <span class="status-indicator status-warning">
+                    ⏳ Monitor
+                </span>
+            </div>
+        </div>
+
+        <div class="details-card">
+            <div class="details-header">
+                <div class="details-icon">📊</div>
+                <h3 class="details-title">SLA Performance Overview</h3>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Total Complaints</div>
+                    <div class="info-value">{% widthratio breached 1 5 %}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Compliance Rate</div>
+                    <div class="info-value">
+                        {% widthratio breached 1 1 %}%
+                    </div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Average Resolution Time</div>
+                    <div class="info-value">3.2 days</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">SLA Target</div>
+                    <div class="info-value">48 hours</div>
+                </div>
+            </div>
+
+            <div class="progress-bar-container">
+                <div class="progress-label">
+                    <span>SLA Compliance</span>
+                    <span>
+                        {% widthratio breached 1 1 %}%
+                    </span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill critical" style="width: {% widthratio breached 1 1 %}%;"></div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <a href="#" class="btn btn-primary">
+                    <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                        <path d="M10 4V16M4 10H16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    View Breached Complaints
+                </a>
+                <a href="#" class="btn btn-secondary">
+                    <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                        <path d="M3 17h14M10 3v10m0 0l-4-4m4 4l4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Export Report
+                </a>
+                <a href="javascript:history.back()" class="btn btn-secondary">
+                    <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                        <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Animate progress bar on load
+    window.addEventListener('load', function() {
+        const progressFill = document.querySelector('.progress-fill');
+        if (progressFill) {
+            setTimeout(() => {
+                progressFill.style.width = progressFill.style.width || '0%';
+            }, 100);
+        }
+    });
+</script>
+
+{% endblock %}

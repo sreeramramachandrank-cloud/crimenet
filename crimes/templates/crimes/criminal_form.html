@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {% if form.instance.pk %}Edit Criminal{% else %}Add New Criminal{% endif %} - Kerala Police CrimeNET
+{% endblock %}
+
+{% block content %}
+<style>
+/* ===============================
+   KERALA POLICE OFFICIAL THEME
+================================ */
+:root {
+    --kp-dark: #0b1f3a;
+    --kp-primary: #003366;
+    --kp-secondary: #1e40af;
+    --kp-light: #f1f5f9;
+    --kp-border: #cbd5e1;
+
+    --kp-success: #166534;
+    --kp-danger: #7f1d1d;
+    --kp-warning: #92400e;
+}
+
+/* ===============================
+   PAGE HEADER
+================================ */
+h2 {
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--kp-primary);
+}
+
+/* ===============================
+   CARD STYLING
+================================ */
+.card {
+    border-radius: 6px;
+    border: 1px solid var(--kp-border);
+    background-color: #ffffff;
+}
+
+.card-police {
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+.card-header {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.card-header-police {
+    background: linear-gradient(90deg, var(--kp-dark), var(--kp-primary));
+    color: #ffffff;
+    border-bottom: 3px solid var(--kp-secondary);
+}
+
+/* ===============================
+   FORM LABELS & INPUTS
+================================ */
+.form-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #0f172a;
+}
+
+.form-control,
+.form-select {
+    font-size: 0.85rem;
+    border-radius: 4px;
+    border: 1px solid var(--kp-border);
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--kp-primary);
+    box-shadow: 0 0 0 0.2rem rgba(0, 51, 102, 0.25);
+}
+
+/* ===============================
+   FORM HELP & ERROR TEXT
+================================ */
+.form-text {
+    font-size: 0.75rem;
+    color: #475569;
+}
+
+.text-danger {
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* ===============================
+   BUTTONS
+================================ */
+.btn-police {
+    background-color: var(--kp-primary);
+    color: #ffffff;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    border: none;
+    padding: 8px 18px;
+}
+
+.btn-police:hover {
+    background-color: var(--kp-secondary);
+    color: #ffffff;
+}
+
+.btn-outline-secondary {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* ===============================
+   ICON COLOR
+================================ */
+.text-primary {
+    color: var(--kp-primary) !important;
+}
+
+/* ===============================
+   FORM GRID SPACING
+================================ */
+.card-body .row > div {
+    margin-bottom: 10px;
+}
+
+/* ===============================
+   MOBILE OPTIMIZATION
+================================ */
+@media (max-width: 768px) {
+    h2 {
+        font-size: 1.3rem;
+    }
+
+    .btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
+
+/* ===============================
+   PRINT VIEW
+================================ */
+@media print {
+    .btn {
+        display: none !important;
+    }
+}
+</style>
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="mb-3">
+                <i class="fas fa-user-secret text-primary me-2"></i>
+                {% if form.instance.pk %}Edit Criminal{% else %}Add New Criminal{% endif %}
+            </h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card card-police shadow-sm">
+                <div class="card-header card-header-police">
+                    <h5 class="mb-0">
+                        <i class="fas fa-id-card me-2"></i>
+                        Criminal Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            {% for field in form %}
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.errors %}
+                                <div class="text-danger small">
+                                    {{ field.errors }}
+                                </div>
+                                {% endif %}
+                                {% if field.help_text %}
+                                <div class="form-text">{{ field.help_text }}</div>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-police me-2">
+                                <i class="fas fa-save me-1"></i>
+                                {% if form.instance.pk %}Update{% else %}Create{% endif %} Criminal
+                            </button>
+                            <a href="{% url 'crimes:criminal_list' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-1"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

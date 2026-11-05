@@ -1,0 +1,206 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FIR Biometric Capture</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Tahoma, sans-serif;
+            background-color: #f2f4f7;
+            color: #1a1a1a;
+        }
+
+        /* ===== Header ===== */
+        .header {
+            background: #0b2c4d;
+            color: #ffffff;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 22px;
+            letter-spacing: 1px;
+        }
+
+        .header span {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* ===== Container ===== */
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            background: #ffffff;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            padding: 30px;
+        }
+
+        /* ===== FIR Info ===== */
+        .fir-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f7f9fc;
+            border-left: 6px solid #0b2c4d;
+        }
+
+        .fir-info div {
+            font-size: 14px;
+        }
+
+        .fir-info strong {
+            color: #0b2c4d;
+        }
+
+        /* ===== Section Title ===== */
+        .section-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #0b2c4d;
+            padding-bottom: 6px;
+            color: #0b2c4d;
+        }
+
+        /* ===== Form ===== */
+        form {
+            margin-top: 20px;
+        }
+
+        form p {
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #cfd6dd;
+            font-size: 14px;
+        }
+
+        input[type="file"] {
+            padding: 6px;
+        }
+
+        /* ===== Buttons ===== */
+        .btn-group {
+            margin-top: 25px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: #0b2c4d;
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background: #09305a;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: #ffffff;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        /* ===== Footer Note ===== */
+        .note {
+            margin-top: 30px;
+            font-size: 13px;
+            color: #555;
+            background: #fff3cd;
+            padding: 12px;
+            border-left: 5px solid #ffc107;
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 768px) {
+            .fir-info {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        <h1>Police FIR Management System</h1>
+        <span>Biometric Verification</span>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+
+        <!-- FIR Information -->
+        <div class="fir-info">
+            <div><strong>FIR Number:</strong> {{ fir.fir_number }}</div>
+            <div><strong>Police Station:</strong> {{ fir.police_station.name }}</div>
+            <div><strong>Informant Name:</strong> {{ fir.informant_name }}</div>
+            <div><strong>Status:</strong> {{ fir.get_status_display }}</div>
+        </div>
+
+        <!-- Biometric Section -->
+        <div class="section-title">Biometric Capture</div>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            {{ form.as_p }}
+
+            <div class="btn-group">
+                <button type="submit" class="btn btn-primary">
+                    Capture & Register FIR
+                </button>
+
+                <a href="{% url 'crimes:fir_detail' fir.pk %}" class="btn btn-secondary">
+                    Cancel
+                </a>
+            </div>
+        </form>
+
+        <!-- Note -->
+        <div class="note">
+            ⚠️ Please ensure biometric details are captured clearly and accurately. 
+            Once submitted, the FIR will be officially registered.
+        </div>
+
+    </div>
+
+</body>
+</html>

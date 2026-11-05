@@ -1,0 +1,778 @@
+{% extends 'crimes/base.html' %}
+
+{% block title %}{{ station.name }} - CrimeNET{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <div>
+        <h1 class="h2">{{ station.code }} - {{ station.name }}</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'crimes:dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'crimes:station_list' %}">Police Stations</a></li>
+                <li class="breadcrumb-item active">{{ station.code }}</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'crimes:edit_station' station.id %}" class="btn btn-sm btn-outline-secondary me-2">
+            <i class="fas fa-edit"></i> Edit Station
+        </a>
+        <a href="{% url 'crimes:dashboard' %}" class="btn btn-sm btn-police">
+            <i class="fas fa-home"></i> Dashboard
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <!-- Station Overview -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Station Overview</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table table-sm">
+                            <tr>
+                                <th width="40%">Station Code:</th>
+                                <td><strong>{{ station.code }}</strong></td>
+                            </tr>
+                            <tr>
+                                <th>Station Name:</th>
+                                <td>{{ station.name }}</td>
+                            </tr>
+                            <tr>
+                                <th>District:</th>
+                                <td>{{ station.district }}</td>
+                            </tr>
+                            <tr>
+                                <th>State:</th>
+                                <td>{{ station.state }}</td>
+                            </tr>
+                            <tr>
+                                <th>Phone:</th>
+                                <td>{{ station.phone }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-sm">
+                            <tr>
+                                <th width="40%">Station Incharge:</th>
+                                <td>{{ station.incharge_name }}</td>
+                            </tr>
+                            <tr>
+                                <th>Rank:</th>
+                                <td>{{ station.incharge_rank }}</td>
+                            </tr>
+                            <tr>
+                                <th>GPS Coordinates:</th>
+                                <td>
+                                    {% if station.latitude and station.longitude %}
+                                    {{ station.latitude }}, {{ station.longitude }}
+                                    {% else %}
+                                    Not specified
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Jurisdiction:</th>
+                                <td>{{ station.jurisdiction|default:"Not specified" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Established:</th>
+                                <td>{{ station.established_year|default:"Not specified" }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h6>Address</h6>
+                    <p>{{ station.address|linebreaks }}</p>
+                </div>
+                
+                {% if station.facilities %}
+                <div class="mt-4">
+                    <h6>Facilities</h6>
+                    <div class="d-flex flex-wrap">
+                        {% for facility in station.facilities %}
+                        <span class="badge bg-info me-2 mb-2">{{ facility }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Station Statistics -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Station Statistics</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <div class="display-4">{{ total_firs }}</div>
+                        <small class="text-muted">Total FIRs</small>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="display-4">{{ investigation_firs }}</div>
+                        <small class="text-muted">Under Investigation</small>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="display-4">{{ solved_cases }}</div>
+                        <small class="text-muted">Cases Solved</small>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="display-4">{{ clearance_rate }}%</div>
+                        <small class="text-muted">Clearance Rate</small>
+                    </div>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <h6>FIR Status Distribution</h6>
+                        <canvas id="stationStatusChart" height="150"></canvas>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Crime Type Distribution</h6>
+                        <canvas id="stationCrimeChart" height="150"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent FIRs -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Recent FIRs</h5>
+                <a href="{% url 'crimes:fir_list' %}?police_station={{ station.id }}" class="btn btn-sm btn-outline-primary">
+                    View All FIRs
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>FIR Number</th>
+                                <th>Crime</th>
+                                <th>Informant</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for fir in recent_firs %}
+                            <tr>
+                                <td><strong>{{ fir.fir_number }}</strong></td>
+                                <td>{{ fir.crime_category.section }}</td>
+                                <td>{{ fir.informant_name }}</td>
+                                <td>{{ fir.date_registered|date:"d/m/Y" }}</td>
+                                <td>
+                                    <span class="status-badge status-{{ fir.status|lower }}">
+                                        {{ fir.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{% url 'crimes:fir_detail' fir.id %}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-3">
+                                    No FIRs registered from this station yet.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <!-- Station Map -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">Station Location</h6>
+            </div>
+            <div class="card-body">
+                <div id="stationMap" style="height: 200px; background-color: #f8f9fa; border-radius: 8px;">
+                    <div class="d-flex justify-content-center align-items-center h-100">
+                        <div class="text-center">
+                            {% if station.latitude and station.longitude %}
+                            <i class="fas fa-map-marker-alt fa-3x text-danger mb-3"></i>
+                            <p>GPS: {{ station.latitude }}, {{ station.longitude }}</p>
+                            <button class="btn btn-sm btn-outline-primary" onclick="viewOnMap()">
+                                <i class="fas fa-map"></i> View on Map
+                            </button>
+                            {% else %}
+                            <i class="fas fa-map fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">Location not specified</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Station Staff -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">Station Staff</h6>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item">
+                        <div class="d-flex align-items-center">
+                            <div class="avatar me-3">
+                                <i class="fas fa-user-shield"></i>
+                            </div>
+                            <div>
+                                <strong>Station Incharge</strong><br>
+                                <small>{{ station.incharge_name }}</small><br>
+                                <small class="text-muted">{{ station.incharge_rank }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% for officer in station_officers %}
+                    <div class="list-group-item">
+                        <div class="d-flex align-items-center">
+                            <div class="avatar me-3">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div>
+                                <strong>{{ officer.get_full_name }}</strong><br>
+                                <small class="text-muted">{{ officer.rank|default:"Police Officer" }}</small><br>
+                                <small class="text-muted">{{ officer.phone|default:"No phone" }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                    {% if station_officers|length == 0 %}
+                    <div class="list-group-item text-center text-muted">
+                        <i class="fas fa-users-slash fa-2x mb-2"></i>
+                        <p>No officers assigned</p>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="mt-3">
+                    <button class="btn btn-sm btn-outline-primary w-100" data-bs-toggle="modal" data-bs-target="#addStaffModal">
+                        <i class="fas fa-user-plus"></i> Add Staff Member
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Station Performance -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">Performance Metrics</h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <small class="text-muted">Clearance Rate</small>
+                    <div class="progress" style="height: 20px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ clearance_rate }}%;">
+                            {{ clearance_rate }}%
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <small class="text-muted">Average Investigation Days</small>
+                    <div class="progress" style="height: 20px;">
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: 60%;">
+                            45 days
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <small class="text-muted">Witness Cooperation</small>
+                    <div class="progress" style="height: 20px;">
+                        <div class="progress-bar bg-info" role="progressbar" style="width: 78%;">
+                            78%
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <small class="text-muted">Public Satisfaction</small>
+                    <div class="progress" style="height: 20px;">
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: 85%;">
+                            85%
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">Quick Actions</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'crimes:create_fir' %}?station={{ station.id }}" class="btn btn-police">
+                        <i class="fas fa-plus-circle"></i> Register New FIR
+                    </a>
+                    <button class="btn btn-outline-primary" onclick="generateStationReport()">
+                        <i class="fas fa-file-pdf"></i> Generate Report
+                    </button>
+                    <button class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#contactModal">
+                        <i class="fas fa-phone"></i> Contact Station
+                    </button>
+                    <button class="btn btn-outline-warning" onclick="viewStationHistory()">
+                        <i class="fas fa-history"></i> View History
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Contact Modal -->
+<div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="contactModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="contactModalLabel">Contact {{ station.code }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h6>Contact Information</h6>
+                <p><strong>Phone:</strong> {{ station.phone }}</p>
+                <p><strong>Emergency:</strong> 100</p>
+                <p><strong>Email:</strong> {{ station.email|default:"station@keralapolice.gov.in" }}</p>
+                <p><strong>Address:</strong> {{ station.address }}</p>
+                
+                <hr>
+                
+                <h6>Office Hours</h6>
+                <p><strong>Regular:</strong> 24/7</p>
+                <p><strong>Administrative:</strong> 9:00 AM - 5:00 PM</p>
+                <p><strong>Weekends:</strong> Open</p>
+                
+                <div class="alert alert-info mt-3">
+                    <i class="fas fa-info-circle"></i>
+                    For emergencies, always call 100 immediately.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a href="tel:{{ station.phone }}" class="btn btn-success">
+                    <i class="fas fa-phone"></i> Call Station
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Staff Modal -->
+<div class="modal fade" id="addStaffModal" tabindex="-1" aria-labelledby="addStaffModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addStaffModalLabel">Add Staff Member</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label class="form-label">Officer Name</label>
+                        <input type="text" class="form-control" placeholder="Full Name">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Rank</label>
+                        <select class="form-select">
+                            <option value="">Select Rank</option>
+                            <option value="SHO">Station House Officer</option>
+                            <option value="SI">Sub-Inspector</option>
+                            <option value="ASI">Assistant Sub-Inspector</option>
+                            <option value="HC">Head Constable</option>
+                            <option value="PC">Police Constable</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Badge Number</label>
+                        <input type="text" class="form-control" placeholder="Badge/ID Number">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Contact Number</label>
+                        <input type="tel" class="form-control" placeholder="Mobile Number">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" placeholder="Email Address">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Duty Shift</label>
+                        <select class="form-select">
+                            <option value="MORNING">Morning (6AM-2PM)</option>
+                            <option value="AFTERNOON">Afternoon (2PM-10PM)</option>
+                            <option value="NIGHT">Night (10PM-6AM)</option>
+                            <option value="GENERAL">General Duty</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-police">
+                    <i class="fas fa-save"></i> Add Officer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    $(document).ready(function() {
+        // Station Status Chart
+        const statusCtx = document.getElementById('stationStatusChart').getContext('2d');
+        new Chart(statusCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Registered', 'Investigation', 'Chargesheet', 'Court', 'Solved'],
+                datasets: [{
+                    data: [15, 40, 20, 10, 15],
+                    backgroundColor: [
+                        '#17a2b8',
+                        '#ffc107',
+                        '#6610f2',
+                        '#fd7e14',
+                        '#28a745'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+        
+        // Station Crime Chart
+        const crimeCtx = document.getElementById('stationCrimeChart').getContext('2d');
+        new Chart(crimeCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Theft', 'Assault', 'Fraud', 'Cyber', 'Other'],
+                datasets: [{
+                    label: 'FIR Count',
+                    data: [45, 30, 20, 10, 15],
+                    backgroundColor: '#003366'
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+        
+        // Update statistics with animation
+        animateStatistics();
+    });
+    
+    function viewOnMap() {
+        $('#stationMap').html(`
+            <div class="text-center p-4">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading map...</span>
+                </div>
+                <p class="mt-2">Loading map location...</p>
+            </div>
+        `);
+        
+        setTimeout(() => {
+            $('#stationMap').html(`
+                <div class="text-center p-4">
+                    <i class="fas fa-map-marker-alt fa-4x text-danger mb-3"></i>
+                    <h5>{{ station.name }}</h5>
+                    <p>{{ station.address|truncatechars:50 }}</p>
+                    <p class="text-muted">GPS: {{ station.latitude }}, {{ station.longitude }}</p>
+                    <small class="text-muted">(Map integration requires Google Maps API)</small>
+                </div>
+            `);
+        }, 1500);
+    }
+    
+    function generateStationReport() {
+        alert('Generating station report for {{ station.code }}\n\nReport would include:\n• Station statistics\n• FIR details\n• Performance metrics\n• Staff information\n\nPDF report will be downloaded.');
+        
+        // In real app, this would generate and download PDF
+        setTimeout(() => {
+            alert('Report generated successfully! Downloading PDF...');
+        }, 2000);
+    }
+    
+    function viewStationHistory() {
+        alert('Viewing station history for {{ station.name }}\n\nThis would show:\n• Historical performance\n• Past officers\n• Major cases\n• Achievements\n• Timeline of events');
+    }
+    
+    function animateStatistics() {
+        // Animate the clearance rate progress bar
+        const clearanceRate = {{ clearance_rate }};
+        $('.progress-bar.bg-success').each(function() {
+            $(this).css('width', '0%');
+            $(this).animate({
+                width: clearanceRate + '%'
+            }, 1500);
+        });
+        
+        // Animate other progress bars
+        $('.progress-bar:not(.bg-success)').each(function() {
+            const width = $(this).css('width');
+            $(this).css('width', '0%').animate({
+                width: width
+            }, 1500);
+        });
+    }
+</script>
+
+<style>
+/* ===============================
+   POLICE THEME VARIABLES
+================================ */
+:root {
+    --police-dark: #0b1f3a;
+    --police-primary: #003366;
+    --police-accent: #1e40af;
+    --police-light: #f1f5f9;
+    --police-border: #cbd5e1;
+
+    --success: #166534;
+    --warning: #92400e;
+    --danger: #7f1d1d;
+    --info: #1e3a8a;
+}
+
+/* ===============================
+   HEADINGS & BREADCRUMB
+================================ */
+h1, h2, h5, h6 {
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--police-primary);
+}
+
+.breadcrumb {
+    font-size: 0.75rem;
+}
+
+.breadcrumb a {
+    color: var(--police-accent);
+    font-weight: 600;
+}
+
+/* ===============================
+   CARDS
+================================ */
+.card {
+    border: 1px solid var(--police-border);
+    border-radius: 6px;
+    background: #ffffff;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+}
+
+.card-header {
+    background: linear-gradient(90deg, var(--police-dark), var(--police-primary));
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--police-accent);
+}
+
+.card-body {
+    background: #ffffff;
+}
+
+/* ===============================
+   TABLES
+================================ */
+.table {
+    border-color: var(--police-border);
+}
+
+.table th {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #0f172a;
+    background: var(--police-light);
+}
+
+.table td {
+    font-size: 0.85rem;
+}
+
+.table tbody tr:hover {
+    background: #f8fafc;
+}
+
+/* ===============================
+   STATUS BADGES
+================================ */
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 14px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.status-registered { background: #0369a1; color: #fff; }
+.status-investigation { background: #facc15; color: #000; }
+.status-chargesheet { background: #4c1d95; color: #fff; }
+.status-court { background: #c2410c; color: #fff; }
+.status-solved { background: #166534; color: #fff; }
+.status-closed { background: #334155; color: #fff; }
+
+/* ===============================
+   AVATAR / STAFF
+================================ */
+.avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--police-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--police-primary);
+    font-size: 1.1rem;
+}
+
+/* ===============================
+   BUTTONS
+================================ */
+.btn-police {
+    background: var(--police-primary);
+    color: #ffffff;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    border: none;
+}
+
+.btn-police:hover {
+    background: var(--police-accent);
+    color: #ffffff;
+}
+
+.btn-outline-primary {
+    font-weight: 600;
+}
+
+/* ===============================
+   STATISTICS
+================================ */
+.display-4 {
+    font-weight: 900;
+    color: var(--police-primary);
+}
+
+/* ===============================
+   PROGRESS BARS
+================================ */
+.progress {
+    border-radius: 12px;
+    background: #e5e7eb;
+}
+
+.progress-bar {
+    font-weight: 700;
+    border-radius: 12px;
+}
+
+/* ===============================
+   LIST GROUP
+================================ */
+.list-group-item {
+    border: none;
+    border-bottom: 1px solid var(--police-border);
+    padding: 0.8rem 0;
+}
+
+.list-group-item:last-child {
+    border-bottom: none;
+}
+
+/* ===============================
+   MAP CONTAINER
+================================ */
+#stationMap {
+    border: 2px dashed var(--police-border);
+    background: #f8fafc;
+}
+
+/* ===============================
+   MODALS
+================================ */
+.modal-header {
+    background: var(--police-primary);
+    color: #ffffff;
+}
+
+.modal-title {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+/* ===============================
+   ALERTS
+================================ */
+.alert-info {
+    background: #e0ecff;
+    border-left: 5px solid var(--info);
+    color: #0b1f3a;
+}
+
+/* ===============================
+   MOBILE
+================================ */
+@media (max-width: 768px) {
+    h1.h2 {
+        font-size: 1.4rem;
+    }
+
+    .display-4 {
+        font-size: 2rem;
+    }
+}
+</style>
+
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,291 @@
+{% extends 'crimes/base.html' %}
+
+{% block title %}Assign Investigator - {{ fir.fir_number }}{% endblock %}
+
+{% block content %}
+<style>
+    /* ==================================================
+   POLICE FIR – INVESTIGATOR ASSIGNMENT STYLE
+================================================== */
+
+:root {
+    --police-navy: #0b1f3a;
+    --police-blue: #1e3a8a;
+    --police-gold: #c9a227;
+    --police-gray: #f1f5f9;
+    --police-border: #cbd5e1;
+    --alert-yellow: #92400e;
+    --alert-blue: #1e40af;
+    --alert-green: #14532d;
+    --alert-red: #7f1d1d;
+}
+
+/* ---------- PAGE TITLE ---------- */
+h1.h2 {
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--police-navy);
+}
+
+/* ---------- BREADCRUMB ---------- */
+.breadcrumb {
+    background: transparent;
+    font-weight: 700;
+}
+
+.breadcrumb a {
+    color: var(--police-blue);
+    text-decoration: none;
+}
+
+/* ---------- CARD STRUCTURE ---------- */
+.card {
+    border: 1.5px solid var(--police-border);
+    border-radius: 4px;
+    box-shadow: none;
+}
+
+.card-header {
+    background: #f8fafc;
+    border-bottom: 2px solid var(--police-gold);
+    font-weight: 900;
+    color: var(--police-navy);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+
+/* ---------- ALERTS ---------- */
+.alert {
+    border-radius: 4px;
+    font-weight: 700;
+}
+
+.alert-warning {
+    background: #fff7ed;
+    border-left: 6px solid var(--alert-yellow);
+    color: #7c2d12;
+}
+
+.alert-info {
+    background: #eff6ff;
+    border-left: 6px solid var(--alert-blue);
+    color: #0f172a;
+}
+
+/* ---------- FORM LABELS ---------- */
+.form-label {
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--police-navy);
+}
+
+/* ---------- FORM INPUTS ---------- */
+.form-control,
+.form-select {
+    border-radius: 3px;
+    border: 1.5px solid var(--police-border);
+    font-weight: 600;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--police-blue);
+    box-shadow: none;
+}
+
+/* ---------- BUTTONS ---------- */
+.btn {
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    border-radius: 4px;
+}
+
+.btn-success {
+    background: var(--alert-green);
+    border: none;
+}
+
+.btn-success:hover {
+    background: #052e16;
+}
+
+.btn-outline-secondary {
+    border: 2px solid var(--police-border);
+    font-weight: 700;
+}
+
+/* ---------- BADGES (WORKLOAD & STATUS) ---------- */
+.badge {
+    font-weight: 900;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+}
+
+.bg-success {
+    background: var(--alert-green) !important;
+}
+
+.bg-warning {
+    background: var(--alert-yellow) !important;
+    color: #fff !important;
+}
+
+.bg-danger {
+    background: var(--alert-red) !important;
+}
+
+/* ---------- TABLE ---------- */
+.table th {
+    background: var(--police-gray);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    color: var(--police-navy);
+}
+
+.table td {
+    font-weight: 600;
+    color: #111827;
+}
+
+/* ---------- FIR SUMMARY PANEL ---------- */
+.card-body p strong {
+    color: var(--police-navy);
+    font-weight: 800;
+}
+
+/* ---------- REMOVE SOFT UI ---------- */
+* {
+    animation: none !important;
+    transition: none !important;
+}
+
+</style>
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <div>
+        <h1 class="h2">Assign Investigator</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'crimes:dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'crimes:fir_detail' fir.id %}">FIR {{ fir.fir_number }}</a></li>
+                <li class="breadcrumb-item active">Assign Investigator</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'crimes:fir_detail' fir.id %}" class="btn btn-sm btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Back to FIR
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Assign Investigator to FIR: {{ fir.fir_number }}</h5>
+            </div>
+            <div class="card-body">
+                {% if fir.investigating_officer %}
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Currently Assigned:</strong> {{ fir.investigating_officer.get_full_name }}
+                    (since {{ fir.io_assigned_date|date:"d/m/Y" }})
+                </div>
+                {% endif %}
+                
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="investigator_id" class="form-label">Select Investigator</label>
+                        <select class="form-select" id="investigator_id" name="investigator_id" required>
+                            <option value="">Select an investigator...</option>
+                            {% for investigator in investigators %}
+                            <option value="{{ investigator.id }}" 
+                                    {% if fir.investigating_officer.id == investigator.id %}selected{% endif %}>
+                                {{ investigator.get_full_name }} ({{ investigator.username }})
+                                {% if investigator.email %} - {{ investigator.email }}{% endif %}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="assignment_notes" class="form-label">Assignment Notes (Optional)</label>
+                        <textarea class="form-control" id="assignment_notes" name="assignment_notes" rows="3"
+                                  placeholder="Add any special instructions or notes for the investigator..."></textarea>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Note:</strong> Assigning an investigator will automatically change the FIR status to "Under Investigation".
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-user-check"></i> Assign Investigator
+                        </button>
+                        <a href="{% url 'crimes:fir_detail' fir.id %}" class="btn btn-outline-secondary">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <!-- FIR Summary -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">FIR Summary</h6>
+            </div>
+            <div class="card-body">
+                <p><strong>FIR Number:</strong> {{ fir.fir_number }}</p>
+                <p><strong>Crime:</strong> {{ fir.crime_category.section }}</p>
+                <p><strong>Informant:</strong> {{ fir.informant_name }}</p>
+                <p><strong>Incident Date:</strong> {{ fir.incident_date|date:"d/m/Y" }}</p>
+                <p><strong>Current Status:</strong> {{ fir.get_status_display }}</p>
+                <p><strong>Officer In Charge:</strong> {{ fir.officer_in_charge.get_full_name }}</p>
+            </div>
+        </div>
+        
+        <!-- Investigator Workload -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">Investigator Workload</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Investigator</th>
+                                <th>Active Cases</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for investigator in investigators %}
+                            <tr>
+                                <td>{{ investigator.get_full_name }}</td>
+                                <td>
+                                    {% with active_cases=investigator.investigating_firs.filter status='INVESTIGATION'|length %}
+                                    <span class="badge {% if active_cases > 10 %}bg-danger{% elif active_cases > 5 %}bg-warning{% else %}bg-success{% endif %}">
+                                        {{ active_cases }} cases
+                                    </span>
+                                    {% endwith %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

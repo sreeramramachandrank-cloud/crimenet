@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+:root {
+    --police-blue: #0b1f3a;
+    --police-gold: #c9a227;
+    --border: #d1d5db;
+    --bg-light: #f4f6f9;
+    --text-dark: #111827;
+    --text-muted: #6b7280;
+    --status-green: #14532d;
+    --status-red: #7f1d1d;
+    --status-yellow: #92400e;
+}
+
+body {
+    background: var(--bg-light);
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+}
+
+/* ===== MAIN CARD ===== */
+.complaints-card {
+    max-width: 900px;
+    margin: 3rem auto;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    padding: 2rem;
+}
+
+/* ===== HEADER ===== */
+.complaints-card h2 {
+    font-size: 1.1rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--police-blue);
+    border-bottom: 3px solid var(--police-gold);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* ===== LIST ===== */
+.complaint-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.complaint-item {
+    border: 1px solid var(--border);
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    background: #ffffff;
+}
+
+.complaint-subject {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--police-blue);
+    margin-bottom: 0.4rem;
+}
+
+.complaint-meta {
+    font-size: 0.8rem;
+    color: var(--text-dark);
+    margin-bottom: 0.3rem;
+}
+
+/* ===== STATUS BADGES ===== */
+.status {
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 3px;
+    display: inline-block;
+}
+
+.status-pending {
+    background: #fef3c7;
+    color: var(--status-yellow);
+}
+
+.status-accepted,
+.status-closed {
+    background: #dcfce7;
+    color: var(--status-green);
+}
+
+.status-rejected {
+    background: #fee2e2;
+    color: var(--status-red);
+}
+
+/* ===== POLICE REMARK ===== */
+.police-remark {
+    margin-top: 0.5rem;
+    padding: 0.6rem;
+    background: #f9fafb;
+    border-left: 4px solid var(--police-gold);
+    font-size: 0.8rem;
+    color: var(--text-dark);
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-message {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    padding: 1rem;
+    background: #f9fafb;
+    border: 1px dashed var(--border);
+}
+</style>
+
+<div class="complaints-card">
+
+    <h2>My Complaints</h2>
+
+    <ul class="complaint-list">
+        {% for c in complaints %}
+        <li class="complaint-item">
+            <div class="complaint-subject">
+                {{ c.subject }}
+            </div>
+
+            <div class="complaint-meta">
+                Status:
+                <span class="status status-{{ c.status|lower }}">
+                    {{ c.status }}
+                </span>
+            </div>
+
+            {% if c.police_remark %}
+            <div class="police-remark">
+                <strong>Police Remark:</strong><br>
+                {{ c.police_remark }}
+            </div>
+            {% endif %}
+        </li>
+        {% empty %}
+        <div class="empty-message">
+            No complaints have been filed yet.
+        </div>
+        {% endfor %}
+    </ul>
+
+</div>
+</div>
+{% endblock %}  

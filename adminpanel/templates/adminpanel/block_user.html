@@ -1,0 +1,349 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+    :root {
+        --police-blue: #0b1f3a;
+        --police-blue-dark: #08162b;
+        --police-gold: #c9a227;
+
+        --danger: #7f1d1d;
+        --warning: #92400e;
+
+        --border: #d1d5db;
+        --bg-light: #f1f5f9;
+
+        --text-dark: #111827;
+        --text-muted: #6b7280;
+    }
+
+    body {
+        background: var(--bg-light);
+        font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+    }
+
+    .block-container {
+        max-width: 650px;
+        margin: 3rem auto;
+        padding: 0 1rem;
+    }
+
+    .block-card {
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 2.5rem;
+    }
+
+    /* ===== HEADER ===== */
+    .block-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 1.5rem;
+    }
+
+    .block-header h2 {
+        font-size: 1.9rem;
+        color: var(--danger);
+        font-weight: 700;
+        margin-bottom: 0.4rem;
+        letter-spacing: 0.5px;
+    }
+
+    .block-header p {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+    }
+
+    /* ===== WARNING ===== */
+    .warning-banner {
+        background: #fffbeb;
+        border: 1px solid #facc15;
+        border-left: 6px solid #ca8a04;
+        padding: 1rem 1.25rem;
+        margin-bottom: 2rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--warning);
+    }
+
+    /* ===== USER INFO ===== */
+    .user-info-card {
+        border: 1px solid var(--border);
+        padding: 1.75rem;
+        margin-bottom: 2rem;
+    }
+
+    .user-info-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .user-avatar {
+        width: 56px;
+        height: 56px;
+        background: var(--police-blue);
+        color: var(--police-gold);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.4rem;
+        border-radius: 4px;
+    }
+
+    .user-name {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--text-dark);
+    }
+
+    .user-role {
+        display: inline-block;
+        margin-top: 0.25rem;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 0.25rem 0.6rem;
+        border: 1px solid var(--police-blue);
+        color: var(--police-blue);
+    }
+
+    .user-info-list {
+        border-top: 1px solid var(--border);
+        padding-top: 1rem;
+    }
+
+    .info-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.6rem 0;
+        font-size: 0.85rem;
+    }
+
+    .info-label {
+        font-weight: 600;
+        color: var(--text-muted);
+    }
+
+    .info-value {
+        font-weight: 700;
+        color: var(--text-dark);
+    }
+
+    /* ===== CONSEQUENCES ===== */
+    .consequences-box {
+        border: 1px solid #fecaca;
+        border-left: 6px solid var(--danger);
+        background: #fef2f2;
+        padding: 1.25rem;
+        margin-bottom: 2rem;
+    }
+
+    .consequences-title {
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: var(--danger);
+        margin-bottom: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .consequences-list {
+        margin: 0;
+        padding-left: 1.25rem;
+        font-size: 0.85rem;
+        color: var(--danger);
+    }
+
+    .consequences-list li {
+        margin-bottom: 0.4rem;
+    }
+
+    /* ===== FORM ===== */
+    .form-group {
+        margin-bottom: 1.75rem;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid var(--border);
+        font-size: 0.9rem;
+        resize: vertical;
+        min-height: 120px;
+        font-family: inherit;
+    }
+
+    textarea:focus {
+        outline: none;
+        border-color: var(--police-blue);
+    }
+
+    /* ===== ACTION BUTTONS ===== */
+    .action-buttons {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 2rem;
+    }
+
+    .btn-block {
+        flex: 1;
+        padding: 0.75rem;
+        background: var(--danger);
+        color: white;
+        border: 1px solid var(--danger);
+        font-size: 0.85rem;
+        font-weight: 700;
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .btn-block:hover {
+        background: #991b1b;
+    }
+
+    .btn-cancel {
+        flex: 1;
+        padding: 0.75rem;
+        background: white;
+        color: var(--text-dark);
+        border: 1px solid var(--border);
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-decoration: none;
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .btn-cancel:hover {
+        background: #f9fafb;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 640px) {
+        .block-card {
+            padding: 1.75rem;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        .user-info-header {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+</style>
+
+
+<div class="block-container">
+    <div class="block-card">
+        <div class="block-header">
+            <div class="block-icon">🚫</div>
+            <h2>Block User</h2>
+            <p>Restrict user access to the system</p>
+        </div>
+
+        <div class="warning-banner">
+            <div class="warning-icon">⚠️</div>
+            <div class="warning-text">
+                <strong>Critical Action:</strong> Blocking this user will immediately revoke all system access and permissions. This action is logged and auditable.
+            </div>
+        </div>
+
+        <div class="user-info-card">
+            <div class="user-info-header">
+                <div class="user-avatar">
+                    {{ user.username|first|upper }}
+                </div>
+                <div class="user-details">
+                    <div class="user-name">{{ user.username }}</div>
+                    <div class="user-role">
+                        <span>🎯</span>
+                        <span>{{ user.role }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="user-info-list">
+                <div class="info-item">
+                    <span class="info-label">Username:</span>
+                    <span class="info-value">{{ user.username }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Current Role:</span>
+                    <span class="info-value">{{ user.role }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Access Level:</span>
+                    <span class="info-value" style="color: #10b981;">Active</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="consequences-box">
+            <div class="consequences-title">
+                <span>📋</span>
+                <span>Consequences of Blocking</span>
+            </div>
+            <ul class="consequences-list">
+                <li>User will be immediately logged out from all sessions</li>
+                <li>All access permissions will be revoked</li>
+                <li>User cannot login or access any system resources</li>
+                <li>Action will be recorded in audit logs</li>
+                <li>User can appeal the block decision</li>
+            </ul>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-section">
+                <div class="form-group">
+                    <label class="form-label">
+                        <span>📝</span>
+                        <span>Reason for Blocking</span>
+                        <span class="required-star">*</span>
+                    </label>
+                    <textarea 
+                        name="reason" 
+                        required 
+                        placeholder="Provide a detailed explanation for blocking this user. This will be visible to the user and stored in audit logs..."
+                    ></textarea>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button type="submit" class="btn-block">
+                    <span>🚫</span>
+                    <span>Block User</span>
+                </button>
+                <a href="{% url 'admin_users_list' %}" class="btn-cancel">
+                    <span>↩️</span>
+                    <span>Cancel</span>
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

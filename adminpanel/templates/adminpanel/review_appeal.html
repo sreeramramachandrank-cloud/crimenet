@@ -1,0 +1,383 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+:root {
+    --police-blue: #0b1f3a;
+    --police-blue-dark: #08162b;
+    --police-gold: #c9a227;
+
+    --success: #065f46;
+    --danger: #7f1d1d;
+
+    --border: #d1d5db;
+    --bg-light: #f1f5f9;
+
+    --text-dark: #111827;
+    --text-muted: #6b7280;
+}
+
+body {
+    background: var(--bg-light);
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+}
+
+/* ===== PAGE LAYOUT ===== */
+.review-appeal-container {
+    min-height: 90vh;
+    padding: 2.5rem 1rem;
+}
+
+.content-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* ===== CARD ===== */
+.appeal-card {
+    background: white;
+    border: 1px solid var(--border);
+}
+
+/* ===== HEADER ===== */
+.appeal-header {
+    padding: 2rem;
+    background: var(--police-blue);
+    color: white;
+    border-bottom: 5px solid var(--police-gold);
+    text-align: center;
+}
+
+.appeal-header h2 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.appeal-header-subtitle {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    opacity: 0.9;
+}
+
+/* ===== BODY ===== */
+.appeal-body {
+    padding: 2rem;
+}
+
+/* ===== USER INFO ===== */
+.user-info-section {
+    border: 1px solid var(--border);
+    padding: 1.25rem;
+    margin-bottom: 2rem;
+    background: #f9fafb;
+}
+
+.user-info-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-avatar {
+    width: 48px;
+    height: 48px;
+    background: var(--police-blue);
+    color: white;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.user-label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.user-name {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--text-dark);
+}
+
+/* ===== SECTIONS ===== */
+.section-title {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: var(--police-blue);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.75rem;
+}
+
+.appeal-reason-box {
+    border: 1px solid var(--border);
+    background: #ffffff;
+    padding: 1rem;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+
+/* ===== DECISION FORM ===== */
+.decision-form {
+    margin-top: 2rem;
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    background: #f9fafb;
+}
+
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-group label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-dark);
+    display: block;
+    margin-bottom: 0.4rem;
+}
+
+select,
+textarea {
+    width: 100%;
+    padding: 0.6rem;
+    font-size: 0.85rem;
+    border: 1px solid var(--border);
+    font-family: inherit;
+}
+
+textarea {
+    min-height: 120px;
+}
+
+.required-indicator {
+    color: var(--danger);
+}
+
+/* ===== PREVIEW ===== */
+.decision-preview {
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    display: none;
+}
+
+.decision-preview.approved {
+    border-left: 4px solid var(--success);
+    background: #ecfdf5;
+    color: var(--success);
+}
+
+.decision-preview.rejected {
+    border-left: 4px solid var(--danger);
+    background: #fef2f2;
+    color: var(--danger);
+}
+
+/* ===== ACTIONS ===== */
+.submit-section {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    border-top: 1px solid var(--border);
+    padding-top: 1rem;
+}
+
+.submit-btn {
+    padding: 0.5rem 1.25rem;
+    background: var(--police-blue);
+    color: white;
+    border: none;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+}
+
+.submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.cancel-btn {
+    padding: 0.5rem 1.25rem;
+    background: white;
+    border: 1px solid var(--border);
+    color: var(--text-dark);
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    text-decoration: none;
+}
+
+/* ===== COUNTER ===== */
+.char-counter {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-align: right;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .appeal-body {
+        padding: 1.25rem;
+    }
+
+    .submit-section {
+        flex-direction: column;
+    }
+
+    .submit-btn,
+    .cancel-btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+</style>
+
+
+<div class="review-appeal-container">
+    <div class="content-wrapper">
+        <div class="appeal-card">
+            <div class="appeal-header">
+                <div class="header-icon">⚖️</div>
+                <h2>Review Appeal</h2>
+                <p class="appeal-header-subtitle">Carefully review and make a decision on this user appeal</p>
+            </div>
+
+            <div class="appeal-body">
+                <div class="user-info-section">
+                    <div class="user-info-header">
+                        <div class="user-avatar">
+                            {{ appeal.user.username|slice:":1"|upper }}
+                        </div>
+                        <div class="user-details">
+                            <div class="user-label">Appellant</div>
+                            <div class="user-name">{{ appeal.user.username }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="appeal-reason-section">
+                    <div class="section-title">
+                        <div class="section-icon">📝</div>
+                        User's Appeal Statement
+                    </div>
+                    <div class="appeal-reason-box">{{ appeal.reason }}</div>
+                </div>
+
+                <form method="post" id="appealForm">
+                    {% csrf_token %}
+                    <div class="decision-form">
+                        <div class="section-title" style="margin-bottom: 25px;">
+                            <div class="section-icon">✓</div>
+                            Your Decision
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <span>Decision</span>
+                                <span class="required-indicator">*</span>
+                            </label>
+                            <select name="decision" id="decisionSelect" required>
+                                <option value="">Select a decision...</option>
+                                <option value="APPROVED">✅ Approve & Unblock User</option>
+                                <option value="REJECTED">❌ Reject Appeal</option>
+                            </select>
+                            <div class="input-helper">
+                                Choose whether to approve or reject this appeal
+                            </div>
+                        </div>
+
+                        <div id="decisionPreview" class="decision-preview"></div>
+
+                        <div class="form-group">
+                            <label>
+                                <span>Admin Comment</span>
+                            </label>
+                            <textarea 
+                                name="comment" 
+                                id="commentTextarea"
+                                placeholder="Provide detailed reasoning for your decision (optional but recommended)..."
+                                maxlength="1000"></textarea>
+                            <div class="char-counter">
+                                <span id="charCount">0</span> / 1000 characters
+                            </div>
+                            <div class="input-helper">
+                                Your comment will be visible to the user
+                            </div>
+                        </div>
+
+                        <div class="submit-section">
+                            <a href="javascript:history.back()" class="cancel-btn">Cancel</a>
+                            <button type="submit" class="submit-btn" id="submitBtn" disabled>
+                                Submit Decision
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const decisionSelect = document.getElementById('decisionSelect');
+    const decisionPreview = document.getElementById('decisionPreview');
+    const commentTextarea = document.getElementById('commentTextarea');
+    const charCount = document.getElementById('charCount');
+    const submitBtn = document.getElementById('submitBtn');
+    const appealForm = document.getElementById('appealForm');
+
+    // Handle decision selection
+    decisionSelect.addEventListener('change', function() {
+        const value = this.value;
+        
+        if (value) {
+            submitBtn.disabled = false;
+            decisionPreview.style.display = 'block';
+            
+            if (value === 'APPROVED') {
+                decisionPreview.className = 'decision-preview approved';
+                decisionPreview.innerHTML = '<span class="preview-icon">✅</span><span class="preview-text">User will be unblocked and notified of approval</span>';
+            } else if (value === 'REJECTED') {
+                decisionPreview.className = 'decision-preview rejected';
+                decisionPreview.innerHTML = '<span class="preview-icon">❌</span><span class="preview-text">Appeal will be rejected and user will remain blocked</span>';
+            }
+        } else {
+            submitBtn.disabled = true;
+            decisionPreview.style.display = 'none';
+        }
+    });
+
+    // Character counter
+    commentTextarea.addEventListener('input', function() {
+        charCount.textContent = this.value.length;
+    });
+
+    // Form submission confirmation
+    appealForm.addEventListener('submit', function(e) {
+        const decision = decisionSelect.value;
+        const decisionText = decision === 'APPROVED' ? 'APPROVE' : 'REJECT';
+        const confirmMessage = `Are you sure you want to ${decisionText} this appeal?\n\nThis action cannot be undone.`;
+        
+        if (!confirm(confirmMessage)) {
+            e.preventDefault();
+        }
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,331 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+/* ===============================
+   CONTAINER
+================================ */
+.blocked-container {
+    max-width: 700px;
+    margin: 3rem auto;
+}
+
+/* ===============================
+   CARD
+================================ */
+.blocked-card {
+    background: #020617;
+    border: 2px solid #1e293b;
+    border-radius: 6px;
+    padding: 3rem 2.5rem;
+    text-align: center;
+}
+
+/* ===============================
+   ICON
+================================ */
+.blocked-icon-wrapper {
+    margin-bottom: 2rem;
+}
+
+.blocked-icon {
+    width: 110px;
+    height: 110px;
+    background: #1e293b;
+    border: 3px solid #b91c1c;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: #ef4444;
+    margin: 0 auto;
+}
+
+/* ===============================
+   HEADING
+================================ */
+.blocked-card h2 {
+    font-size: 1.9rem;
+    color: #ef4444;
+    margin-bottom: 1.25rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* ===============================
+   STATUS BADGE
+================================ */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.4rem;
+    background: #1e293b;
+    color: #fee2e2;
+    border: 2px solid #b91c1c;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+}
+
+/* ===============================
+   WARNING BANNER
+================================ */
+.warning-banner {
+    background: #020617;
+    padding: 1.25rem 1.5rem;
+    border-left: 6px solid #f59e0b;
+    margin-bottom: 2rem;
+    display: flex;
+    gap: 1rem;
+    text-align: left;
+}
+
+.warning-banner-icon {
+    font-size: 1.8rem;
+    color: #f59e0b;
+}
+
+.warning-banner p {
+    color: #fde68a;
+    font-weight: 600;
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+/* ===============================
+   BLOCK MESSAGE
+================================ */
+.blocked-message {
+    background: #020617;
+    padding: 1.75rem;
+    border-radius: 6px;
+    margin: 2rem 0;
+    border-left: 6px solid #ef4444;
+    text-align: left;
+}
+
+.blocked-message strong {
+    color: #ef4444;
+    font-size: 1rem;
+    display: block;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+}
+
+.blocked-message p {
+    color: #fee2e2;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+/* ===============================
+   REASON BOX
+================================ */
+.reason-box {
+    background: #020617;
+    padding: 1.25rem;
+    border: 2px solid #b91c1c;
+}
+
+.reason-box p {
+    color: #fecaca;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin: 0;
+}
+
+/* ===============================
+   DIVIDER
+================================ */
+.divider {
+    border: none;
+    height: 2px;
+    background: #1e293b;
+    margin: 2.5rem 0;
+}
+
+/* ===============================
+   HELP SECTION
+================================ */
+.help-section {
+    background: #020617;
+    border: 2px solid #1e293b;
+    padding: 2rem;
+    margin: 2rem 0;
+    text-align: left;
+}
+
+.help-section h3 {
+    color: #38bdf8;
+    font-size: 1.05rem;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+/* ===============================
+   ACTION LIST
+================================ */
+.actions-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.actions-list li {
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    background: #020617;
+    border-left: 4px solid #1e40af;
+    display: flex;
+    gap: 1rem;
+}
+
+.action-icon {
+    font-size: 1.3rem;
+}
+
+.actions-list li a {
+    color: #38bdf8;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.actions-list li a:hover {
+    text-decoration: underline;
+}
+
+/* ===============================
+   INFO NOTE
+================================ */
+.info-note {
+    background: #020617;
+    padding: 1.5rem;
+    border-left: 6px solid #1e40af;
+    margin: 2rem 0;
+    text-align: left;
+}
+
+.info-note p {
+    color: #cbd5e1;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+/* ===============================
+   LOGOUT
+================================ */
+.logout-section {
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 2px solid #1e293b;
+}
+
+.btn-logout {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 2.25rem;
+    background: #334155;
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+}
+
+.btn-logout:hover {
+    background: #475569;
+}
+
+/* ===============================
+   MOBILE
+================================ */
+@media (max-width: 768px) {
+    .blocked-card {
+        padding: 2rem 1.5rem;
+    }
+
+    .blocked-icon {
+        width: 90px;
+        height: 90px;
+        font-size: 2.5rem;
+    }
+
+    .blocked-card h2 {
+        font-size: 1.5rem;
+    }
+}
+</style>
+
+
+<div class="blocked-container">
+    <div class="blocked-card">
+        <div class="blocked-icon-wrapper">
+            <div class="blocked-icon">🚫</div>
+        </div>
+
+        <h2>Account Blocked</h2>
+
+        <div class="status-badge">
+            <span>⛔</span>
+            <span>Access Denied</span>
+        </div>
+
+        <div class="warning-banner">
+            <div class="warning-banner-icon">⚠️</div>
+            <p>Your account has been blocked by the system administrator.</p>
+        </div>
+
+        <div class="blocked-message">
+            <strong>📋 Reason for Block:</strong>
+            <div class="reason-box">
+                <p>{{ block_reason }}</p>
+            </div>
+        </div>
+
+        <hr class="divider">
+
+        <div class="help-section">
+            <h3>💡 What can you do?</h3>
+            
+            <ul class="actions-list">
+                <li>
+                    <span class="action-icon">📨</span>
+                    <a href="/appeals/submit/">Submit a Formal Appeal</a>
+                </li>
+
+                {% if blocked_by %}
+                <li>
+                    <span class="action-icon">📩</span>
+                    <a href="/appeals/contact-admin/{{ blocked_by.id }}/">
+                        Contact Administrator ({{ blocked_by.username }})
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <div class="info-note">
+            <p>
+                💬 If you believe this is an error, contact your system administrator or submit an appeal explaining your situation. Include any relevant details that may help resolve this issue.
+            </p>
+        </div>
+
+        <div class="logout-section">
+            <a href="/accounts/logout/" class="btn-logout">
+                <span>🚪</span>
+                <span>Logout</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

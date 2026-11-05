@@ -1,0 +1,361 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+/* ===============================
+   CONTAINER
+================================ */
+.expired-container {
+    max-width: 700px;
+    margin: 3rem auto;
+}
+
+/* ===============================
+   CARD
+================================ */
+.expired-card {
+    background: #020617;
+    border: 2px solid #1e293b;
+    border-radius: 6px;
+    padding: 3rem 2.5rem;
+    text-align: center;
+}
+
+/* ===============================
+   ICON
+================================ */
+.expired-icon-wrapper {
+    margin-bottom: 2rem;
+}
+
+.expired-icon {
+    width: 110px;
+    height: 110px;
+    background: #1e293b;
+    border: 3px solid #38bdf8;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: #38bdf8;
+    margin: 0 auto;
+}
+
+/* ===============================
+   HEADING
+================================ */
+.expired-card h3 {
+    font-size: 1.9rem;
+    color: #38bdf8;
+    margin-bottom: 1.25rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* ===============================
+   STATUS BADGE
+================================ */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.4rem;
+    background: #1e293b;
+    color: #cbd5e1;
+    border: 2px solid #1e40af;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+}
+
+/* ===============================
+   EXPIRED MESSAGE
+================================ */
+.expired-message {
+    background: #020617;
+    padding: 1.75rem;
+    border-radius: 6px;
+    margin: 2rem 0;
+    border-left: 6px solid #b91c1c;
+    text-align: left;
+}
+
+.expired-message p {
+    color: #e5e7eb;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    margin: 0.75rem 0;
+    display: flex;
+    gap: 0.75rem;
+}
+
+.expired-message p::before {
+    content: "●";
+    color: #ef4444;
+    font-size: 0.75rem;
+    margin-top: 0.4rem;
+}
+
+/* ===============================
+   SECURITY NOTICE
+================================ */
+.security-notice {
+    background: #020617;
+    padding: 1.25rem 1.5rem;
+    border-radius: 6px;
+    border-left: 6px solid #f59e0b;
+    margin: 2rem 0;
+    display: flex;
+    gap: 1rem;
+    text-align: left;
+}
+
+.security-notice-icon {
+    font-size: 1.8rem;
+    color: #f59e0b;
+}
+
+.security-notice p {
+    color: #fde68a;
+    font-weight: 600;
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+/* ===============================
+   TIMELINE
+================================ */
+.timeline {
+    background: #020617;
+    border: 2px solid #1e293b;
+    border-radius: 6px;
+    padding: 2rem;
+    margin: 2rem 0;
+    text-align: left;
+}
+
+.timeline h4 {
+    color: #38bdf8;
+    font-size: 1.05rem;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.timeline-item {
+    padding: 0.9rem 1rem;
+    margin-bottom: 0.75rem;
+    background: #020617;
+    border-left: 4px solid #334155;
+    display: flex;
+    gap: 1rem;
+}
+
+.timeline-item.completed {
+    border-left-color: #22c55e;
+}
+
+.timeline-item.current {
+    border-left-color: #38bdf8;
+}
+
+.timeline-icon {
+    font-size: 1.2rem;
+}
+
+.timeline-text {
+    color: #cbd5e1;
+    font-size: 0.9rem;
+}
+
+/* ===============================
+   INFO BOX
+================================ */
+.info-box {
+    background: #020617;
+    padding: 1.75rem;
+    border-radius: 6px;
+    margin: 2rem 0;
+    border-left: 6px solid #1e40af;
+    text-align: left;
+}
+
+.info-box strong {
+    color: #38bdf8;
+    font-size: 1rem;
+    display: block;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+}
+
+.info-box p {
+    color: #cbd5e1;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+/* ===============================
+   DIVIDER
+================================ */
+.divider {
+    border: none;
+    height: 2px;
+    background: #1e293b;
+    margin: 2.5rem 0;
+}
+
+/* ===============================
+   ACTION BUTTONS
+================================ */
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2.5rem;
+    flex-wrap: wrap;
+}
+
+.btn-login {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 2.25rem;
+    background: #1e40af;
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.btn-login:hover {
+    background: #1d4ed8;
+}
+
+.btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 2.25rem;
+    background: transparent;
+    color: #38bdf8;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    border: 2px solid #38bdf8;
+    text-transform: uppercase;
+}
+
+.btn-secondary:hover {
+    background: #38bdf8;
+    color: #020617;
+}
+
+/* ===============================
+   MOBILE
+================================ */
+@media (max-width: 768px) {
+    .expired-card {
+        padding: 2rem 1.5rem;
+    }
+
+    .expired-icon {
+        width: 90px;
+        height: 90px;
+        font-size: 2.5rem;
+    }
+
+    .expired-card h3 {
+        font-size: 1.5rem;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .btn-login,
+    .btn-secondary {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
+
+
+<div class="expired-container">
+    <div class="expired-card">
+        <div class="expired-icon-wrapper">
+            <div class="expired-icon">🔒</div>
+        </div>
+
+        <h3>Investigation Access Ended</h3>
+
+        <div class="status-badge">
+            <span>⏰</span>
+            <span>Session Expired</span>
+        </div>
+
+        <div class="expired-message">
+            <p>Your authorized investigation period has ended.</p>
+            <p>You have been logged out automatically for security reasons.</p>
+        </div>
+
+        <div class="security-notice">
+            <div class="security-notice-icon">🛡️</div>
+            <p>
+                <strong>Security Protocol:</strong> Time-limited access helps protect sensitive criminal investigation data and ensures proper authorization controls.
+            </p>
+        </div>
+
+        <div class="timeline">
+            <h4>⏱️ Access Timeline</h4>
+            <div class="timeline-item completed">
+                <div class="timeline-icon">✅</div>
+                <div class="timeline-text">Investigation access was granted</div>
+            </div>
+            <div class="timeline-item completed">
+                <div class="timeline-icon">✅</div>
+                <div class="timeline-text">Time-limited authorization period active</div>
+            </div>
+            <div class="timeline-item current">
+                <div class="timeline-icon">⏰</div>
+                <div class="timeline-text"><strong>Authorization period expired</strong></div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-icon">🔄</div>
+                <div class="timeline-text">Request new authorization if needed</div>
+            </div>
+        </div>
+
+        <hr class="divider">
+
+        <div class="info-box">
+            <strong>💡 If you need further access:</strong>
+            <p>
+                A new case authorization must be granted by the system administrator. Contact your supervisor or the admin team to request an extension or new investigation access.
+            </p>
+        </div>
+
+        <div class="action-buttons">
+            <a href="{% url 'login' %}" class="btn-login">
+                <span>🔓</span>
+                <span>Login Again</span>
+            </a>
+            <a href="/" class="btn-secondary">
+                <span>🏠</span>
+                <span>Go to Home</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

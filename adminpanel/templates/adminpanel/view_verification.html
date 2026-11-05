@@ -1,0 +1,339 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+:root {
+    --police-blue: #0b1f3a;
+    --police-gold: #c9a227;
+    --border: #d1d5db;
+    --bg-light: #f4f6f9;
+    --text-dark: #111827;
+    --text-muted: #6b7280;
+
+    --success-bg: #e6f4ea;
+    --success-text: #065f46;
+
+    --warning-bg: #fff7e6;
+    --warning-text: #92400e;
+
+    --danger-bg: #fdecea;
+    --danger-text: #991b1b;
+}
+
+body {
+    background: var(--bg-light);
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+}
+
+/* ===== MAIN CARD ===== */
+.content-card {
+    background: white;
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* ===== TITLES ===== */
+.section-title {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--police-blue);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    border-bottom: 3px solid var(--police-gold);
+    padding-bottom: 0.4rem;
+}
+
+/* ===== TABLE ===== */
+.details-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.details-table td {
+    border: 1px solid var(--border);
+    padding: 0.6rem 0.75rem;
+    vertical-align: top;
+}
+
+.details-table td:first-child {
+    width: 35%;
+    font-weight: 700;
+    background: #f8fafc;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-size: 0.7rem;
+}
+
+.details-table td:last-child {
+    color: var(--text-dark);
+    font-weight: 600;
+}
+
+/* ===== FILE LINK ===== */
+.file-link {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: white;
+    background: var(--police-blue);
+    padding: 0.4rem 0.75rem;
+    text-decoration: none;
+    border-radius: 4px;
+}
+
+.file-link:hover {
+    opacity: 0.9;
+}
+
+/* ===== BADGES ===== */
+.badge {
+    display: inline-block;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    border-radius: 3px;
+}
+
+.badge-verified {
+    background: var(--success-bg);
+    color: var(--success-text);
+    border: 1px solid #34a853;
+}
+
+.badge-pending {
+    background: var(--warning-bg);
+    color: var(--warning-text);
+    border: 1px solid #f59e0b;
+}
+
+/* ===== VERIFICATION META ===== */
+.verification-meta {
+    margin-top: 0.4rem;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+/* ===== ALERT ===== */
+.alert {
+    padding: 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-left: 5px solid #f59e0b;
+    background: var(--warning-bg);
+    color: var(--warning-text);
+}
+
+/* ===== ACTIONS CARD ===== */
+.actions-card {
+    background: white;
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.actions-title {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: var(--police-blue);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+}
+
+/* ===== BUTTONS ===== */
+.action-buttons {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.btn {
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    padding: 0.5rem 1rem;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-success {
+    background: #065f46;
+    color: white;
+}
+
+.btn-warning {
+    background: #92400e;
+    color: white;
+}
+
+.btn-danger {
+    background: #991b1b;
+    color: white;
+}
+
+.btn-secondary {
+    background: #6b7280;
+    color: white;
+}
+
+/* ===== REJECTION FORM ===== */
+.rejection-form {
+    display: none;
+    margin-top: 1rem;
+    border: 1px solid var(--border);
+    padding: 1rem;
+    background: #f9fafb;
+}
+
+.rejection-form.active {
+    display: block;
+}
+
+.form-label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+textarea {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 0.8rem;
+    border: 1px solid var(--border);
+    margin-top: 0.4rem;
+}
+
+.form-buttons {
+    margin-top: 0.75rem;
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* ===== BACK LINK ===== */
+.back-link {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--police-blue);
+    text-decoration: none;
+}
+</style>
+
+<div class="content-card">
+    <h3 class="section-title">📋 Role Verification Details</h3>
+
+    {% if verification %}
+    <table class="details-table">
+        <tr>
+            <td>Role</td>
+            <td><strong>{{ verification.get_role_display }}</strong></td>
+        </tr>
+
+        {% if verification.rank %}
+        <tr>
+            <td>Rank / Designation</td>
+            <td>{{ verification.rank }}</td>
+        </tr>
+        {% endif %}
+
+        {% if verification.jurisdiction %}
+        <tr>
+            <td>Jurisdiction</td>
+            <td>{{ verification.jurisdiction }}</td>
+        </tr>
+        {% endif %}
+
+        {% if verification.appointment_order %}
+        <tr>
+            <td>Appointment Order</td>
+            <td>
+                <a href="{{ verification.appointment_order.url }}"
+                   class="file-link"
+                   target="_blank">
+                    📄 View Appointment Order
+                </a>
+            </td>
+        </tr>
+        {% endif %}
+
+        <tr>
+            <td>Reason for Access</td>
+            <td>{{ verification.reason_for_access }}</td>
+        </tr>
+
+        <tr>
+            <td>Status</td>
+            <td>
+                {% if verification.verified %}
+                    <span class="badge badge-verified">✅ Verified</span>
+                    <div class="verification-meta">
+                        <div><strong>Verified by:</strong> {{ verification.verified_by }}</div>
+                        <div><strong>Verified at:</strong> {{ verification.verified_at }}</div>
+                    </div>
+                {% else %}
+                    <span class="badge badge-pending">⏳ Pending Verification</span>
+                {% endif %}
+            </td>
+        </tr>
+
+        <tr>
+            <td>Submitted At</td>
+            <td>{{ verification.created_at|date:"Y-m-d H:i" }}</td>
+        </tr>
+    </table>
+    {% else %}
+        <div class="alert alert-warning">
+            ⚠️ No verification details found for this user.
+        </div>
+    {% endif %}
+</div>
+
+{% if verification and not verification.verified %}
+<div class="actions-card">
+    <h4 class="actions-title">⚡ Verification Actions</h4>
+
+    <div class="action-buttons">
+        <!-- ✅ APPROVE (POST – IMPORTANT) -->
+        <form method="post" action="{% url 'admin_approve_role' verification.user.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-success">
+                ✅ Approve Role
+            </button>
+        </form>
+
+        <button class="btn btn-warning" onclick="toggleRejectionForm()">
+            ❌ Reject Request
+        </button>
+    </div>
+
+    <!-- Rejection Form -->
+    <div id="rejectionForm" class="rejection-form">
+        <form method="post" action="{% url 'admin_reject_verification' verification.user.id %}">
+            {% csrf_token %}
+            <label class="form-label">Rejection Reason:</label>
+            <textarea name="rejection_reason" rows="4" required></textarea>
+
+            <div class="form-buttons">
+                <button type="submit" class="btn btn-danger">Submit Rejection</button>
+                <button type="button" class="btn btn-secondary"
+                        onclick="toggleRejectionForm()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endif %}
+
+<a href="{% url 'admin_users_list' %}" class="back-link">
+    ⬅ Back to Users
+</a>
+
+<script>
+function toggleRejectionForm() {
+    document.getElementById('rejectionForm').classList.toggle('active');
+}
+</script>
+
+{% endblock %}

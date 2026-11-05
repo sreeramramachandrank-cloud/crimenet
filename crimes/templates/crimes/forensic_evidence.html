@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block title %}Evidence Verification | CrimeNet{% endblock %}
+
+{% block content %}
+<style>
+/* ===============================
+   FORENSIC EVIDENCE – OFFICIAL UI
+================================ */
+
+.forensic-wrapper {
+    max-width: 1100px;
+    margin: 2rem auto;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+}
+
+/* Header */
+.forensic-header {
+    padding: 1.5rem 2rem;
+    border-bottom: 4px solid #0b1f47;
+    background: #f8fafc;
+}
+
+.forensic-header h1 {
+    font-size: 1.4rem;
+    font-weight: 900;
+    color: #0b1f47;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.forensic-header p {
+    margin-top: 0.3rem;
+    font-size: 0.9rem;
+    color: #4b5563;
+}
+
+/* Body */
+.forensic-body {
+    padding: 2rem;
+}
+
+/* Notice */
+.notice {
+    background: #ecfeff;
+    border-left: 5px solid #0284c7;
+    padding: 1rem 1.2rem;
+    margin-bottom: 2rem;
+    font-size: 0.85rem;
+    color: #075985;
+    font-weight: 600;
+}
+
+/* Form */
+label {
+    font-weight: 700;
+    color: #1f2933;
+    display: block;
+    margin-bottom: 0.3rem;
+}
+
+input[type="text"],
+select,
+textarea {
+    width: 100%;
+    padding: 0.6rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    margin-bottom: 1.2rem;
+    font-size: 0.9rem;
+}
+
+/* Buttons */
+.btn-primary {
+    background: #0b1f47;
+    color: #ffffff;
+    border: none;
+    padding: 0.6rem 1.6rem;
+    font-weight: 700;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-secondary {
+    margin-left: 1rem;
+    color: #0b1f47;
+    font-weight: 700;
+    text-decoration: none;
+}
+</style>
+
+<div class="forensic-wrapper">
+
+    <!-- HEADER -->
+    <div class="forensic-header">
+        <h1>Evidence Verification</h1>
+        <p>Forensic Division – Chain of Custody Validation</p>
+    </div>
+
+    <!-- BODY -->
+    <div class="forensic-body">
+
+        <div class="notice">
+            ℹ️ All evidence verification actions are permanently logged
+            as part of the official chain of custody record.
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <label>FIR Number</label>
+            <input type="text" name="fir_number" required>
+
+            <label>Evidence ID</label>
+            <input type="text" name="evidence_id" required>
+
+            <label>Verification Status</label>
+            <select name="verification_status" required>
+                <option value="">Select</option>
+                <option value="VERIFIED">Verified</option>
+                <option value="REJECTED">Rejected</option>
+            </select>
+
+            <label>Verification Remarks</label>
+            <textarea name="remarks" rows="4" required></textarea>
+
+            <button type="submit" class="btn-primary">
+                Submit Verification
+            </button>
+
+            <a href="{% url 'dashboard' %}" class="btn-secondary">
+                Cancel
+            </a>
+        </form>
+
+    </div>
+</div>
+{% endblock %}

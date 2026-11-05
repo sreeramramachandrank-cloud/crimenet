@@ -1,0 +1,155 @@
+<style>
+/* =====================================================
+   KERALA POLICE – OFFICER VERIFICATION PAGE
+===================================================== */
+:root {
+    --kp-primary: #0b2545;
+    --kp-secondary: #133e7c;
+    --kp-border: #cbd5e1;
+    --kp-bg: #f8fafc;
+
+    --kp-success: #166534;
+    --kp-warning: #b45309;
+}
+
+/* =====================================================
+   PAGE BACKGROUND
+===================================================== */
+body {
+    background-color: var(--kp-bg);
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+/* =====================================================
+   CONTAINER
+===================================================== */
+form {
+    max-width: 640px;
+    margin: 30px auto;
+    background: #ffffff;
+    border: 1px solid var(--kp-border);
+    border-radius: 6px;
+    padding: 25px;
+}
+
+/* =====================================================
+   HEADER
+===================================================== */
+h2 {
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 900;
+    font-size: 1.2rem;
+    color: var(--kp-primary);
+    border-bottom: 3px solid var(--kp-primary);
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+/* =====================================================
+   NOTICE TEXT
+===================================================== */
+p {
+    font-size: 0.8rem;
+    text-align: center;
+    color: #475569;
+    margin-bottom: 25px;
+}
+
+/* =====================================================
+   FORM ELEMENTS
+===================================================== */
+form p {
+    margin-bottom: 14px;
+    text-align: left;
+}
+
+label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #1e293b;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 0.8rem;
+    border-radius: 4px;
+    border: 1px solid var(--kp-border);
+    margin-top: 4px;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--kp-secondary);
+    box-shadow: 0 0 0 1px var(--kp-secondary);
+}
+
+/* =====================================================
+   SUBMIT BUTTON
+===================================================== */
+button[type="submit"] {
+    width: 100%;
+    margin-top: 20px;
+    padding: 10px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 4px;
+    border: none;
+    background-color: var(--kp-primary);
+    color: #ffffff;
+    cursor: pointer;
+}
+
+button[type="submit"]:hover {
+    background-color: var(--kp-secondary);
+}
+
+/* =====================================================
+   FORM HELP TEXT & ERRORS
+===================================================== */
+.helptext {
+    font-size: 0.7rem;
+    color: #64748b;
+}
+
+.errorlist {
+    font-size: 0.7rem;
+    color: #991b1b;
+    list-style: none;
+    padding-left: 0;
+    margin-top: 5px;
+}
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+@media (max-width: 576px) {
+    form {
+        margin: 15px;
+        padding: 20px;
+    }
+}
+</style>
+
+<h2>Officer Verification</h2>
+
+<p>
+Please provide official details for verification.
+Your access will remain limited until approved.
+</p>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Submit for Verification</button>
+</form>

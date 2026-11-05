@@ -1,0 +1,1155 @@
+{% extends 'base.html' %}
+
+{% block title %}FIR List - Kerala Police CrimeNET{% endblock %}
+
+{% block content %}
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* =====================================================
+   KERALA POLICE - OFFICIAL FIR LIST (WHITE THEME)
+===================================================== */
+
+:root {
+    --kp-primary: #0b2545;
+    --kp-primary-light: #134e8c;
+    --kp-accent: #1e5a9e;
+    --kp-success: #047857;
+    --kp-danger: #dc2626;
+    --kp-warning: #d97706;
+    --kp-info: #0284c7;
+    
+    --kp-gray-900: #111827;
+    --kp-gray-800: #1f2937;
+    --kp-gray-700: #374151;
+    --kp-gray-600: #4b5563;
+    --kp-gray-500: #6b7280;
+    --kp-gray-400: #9ca3af;
+    --kp-gray-300: #d1d5db;
+    --kp-gray-200: #e5e7eb;
+    --kp-gray-100: #f3f4f6;
+    --kp-gray-50: #f9fafb;
+    
+    --kp-blue-50: #eff6ff;
+    --kp-blue-100: #dbeafe;
+}
+
+/* Global Styles */
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f8fafc;
+    color: var(--kp-gray-900);
+}
+
+.container-fluid {
+    max-width: 1800px;
+    padding: 2rem;
+}
+
+/* =====================================================
+   PAGE HEADER - OFFICIAL BANNER
+===================================================== */
+.page-header {
+    background: linear-gradient(135deg, var(--kp-primary) 0%, var(--kp-primary-light) 100%);
+    border-radius: 12px;
+    padding: 2rem 2.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    position: relative;
+    overflow: hidden;
+}
+
+.page-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    border-radius: 50%;
+}
+
+.page-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 50%, #fbbf24 100%);
+}
+
+.page-header-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}
+
+.page-title-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.page-icon {
+    width: 56px;
+    height: 56px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.page-icon i {
+    font-size: 1.75rem;
+    color: white;
+}
+
+.page-header h2 {
+    color: white;
+    font-size: 1.75rem;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+
+.page-subtitle {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.9375rem;
+    margin: 0.25rem 0 0 0;
+    font-weight: 500;
+}
+
+.header-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.header-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: white;
+    border: 2px solid white;
+    border-radius: 8px;
+    color: var(--kp-primary);
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header-btn:hover {
+    background: var(--kp-blue-50);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    color: var(--kp-primary);
+    text-decoration: none;
+}
+
+.header-btn.btn-outline {
+    background: transparent;
+    color: white;
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.header-btn.btn-outline:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: white;
+    color: white;
+}
+
+/* =====================================================
+   FILTER CARD
+===================================================== */
+.filter-card {
+    background: white;
+    border: 1px solid var(--kp-gray-200);
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.filter-header {
+    padding: 1.25rem 2rem;
+    background: var(--kp-gray-50);
+    border-bottom: 2px solid var(--kp-gray-200);
+    border-radius: 12px 12px 0 0;
+}
+
+.filter-header h5 {
+    font-size: 0.9375rem;
+    font-weight: 800;
+    color: var(--kp-gray-900);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.filter-header i {
+    color: var(--kp-primary);
+}
+
+.filter-body {
+    padding: 2rem;
+}
+
+.form-control,
+.form-select {
+    background: white;
+    border: 2px solid var(--kp-gray-300);
+    border-radius: 8px;
+    color: var(--kp-gray-900);
+    font-size: 0.875rem;
+    padding: 0.75rem 1rem;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.form-control::placeholder {
+    color: var(--kp-gray-400);
+    font-weight: 400;
+}
+
+.form-control:focus,
+.form-select:focus {
+    background: white;
+    border-color: var(--kp-primary);
+    box-shadow: 0 0 0 3px rgba(11, 37, 69, 0.1);
+    outline: none;
+}
+
+.form-select option {
+    background: white;
+    color: var(--kp-gray-900);
+}
+
+.filter-btn {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: linear-gradient(135deg, var(--kp-primary), var(--kp-primary-light));
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-weight: 700;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(11, 37, 69, 0.3);
+    cursor: pointer;
+}
+
+.filter-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(11, 37, 69, 0.4);
+}
+
+/* =====================================================
+   FIR LIST CARD
+===================================================== */
+.fir-list-card {
+    background: white;
+    border: 1px solid var(--kp-gray-200);
+    border-radius: 12px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.fir-list-header {
+    padding: 1.5rem 2rem;
+    background: var(--kp-gray-50);
+    border-bottom: 2px solid var(--kp-gray-200);
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.fir-list-header h5 {
+    font-size: 0.9375rem;
+    font-weight: 800;
+    color: var(--kp-gray-900);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.fir-list-header h5 i {
+    color: var(--kp-primary);
+}
+
+.header-badges {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.info-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--kp-blue-50);
+    border: 1px solid var(--kp-blue-100);
+    border-radius: 8px;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--kp-primary);
+}
+
+.info-badge.primary {
+    background: linear-gradient(135deg, var(--kp-primary), var(--kp-primary-light));
+    border: none;
+    color: white;
+}
+
+/* =====================================================
+   TABLE STYLES
+===================================================== */
+.table-wrapper {
+    overflow-x: auto;
+}
+
+.fir-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.fir-table thead {
+    background: linear-gradient(135deg, var(--kp-gray-800), var(--kp-gray-700));
+}
+
+.fir-table th {
+    padding: 1rem 1.25rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: white;
+    border-bottom: 3px solid var(--kp-primary);
+    white-space: nowrap;
+}
+
+.fir-table td {
+    padding: 1.25rem;
+    color: var(--kp-gray-700);
+    border-bottom: 1px solid var(--kp-gray-200);
+    font-size: 0.875rem;
+    vertical-align: middle;
+}
+
+.fir-table tbody tr {
+    transition: all 0.15s ease;
+    cursor: pointer;
+}
+
+.fir-table tbody tr:hover {
+    background: var(--kp-blue-50);
+}
+
+.fir-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* FIR Number Styling */
+.fir-number {
+    color: var(--kp-primary);
+    font-weight: 800;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9375rem;
+}
+
+.priority-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.6875rem;
+    font-weight: 800;
+    margin-left: 0.5rem;
+    text-transform: uppercase;
+}
+
+.priority-badge.urgent {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+.priority-badge.high {
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fde68a;
+}
+
+/* Informant Info */
+.informant-name {
+    font-weight: 700;
+    color: var(--kp-gray-900);
+    margin-bottom: 0.25rem;
+}
+
+.informant-mobile {
+    font-size: 0.75rem;
+    color: var(--kp-gray-500);
+    font-weight: 500;
+}
+
+/* Crime Type */
+.crime-type {
+    color: var(--kp-gray-900);
+    font-weight: 600;
+}
+
+.crime-description {
+    font-size: 0.75rem;
+    color: var(--kp-gray-500);
+    margin-top: 0.25rem;
+}
+
+/* =====================================================
+   STATUS BADGES - OFFICIAL COLORS
+===================================================== */
+.status-badge {
+    display: inline-block;
+    padding: 0.4rem 0.85rem;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+}
+
+.status-badge.badge-draft { 
+    background: #f3f4f6;
+    color: #4b5563;
+    border: 1px solid #e5e7eb;
+}
+
+.status-badge.badge-registered { 
+    background: #dbeafe;
+    color: #1e40af;
+    border: 1px solid #bfdbfe;
+}
+
+.status-badge.badge-verified { 
+    background: #cffafe;
+    color: #0e7490;
+    border: 1px solid #a5f3fc;
+}
+
+.status-badge.badge-investigation { 
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fde68a;
+}
+
+.status-badge.badge-chargesheet { 
+    background: #f3e8ff;
+    color: #6b21a8;
+    border: 1px solid #e9d5ff;
+}
+
+.status-badge.badge-court { 
+    background: #fed7aa;
+    color: #9a3412;
+    border: 1px solid #fdba74;
+}
+
+.status-badge.badge-convicted { 
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+}
+
+.status-badge.badge-acquitted { 
+    background: #e5e7eb;
+    color: #374151;
+    border: 1px solid #d1d5db;
+}
+
+.status-badge.badge-closed { 
+    background: #1f2937;
+    color: white;
+    border: 1px solid #374151;
+}
+
+.status-badge.badge-cancelled { 
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+.biometric-alert {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.biometric-alert.pending {
+    color: var(--kp-danger);
+}
+
+.biometric-alert.matched {
+    color: var(--kp-warning);
+}
+
+/* =====================================================
+   ACTION BUTTONS
+===================================================== */
+.action-group {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    padding: 0.5rem 1rem;
+    background: white;
+    border: 2px solid var(--kp-primary);
+    border-radius: 6px;
+    color: var(--kp-primary);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.action-btn:hover {
+    background: var(--kp-primary);
+    color: white;
+    text-decoration: none;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(11, 37, 69, 0.3);
+}
+
+.action-btn i {
+    font-size: 0.875rem;
+}
+
+.action-btn.btn-info {
+    border-color: var(--kp-info);
+    color: var(--kp-info);
+}
+
+.action-btn.btn-info:hover {
+    background: var(--kp-info);
+    color: white;
+}
+
+.action-btn.btn-success {
+    border-color: var(--kp-success);
+    color: var(--kp-success);
+}
+
+.action-btn.btn-success:hover {
+    background: var(--kp-success);
+    color: white;
+}
+
+/* =====================================================
+   PAGINATION
+===================================================== */
+.pagination-wrapper {
+    padding: 2rem;
+    display: flex;
+    justify-content: center;
+    background: var(--kp-gray-50);
+    border-top: 1px solid var(--kp-gray-200);
+}
+
+.pagination {
+    display: flex;
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.page-item {
+    margin: 0;
+}
+
+.page-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0.5rem 0.75rem;
+    background: white;
+    border: 2px solid var(--kp-gray-300);
+    border-radius: 8px;
+    color: var(--kp-gray-700);
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.page-link:hover {
+    background: var(--kp-blue-50);
+    border-color: var(--kp-primary);
+    color: var(--kp-primary);
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+.page-item.active .page-link {
+    background: linear-gradient(135deg, var(--kp-primary), var(--kp-primary-light));
+    border-color: var(--kp-primary);
+    color: white;
+    box-shadow: 0 2px 4px rgba(11, 37, 69, 0.3);
+}
+
+/* =====================================================
+   EMPTY STATE
+===================================================== */
+.empty-state {
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+.empty-state-icon {
+    font-size: 4rem;
+    color: var(--kp-gray-300);
+    margin-bottom: 1.5rem;
+}
+
+.empty-state h4 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--kp-gray-900);
+    margin: 0 0 0.75rem 0;
+}
+
+.empty-state p {
+    color: var(--kp-gray-600);
+    margin: 0 0 2rem 0;
+    font-size: 1rem;
+}
+
+.empty-state-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.empty-state-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, var(--kp-primary), var(--kp-primary-light));
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-weight: 700;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(11, 37, 69, 0.3);
+}
+
+.empty-state-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 10px rgba(11, 37, 69, 0.4);
+    color: white;
+    text-decoration: none;
+}
+
+.empty-state-btn.secondary {
+    background: white;
+    border: 2px solid var(--kp-gray-300);
+    color: var(--kp-gray-700);
+    box-shadow: none;
+}
+
+.empty-state-btn.secondary:hover {
+    background: var(--kp-gray-50);
+    border-color: var(--kp-gray-400);
+    color: var(--kp-gray-900);
+    box-shadow: none;
+}
+
+/* =====================================================
+   FOOTER STATISTICS
+===================================================== */
+.stats-footer {
+    padding: 1.75rem 2rem;
+    background: linear-gradient(135deg, var(--kp-gray-50), white);
+    border-top: 2px solid var(--kp-gray-200);
+    border-radius: 0 0 12px 12px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 2rem;
+    text-align: center;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.stat-value {
+    font-size: 1.75rem;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.stat-value.primary { color: var(--kp-primary); }
+.stat-value.warning { color: var(--kp-warning); }
+.stat-value.success { color: var(--kp-success); }
+.stat-value.danger { color: var(--kp-danger); }
+
+.stat-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--kp-gray-600);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* =====================================================
+   RESPONSIVE DESIGN
+===================================================== */
+@media (max-width: 1024px) {
+    .container-fluid {
+        padding: 1.5rem;
+    }
+    
+    .filter-body .row {
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .container-fluid {
+        padding: 1rem;
+    }
+    
+    .page-header {
+        padding: 1.5rem;
+    }
+    
+    .page-header-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .page-header h2 {
+        font-size: 1.375rem;
+    }
+    
+    .header-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+    
+    .header-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .filter-body {
+        padding: 1.5rem;
+    }
+    
+    .fir-table {
+        font-size: 0.8125rem;
+    }
+    
+    .fir-table th,
+    .fir-table td {
+        padding: 0.875rem;
+    }
+    
+    .action-group {
+        flex-direction: column;
+    }
+    
+    .action-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .fir-list-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .header-badges {
+        width: 100%;
+    }
+    
+    .info-badge {
+        flex: 1;
+        justify-content: center;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .page-title-group {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+/* Print Styles */
+@media print {
+    body {
+        background: white;
+    }
+    
+    .header-actions,
+    .filter-card,
+    .action-btn,
+    .pagination-wrapper {
+        display: none !important;
+    }
+    
+    .page-header {
+        background: var(--kp-primary);
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+    }
+}
+</style>
+
+<div class="container-fluid">
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="page-header-content">
+            <div class="page-title-group">
+                <div class="page-icon">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div>
+                    <h2>First Information Report (FIR) List</h2>
+                    <p class="page-subtitle">Kerala Police Crime & Criminal Tracking Network System</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <a href="{% url 'crimes:fir_create' %}" class="header-btn">
+                    <i class="fas fa-plus-circle"></i> Register New FIR
+                </a>
+                <a href="{% url 'crimes:dashboard' %}" class="header-btn btn-outline">
+                    <i class="fas fa-home"></i> Dashboard
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Filters -->
+    <section class="filter-card">
+        <div class="filter-header">
+            <h5>
+                <i class="fas fa-filter"></i>
+                Search & Filter FIRs
+            </h5>
+        </div>
+        <div class="filter-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label" style="font-size: 0.75rem; font-weight: 700; color: var(--kp-gray-700); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Search</label>
+                    <input type="text" name="search" class="form-control" 
+                           placeholder="FIR number, name, mobile..." 
+                           value="{{ request.GET.search|default:'' }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label" style="font-size: 0.75rem; font-weight: 700; color: var(--kp-gray-700); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Status</label>
+                    <select name="status" class="form-select">
+                        <option value="">All Status</option>
+                        {% for status_code, status_name in status_choices %}
+                        <option value="{{ status_code }}" {% if request.GET.status == status_code %}selected{% endif %}>
+                            {{ status_name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label" style="font-size: 0.75rem; font-weight: 700; color: var(--kp-gray-700); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Police Station</label>
+                    <select name="station" class="form-select">
+                        <option value="">All Stations</option>
+                        {% for station in police_stations %}
+                        <option value="{{ station.code }}" {% if request.GET.station == station.code %}selected{% endif %}>
+                            {{ station.code }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label" style="font-size: 0.75rem; font-weight: 700; color: var(--kp-gray-700); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">From Date</label>
+                    <input type="date" name="date_from" class="form-control" 
+                           value="{{ request.GET.date_from|default:'' }}">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label" style="font-size: 0.75rem; font-weight: 700; color: var(--kp-gray-700); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">To Date</label>
+                    <input type="date" name="date_to" class="form-control" 
+                           value="{{ request.GET.date_to|default:'' }}">
+                </div>
+                <div class="col-md-1">
+                    <label class="form-label" style="font-size: 0.75rem; font-weight: 700; color: transparent; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">Action</label>
+                    <button type="submit" class="filter-btn">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- FIR List -->
+    <section class="fir-list-card">
+        <div class="fir-list-header">
+            <h5>
+                <i class="fas fa-list"></i>
+                Registered FIRs
+            </h5>
+            <div class="header-badges">
+                <div class="info-badge">
+                    Total Records: {{ page_obj.paginator.count|default:firs.count }}
+                </div>
+                <div class="info-badge primary">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                </div>
+            </div>
+        </div>
+        
+        {% if firs %}
+        <div class="table-wrapper">
+            <table class="fir-table">
+                <thead>
+                    <tr>
+                        <th>FIR Number</th>
+                        <th>Informant Details</th>
+                        <th>Crime Type</th>
+                        <th>Police Station</th>
+                        <th>Registration Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fir in firs %}
+                    <tr onclick="window.location='{% url 'crimes:fir_detail' fir.id %}'">
+                        <td>
+                            <span class="fir-number">{{ fir.fir_number|default:"N/A" }}</span>
+                            {% if fir.priority == 'HIGHEST' %}
+                            <span class="priority-badge urgent">
+                                <i class="fas fa-exclamation-triangle"></i> Urgent
+                            </span>
+                            {% elif fir.priority == 'HIGH' %}
+                            <span class="priority-badge high">
+                                <i class="fas fa-exclamation"></i> High
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="informant-name">{{ fir.informant_name|default:"N/A" }}</div>
+                            <div class="informant-mobile">{{ fir.informant_mobile|default:"No contact" }}</div>
+                        </td>
+                        <td>
+                            <div class="crime-type">{{ fir.crime_category.section|default:"N/A" }}</div>
+                            {% if fir.crime_category %}
+                            <div class="crime-description">{{ fir.crime_category.name|truncatechars:35 }}</div>
+                            {% endif %}
+                        </td>
+                        <td>{{ fir.police_station.code|default:"N/A" }}</td>
+                        <td>{{ fir.date_registered|date:"d/m/Y"|default:"N/A" }}</td>
+                        <td>
+                            {% if fir.status == 'DRAFT' %}
+                            <span class="status-badge badge-draft">Draft</span>
+                            {% elif fir.status == 'REGISTERED' %}
+                            <span class="status-badge badge-registered">Registered</span>
+                            {% elif fir.status == 'VERIFIED' %}
+                            <span class="status-badge badge-verified">Verified</span>
+                            {% elif fir.status == 'INVESTIGATION' %}
+                            <span class="status-badge badge-investigation">Investigation</span>
+                            {% elif fir.status == 'CHARGESHEET_FILED' %}
+                            <span class="status-badge badge-chargesheet">Chargesheet</span>
+                            {% elif fir.status == 'COURT' %}
+                            <span class="status-badge badge-court">In Court</span>
+                            {% elif fir.status == 'CONVICTED' %}
+                            <span class="status-badge badge-convicted">Convicted</span>
+                            {% elif fir.status == 'ACQUITTED' %}
+                            <span class="status-badge badge-acquitted">Acquitted</span>
+                            {% elif fir.status == 'CLOSED' %}
+                            <span class="status-badge badge-closed">Closed</span>
+                            {% elif fir.status == 'CANCELLED' %}
+                            <span class="status-badge badge-cancelled">Cancelled</span>
+                            {% else %}
+                            <span class="status-badge badge-draft">{{ fir.status }}</span>
+                            {% endif %}
+                            
+                            {% if fir.biometric_status == 'NOT_CAPTURED' %}
+                            <span class="biometric-alert pending">
+                                <i class="fas fa-fingerprint"></i> Biometric Pending
+                            </span>
+                            {% elif fir.biometric_status == 'MATCH_FOUND' %}
+                            <span class="biometric-alert matched">
+                                <i class="fas fa-exclamation-triangle"></i> Criminal Match
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td onclick="event.stopPropagation();">
+                            <div class="action-group">
+                                <a href="{% url 'crimes:fir_detail' fir.id %}" class="action-btn">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                                {% if fir.status == 'DRAFT' and fir.officer_in_charge == request.user %}
+                                <a href="{% url 'crimes:fir_biometric' fir.id %}" class="action-btn btn-info">
+                                    <i class="fas fa-fingerprint"></i> Biometric
+                                </a>
+                                {% endif %}
+                                {% if fir.investigating_officer == request.user or request.user.is_superuser %}
+                                <a href="{% url 'crimes:add_investigation_update' fir.id %}" class="action-btn btn-success">
+                                    <i class="fas fa-clipboard-check"></i> Update
+                                </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+        <div class="pagination-wrapper">
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" title="First Page">
+                        <i class="fas fa-angle-double-left"></i>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" title="Previous">
+                        <i class="fas fa-angle-left"></i>
+                    </a>
+                </li>
+                {% endif %}
+                
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ num }}</span>
+                    </li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                            {{ num }}
+                        </a>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" title="Next">
+                        <i class="fas fa-angle-right"></i>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% for key,value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" title="Last Page">
+                        <i class="fas fa-angle-double-right"></i>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+        {% endif %}
+        
+        <!-- Footer Statistics -->
+        <div class="stats-footer">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value primary">{{ firs.count }}</div>
+                    <div class="stat-label">Displayed</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value warning">{{ investigation_count }}</div>
+                    <div class="stat-label">Under Investigation</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value success">{{ registered_count }}</div>
+                    <div class="stat-label">Registered</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value danger">{{ pending_biometric }}</div>
+                    <div class="stat-label">Pending Biometric</div>
+                </div>
+            </div>
+        </div>
+        
+        {% else %}
+        <!-- Empty State -->
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="fas fa-file-alt"></i>
+            </div>
+            <h4>No FIRs Found</h4>
+            <p>
+                {% if request.GET %}
+                No FIRs match your search criteria. Please try different filters.
+                {% else %}
+                No FIRs have been registered yet in the system.
+                {% endif %}
+            </p>
+            <div class="empty-state-actions">
+                <a href="{% url 'crimes:fir_create' %}" class="empty-state-btn">
+                    <i class="fas fa-plus-circle"></i> Register First FIR
+                </a>
+                {% if request.GET %}
+                <a href="{% url 'crimes:fir_list' %}" class="empty-state-btn secondary">
+                    <i class="fas fa-redo"></i> Clear Filters
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </section>
+</div>
+
+{% endblock %}

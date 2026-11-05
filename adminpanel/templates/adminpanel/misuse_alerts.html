@@ -1,0 +1,339 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    :root {
+        --police-blue: #0b1f3a;
+        --police-blue-dark: #08162b;
+        --police-gold: #c9a227;
+
+        --danger: #7f1d1d;
+        --warning: #92400e;
+
+        --border: #d1d5db;
+        --bg-light: #f1f5f9;
+
+        --text-dark: #111827;
+        --text-muted: #6b7280;
+    }
+
+    body {
+        background: var(--bg-light);
+        font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+    }
+
+    .alerts-container {
+        min-height: 90vh;
+        padding: 2.5rem 1rem;
+    }
+
+    .alerts-wrapper {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    /* ===== HEADER ===== */
+    .alerts-header {
+        background: white;
+        border: 1px solid var(--border);
+        border-left: 10px solid var(--danger);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+    }
+
+    .header-title h2 {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--danger);
+        margin-bottom: 0.25rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .header-subtitle {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+
+    .back-btn {
+        background: white;
+        border: 1px solid var(--police-blue);
+        color: var(--police-blue);
+        padding: 0.6rem 1.25rem;
+        font-size: 0.8rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        text-decoration: none;
+        letter-spacing: 0.5px;
+    }
+
+    .back-btn:hover {
+        background: var(--police-blue);
+        color: white;
+    }
+
+    /* ===== STATS ===== */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    .stat-card {
+        border: 1px solid var(--border);
+        padding: 1rem;
+        background: #f9fafb;
+    }
+
+    .stat-label {
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-muted);
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--danger);
+    }
+
+    /* ===== ALERT LIST ===== */
+    .alerts-content {
+        background: white;
+        border: 1px solid var(--border);
+    }
+
+    .alerts-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .alert-item {
+        display: flex;
+        gap: 1.25rem;
+        align-items: center;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .alert-item:last-child {
+        border-bottom: none;
+    }
+
+    .alert-item-icon {
+        width: 48px;
+        height: 48px;
+        background: var(--danger);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 1.1rem;
+    }
+
+    .alert-item-content {
+        flex: 1;
+    }
+
+    .alert-username {
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--text-dark);
+        margin-bottom: 0.25rem;
+    }
+
+    .alert-description {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        line-height: 1.4;
+    }
+
+    .severity-indicator {
+        display: inline-block;
+        margin-top: 0.4rem;
+        padding: 0.2rem 0.6rem;
+        font-size: 0.65rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border: 1px solid var(--danger);
+        color: var(--danger);
+        background: #fef2f2;
+    }
+
+    .alert-count {
+        min-width: 70px;
+        text-align: center;
+        font-size: 1.3rem;
+        font-weight: 800;
+        color: var(--danger);
+    }
+
+    .alert-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .action-btn {
+        padding: 0.4rem 0.75rem;
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        border: 1px solid var(--border);
+        background: white;
+        cursor: pointer;
+        letter-spacing: 0.5px;
+    }
+
+    .action-btn:hover {
+        background: var(--police-blue);
+        color: white;
+        border-color: var(--police-blue);
+    }
+
+    /* ===== NO ALERTS ===== */
+    .no-alerts-container {
+        padding: 3rem 2rem;
+        text-align: center;
+    }
+
+    .no-alerts-title {
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: var(--police-blue);
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+    }
+
+    .no-alerts-text {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        max-width: 500px;
+        margin: 0 auto;
+        line-height: 1.5;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+        .header-content {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .alert-item {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .alert-actions {
+            margin-top: 0.5rem;
+        }
+    }
+</style>
+
+
+<div class="alerts-container">
+    <div class="alerts-wrapper">
+        <div class="alerts-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="alert-icon-wrapper">🚨</div>
+                    <div class="header-title">
+                        <h2>Misuse Alerts</h2>
+                        <p class="header-subtitle">System-wide suspicious activity monitoring</p>
+                    </div>
+                </div>
+                <a href="{% url 'admin_dashboard' %}" class="back-btn">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Back to Dashboard
+                </a>
+            </div>
+
+            {% if alerts %}
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Alerts</div>
+                    <div class="stat-value">{{ alerts|length }}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Rejections</div>
+                    <div class="stat-value">
+                        {% widthratio alerts|length 1 1 %}+
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Alert Status</div>
+                    <div class="stat-value">Active</div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="alerts-content">
+            {% if alerts %}
+                <ul class="alerts-list">
+                    {% for a in alerts %}
+                        <li class="alert-item">
+                            <div class="alert-item-icon">⚠️</div>
+                            <div class="alert-item-content">
+                                <div class="alert-username">{{ a.actor__username }}</div>
+                                <div class="alert-description">
+                                    Rejected multiple complaints in suspicious pattern
+                                    <span class="severity-indicator severity-high">
+                                        🔥 High Priority
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="alert-count">{{ a.count }}</div>
+                            <div class="alert-actions">
+                                <button class="action-btn">View Details</button>
+                                <button class="action-btn">Investigate</button>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <div class="no-alerts-container">
+                    <div class="no-alerts-icon">✅</div>
+                    <h3 class="no-alerts-title">All Clear!</h3>
+                    <p class="no-alerts-text">
+                        No suspicious activity detected. Your system is operating normally with no misuse alerts at this time.
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    // Action button handlers
+    document.querySelectorAll('.action-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const action = this.textContent.trim();
+            const username = this.closest('.alert-item').querySelector('.alert-username').textContent;
+            
+            if (action === 'View Details') {
+                alert(`Viewing detailed activity for ${username}`);
+            } else if (action === 'Investigate') {
+                alert(`Opening investigation panel for ${username}`);
+            }
+        });
+    });
+</script>
+
+{% endblock %}

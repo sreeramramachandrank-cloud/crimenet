@@ -1,0 +1,642 @@
+{% extends 'crimes/base.html' %}
+
+
+{% block title %}Add Evidence - FIR {{ fir.fir_number }} - CrimeNET{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <div>
+        <h1 class="h2">Add Evidence</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'crimes:dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'crimes:fir_detail' fir.id %}">FIR {{ fir.fir_number }}</a></li>
+                <li class="breadcrumb-item active">Add Evidence</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'crimes:fir_detail' fir.id %}" class="btn btn-sm btn-outline-secondary me-2">
+            <i class="fas fa-arrow-left"></i> Back to FIR
+        </a>
+        <a href="{% url 'crimes:dashboard' %}" class="btn btn-sm btn-police">
+            <i class="fas fa-home"></i> Dashboard
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Evidence Details for FIR: {{ fir.fir_number }}</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" id="evidenceForm">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.evidence_type.id_for_label }}" class="form-label required-field">Evidence Type</label>
+                                {{ form.evidence_type }}
+                                {% if form.evidence_type.errors %}
+                                <div class="text-danger">{{ form.evidence_type.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.collected_date.id_for_label }}" class="form-label required-field">Collection Date & Time</label>
+                                {{ form.collected_date }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.description.id_for_label }}" class="form-label required-field">Description</label>
+                        {{ form.description }}
+                        <div class="form-text">Detailed description of the evidence</div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.evidence_bag_number.id_for_label }}" class="form-label">Evidence Bag Number</label>
+                                {{ form.evidence_bag_number }}
+                                <div class="form-text">Leave blank for auto-generation</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Collected By</label>
+                                <select class="form-select" name="collected_by">
+                                    <option value="{{ user.id }}">{{ user.get_full_name }} (Current User)</option>
+                                    <!-- Other officers would be populated here -->
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.evidence_file.id_for_label }}" class="form-label">Evidence File/Photo</label>
+                        {{ form.evidence_file }}
+                        <div class="form-text">Upload photo, document, or other file related to evidence</div>
+                    </div>
+                    
+                    <!-- Chain of Custody -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h6 class="mb-0">Chain of Custody</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Storage Location</label>
+                                        <input type="text" class="form-control" name="storage_location" placeholder="e.g., Evidence Room A, Locker 5">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Custodian</label>
+                                        <input type="text" class="form-control" name="custodian" value="{{ user.get_full_name }}">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-check mb-3">
+                                {{ form.sent_to_fsl }}
+                                <label class="form-check-label" for="{{ form.sent_to_fsl.id_for_label }}">
+                                    Sent to Forensic Science Laboratory
+                                </label>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">FSL Reference Number</label>
+                                        <input type="text" class="form-control" name="fsl_reference" disabled>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">FSL Report Date</label>
+                                        <input type="date" class="form-control" name="fsl_report_date" disabled>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Evidence Details Based on Type -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h6 class="mb-0">Type-Specific Details</h6>
+                        </div>
+                        <div class="card-body">
+                            <div id="weaponDetails" class="evidence-details d-none">
+                                <h6>Weapon Details</h6>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label class="form-label">Weapon Type</label>
+                                            <select class="form-select" name="weapon_type">
+                                                <option value="">Select Type</option>
+                                                <option value="FIREARM">Firearm</option>
+                                                <option value="KNIFE">Knife</option>
+                                                <option value="BLUNT">Blunt Object</option>
+                                                <option value="OTHER">Other</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label class="form-label">Make/Model</label>
+                                            <input type="text" class="form-control" name="weapon_make">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label class="form-label">Serial Number</label>
+                                            <input type="text" class="form-control" name="weapon_serial">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div id="documentDetails" class="evidence-details d-none">
+                                <h6>Document Details</h6>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Document Type</label>
+                                            <select class="form-select" name="document_type">
+                                                <option value="">Select Type</option>
+                                                <option value="ID">ID Proof</option>
+                                                <option value="FINANCIAL">Financial Document</option>
+                                                <option value="COMMUNICATION">Communication</option>
+                                                <option value="OTHER">Other</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Issuing Authority</label>
+                                            <input type="text" class="form-control" name="issuing_authority">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div id="mediaDetails" class="evidence-details d-none">
+                                <h6>Media Details</h6>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Media Type</label>
+                                            <select class="form-select" name="media_type">
+                                                <option value="">Select Type</option>
+                                                <option value="PHOTO">Photograph</option>
+                                                <option value="VIDEO">Video Recording</option>
+                                                <option value="AUDIO">Audio Recording</option>
+                                                <option value="CCTV">CCTV Footage</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Source</label>
+                                            <input type="text" class="form-control" name="media_source" placeholder="e.g., Mobile phone, CCTV camera">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Timestamp in Media</label>
+                                    <input type="text" class="form-control" name="media_timestamp" placeholder="e.g., 00:12:34 - 00:15:20">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="fas fa-save"></i> Save Evidence Record
+                        </button>
+                        <button type="reset" class="btn btn-outline-secondary">
+                            <i class="fas fa-redo"></i> Reset Form
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <!-- Evidence Guidelines -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="fas fa-clipboard-check"></i> Evidence Handling Guidelines</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Use gloves when handling evidence
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Place in proper evidence bags
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Label with unique evidence number
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Maintain chain of custody
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Store in secure evidence room
+                    </li>
+                    <li>
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Document all transfers
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Evidence Types Reference -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="fas fa-info-circle"></i> Evidence Types</h6>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item">
+                        <strong>WEAPON</strong><br>
+                        <small>Knives, firearms, blunt objects</small>
+                    </div>
+                    <div class="list-group-item">
+                        <strong>DOCUMENT</strong><br>
+                        <small>Letters, IDs, financial records</small>
+                    </div>
+                    <div class="list-group-item">
+                        <strong>PHOTO/VIDEO</strong><br>
+                        <small>Digital images, CCTV footage</small>
+                    </div>
+                    <div class="list-group-item">
+                        <strong>CLOTHING</strong><br>
+                        <small>Blood-stained clothes, fibers</small>
+                    </div>
+                    <div class="list-group-item">
+                        <strong>BIOLOGICAL</strong><br>
+                        <small>Blood, hair, DNA samples</small>
+                    </div>
+                    <div class="list-group-item">
+                        <strong>DIGITAL</strong><br>
+                        <small>Phones, computers, storage devices</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Existing Evidence -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">Existing Evidence ({{ fir.evidences.count }})</h6>
+            </div>
+            <div class="card-body">
+                {% if fir.evidences.exists %}
+                <div class="list-group list-group-flush">
+                    {% for evidence in fir.evidences.all|slice:":5" %}
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <strong>{{ evidence.get_evidence_type_display }}</strong>
+                            <small class="text-muted">{{ evidence.collected_date|date:"d/m" }}</small>
+                        </div>
+                        <small>{{ evidence.description|truncatechars:30 }}</small>
+                    </div>
+                    {% endfor %}
+                </div>
+                <a href="{% url 'crimes:fir_detail' fir.id %}#investigation" class="btn btn-sm btn-outline-primary w-100 mt-3">
+                    View All Evidence
+                </a>
+                {% else %}
+                <div class="text-center text-muted py-3">
+                    <i class="fas fa-box-open fa-3x mb-2"></i>
+                    <p>No evidence collected yet</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Show/hide type-specific details
+        $('#id_evidence_type').change(function() {
+            const type = $(this).val();
+            
+            // Hide all detail sections
+            $('.evidence-details').addClass('d-none');
+            
+            // Show relevant section
+            if (type === 'WEAPON') {
+                $('#weaponDetails').removeClass('d-none');
+            } else if (type === 'DOCUMENT') {
+                $('#documentDetails').removeClass('d-none');
+            } else if (['PHOTO', 'VIDEO', 'AUDIO'].includes(type)) {
+                $('#mediaDetails').removeClass('d-none');
+            }
+        });
+        
+        // Enable/disable FSL fields
+        $('#id_sent_to_fsl').change(function() {
+            if (this.checked) {
+                $('input[name="fsl_reference"], input[name="fsl_report_date"]').prop('disabled', false);
+            } else {
+                $('input[name="fsl_reference"], input[name="fsl_report_date"]').prop('disabled', true).val('');
+            }
+        });
+        
+        // Auto-generate evidence bag number if empty
+        $('#id_evidence_bag_number').on('blur', function() {
+            if (!$(this).val()) {
+                const firNumber = '{{ fir.fir_number }}'.replace(/\//g, '-');
+                const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+                const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+                $(this).val(`EVD-${firNumber}-${date}-${random}`);
+            }
+        });
+        
+        // Set default collection date to now
+        if (!$('#id_collected_date').val()) {
+            const now = new Date();
+            const localDateTime = now.toISOString().slice(0, 16);
+            $('#id_collected_date').val(localDateTime);
+        }
+        
+        // Form validation
+        $('#evidenceForm').on('submit', function(e) {
+            const evidenceType = $('#id_evidence_type').val();
+            const description = $('#id_description').val().trim();
+            const collectedDate = $('#id_collected_date').val();
+            
+            let isValid = true;
+            
+            if (!evidenceType) {
+                alert('Please select evidence type.');
+                $('#id_evidence_type').focus();
+                isValid = false;
+            } else if (!description) {
+                alert('Please enter evidence description.');
+                $('#id_description').focus();
+                isValid = false;
+            } else if (!collectedDate) {
+                alert('Please enter collection date and time.');
+                $('#id_collected_date').focus();
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Show loading state
+            $(this).find('button[type="submit"]').prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...');
+        });
+        
+        // File preview
+        $('#id_evidence_file').change(function() {
+            const file = this.files[0];
+            if (file) {
+                const fileSize = file.size / 1024 / 1024; // in MB
+                if (fileSize > 10) {
+                    alert('File size should not exceed 10MB.');
+                    $(this).val('');
+                }
+                
+                // Show file info
+                const fileName = file.name;
+                const fileType = file.type;
+                console.log(`File selected: ${fileName} (${fileType}, ${fileSize.toFixed(2)}MB)`);
+            }
+        });
+    });
+</script>
+
+<style>
+/* ===============================
+   POLICE THEME VARIABLES
+================================ */
+:root {
+    --police-dark: #0b1f3a;
+    --police-primary: #003366;
+    --police-accent: #1e40af;
+    --police-light: #f1f5f9;
+    --police-border: #cbd5e1;
+
+    --success: #166534;
+    --warning: #92400e;
+    --danger: #7f1d1d;
+    --info: #1e3a8a;
+}
+
+/* ===============================
+   HEADINGS
+================================ */
+h1, h2, h5, h6 {
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: var(--police-primary);
+}
+
+/* ===============================
+   CARDS
+================================ */
+.card {
+    background: #ffffff;
+    border: 1px solid var(--police-border);
+    border-radius: 6px;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+}
+
+.card-header {
+    background: linear-gradient(90deg, var(--police-dark), var(--police-primary));
+    color: #ffffff;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--police-accent);
+}
+
+/* ===============================
+   FORMS
+================================ */
+.form-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: #0f172a;
+}
+
+.form-control,
+.form-select {
+    font-size: 0.85rem;
+    border-radius: 5px;
+    border: 1px solid var(--police-border);
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--police-primary);
+    box-shadow: 0 0 0 0.15rem rgba(0,51,102,0.25);
+}
+
+/* Required Field */
+.required-field::after {
+    content: " *";
+    color: #b91c1c;
+}
+
+/* ===============================
+   CHECKBOX / SWITCH
+================================ */
+.form-check-input:checked {
+    background-color: var(--police-primary);
+    border-color: var(--police-primary);
+}
+
+/* ===============================
+   BUTTONS
+================================ */
+.btn-police {
+    background: var(--police-primary);
+    color: #ffffff;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    border: none;
+}
+
+.btn-police:hover {
+    background: var(--police-accent);
+    color: #ffffff;
+}
+
+.btn-success {
+    background: var(--success);
+    border-color: var(--success);
+    font-weight: 700;
+}
+
+.btn-success:hover {
+    background: #14532d;
+}
+
+/* ===============================
+   EVIDENCE DETAILS ANIMATION
+================================ */
+.evidence-details {
+    animation: fadeIn 0.35s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===============================
+   LIST GROUPS
+================================ */
+.list-group-item {
+    border-left: none;
+    border-right: none;
+    padding: 0.7rem 0;
+    font-size: 0.85rem;
+}
+
+.list-group-item strong {
+    color: var(--police-primary);
+}
+
+.list-group-item:first-child {
+    border-top: none;
+}
+
+.list-group-item:last-child {
+    border-bottom: none;
+}
+
+/* ===============================
+   GUIDELINES / INFO
+================================ */
+.list-unstyled li {
+    font-size: 0.85rem;
+}
+
+/* ===============================
+   ALERTS
+================================ */
+.alert {
+    font-size: 0.85rem;
+    border-radius: 4px;
+}
+
+.alert-info {
+    background: #e0f2fe;
+    border-left: 5px solid var(--info);
+}
+
+.alert-warning {
+    background: #fff7ed;
+    border-left: 5px solid var(--warning);
+}
+
+.alert-danger {
+    background: #fef2f2;
+    border-left: 5px solid var(--danger);
+}
+
+/* ===============================
+   BADGES
+================================ */
+.badge {
+    font-weight: 800;
+    letter-spacing: 0.4px;
+}
+
+/* ===============================
+   FILE INPUT
+================================ */
+input[type="file"] {
+    font-size: 0.8rem;
+}
+
+/* ===============================
+   MOBILE OPTIMIZATION
+================================ */
+@media (max-width: 768px) {
+    h1.h2 {
+        font-size: 1.4rem;
+    }
+}
+</style>
+
+{% endblock %}
+{% endblock %}

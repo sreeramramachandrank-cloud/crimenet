@@ -1,0 +1,625 @@
+{% extends 'crimes/base.html' %}
+
+
+{% block title %}Add Criminal Record - CrimeNET{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Add Criminal Record</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'crimes:criminal_list' %}" class="btn btn-sm btn-outline-secondary me-2">
+            <i class="fas fa-arrow-left"></i> Back to List
+        </a>
+        <a href="{% url 'crimes:dashboard' %}" class="btn btn-sm btn-police">
+            <i class="fas fa-home"></i> Dashboard
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Criminal Information</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" id="criminalForm">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.name.id_for_label }}" class="form-label required-field">Full Name</label>
+                                {{ form.name }}
+                                {% if form.name.errors %}
+                                <div class="text-danger">{{ form.name.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.alias.id_for_label }}" class="form-label">Alias / Also Known As</label>
+                                {{ form.alias }}
+                                <div class="form-text">Separate multiple aliases with commas</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.father_name.id_for_label }}" class="form-label required-field">Father's Name</label>
+                                {{ form.father_name }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.aadhaar_number.id_for_label }}" class="form-label">Aadhaar Number</label>
+                                {{ form.aadhaar_number }}
+                                <div class="form-text">12-digit Aadhaar number (optional)</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.permanent_address.id_for_label }}" class="form-label">Permanent Address</label>
+                        {{ form.permanent_address }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.distinguishing_marks.id_for_label }}" class="form-label">Distinguishing Marks</label>
+                        {{ form.distinguishing_marks }}
+                        <div class="form-text">Scars, tattoos, birthmarks, etc.</div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Criminal Photo</label>
+                                {{ form.front_photo }}
+                                <div class="form-text">Clear front-facing photo of the criminal</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="text-center">
+                                <div class="photo-frame p-3">
+                                    <img id="photoPreview" src="#" alt="Photo Preview" class="img-fluid rounded d-none" style="max-height: 150px;">
+                                    <div id="noPhoto" class="text-muted">
+                                        <i class="fas fa-user fa-3x"></i>
+                                        <p class="mt-2">Photo preview will appear here</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-check form-switch mb-3">
+                                {{ form.is_active }}
+                                <label class="form-check-label" for="{{ form.is_active.id_for_label }}">
+                                    Active Criminal
+                                </label>
+                                <div class="form-text">Mark if criminal is currently active</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check form-switch mb-3">
+                                {{ form.is_wanted }}
+                                <label class="form-check-label" for="{{ form.is_wanted.id_for_label }}">
+                                    Currently Wanted
+                                </label>
+                                <div class="form-text">Mark if criminal is currently wanted</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Additional Fields (Collapsible) -->
+                    <div class="accordion mb-4" id="additionalFields">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+                                    <i class="fas fa-plus-circle me-2"></i> Additional Information
+                                </button>
+                            </h2>
+                            <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#additionalFields">
+                                <div class="accordion-body">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label class="form-label">Date of Birth</label>
+                                                <input type="date" class="form-control" name="dob">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label class="form-label">Gender</label>
+                                                <select class="form-select" name="gender">
+                                                    <option value="">Select</option>
+                                                    <option value="MALE">Male</option>
+                                                    <option value="FEMALE">Female</option>
+                                                    <option value="OTHER">Other</option>
+                                                    <option value="TRANSGENDER">Transgender</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label class="form-label">Height (cm)</label>
+                                                <input type="number" class="form-control" name="height" min="100" max="250">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label class="form-label">Complexion</label>
+                                                <select class="form-select" name="complexion">
+                                                    <option value="">Select</option>
+                                                    <option value="FAIR">Fair</option>
+                                                    <option value="WHEATISH">Wheatish</option>
+                                                    <option value="DARK">Dark</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label class="form-label">Build</label>
+                                                <select class="form-select" name="build">
+                                                    <option value="">Select</option>
+                                                    <option value="SLIM">Slim</option>
+                                                    <option value="MEDIUM">Medium</option>
+                                                    <option value="HEAVY">Heavy</option>
+                                                    <option value="ATHLETIC">Athletic</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="mb-3">
+                                                <label class="form-label">Hair Color</label>
+                                                <select class="form-select" name="hair_color">
+                                                    <option value="">Select</option>
+                                                    <option value="BLACK">Black</option>
+                                                    <option value="BROWN">Brown</option>
+                                                    <option value="BLONDE">Blonde</option>
+                                                    <option value="RED">Red</option>
+                                                    <option value="GREY">Grey</option>
+                                                    <option value="BALD">Bald</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Previous Crimes</label>
+                                        <textarea class="form-control" name="previous_crimes" rows="3" placeholder="List previous crimes, case numbers, dates..."></textarea>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Modus Operandi</label>
+                                        <textarea class="form-control" name="modus_operandi" rows="3" placeholder="Criminal's typical method of operation..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="fas fa-save"></i> Save Criminal Record
+                        </button>
+                        <button type="reset" class="btn btn-outline-secondary">
+                            <i class="fas fa-redo"></i> Reset Form
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <!-- Criminal ID Preview -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">Criminal ID Preview</h6>
+            </div>
+            <div class="card-body text-center">
+                <div class="criminal-id-card bg-light p-4 rounded">
+                    <div class="mb-3">
+                        <div id="idPhotoPreview" class="mx-auto" style="width: 100px; height: 120px; background-color: #dee2e6; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-user fa-2x text-muted"></i>
+                        </div>
+                    </div>
+                    <h5 id="previewName">[Name]</h5>
+                    <small class="text-muted" id="previewId">ID: [Auto Generated]</small>
+                    <div class="mt-3">
+                        <span class="badge bg-danger d-none" id="wantedBadge">WANTED</span>
+                        <span class="badge bg-success d-none" id="activeBadge">ACTIVE</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Tips -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="fas fa-lightbulb"></i> Data Entry Tips</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Enter full name as per official documents
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Include all known aliases
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Clear, front-facing photo is essential for biometric matching
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Detailed distinguishing marks help in identification
+                    </li>
+                    <li>
+                        <i class="fas fa-check text-success me-2"></i>
+                        Mark as "Wanted" if criminal is currently at large
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Similar Criminals Check -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="fas fa-search"></i> Check for Similar Records</h6>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Check if similar criminal records already exist in the database.</p>
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-outline-primary" onclick="checkSimilar()">
+                        <i class="fas fa-search"></i> Check by Name
+                    </button>
+                    <button type="button" class="btn btn-outline-success" onclick="checkAadhaar()">
+                        <i class="fas fa-id-card"></i> Check by Aadhaar
+                    </button>
+                </div>
+                <div id="similarResults" class="mt-3 d-none">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Potential Match Found</strong>
+                        <div id="matchDetails" class="mt-2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Photo preview
+        $('#id_front_photo').change(function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#photoPreview').attr('src', e.target.result).removeClass('d-none');
+                    $('#idPhotoPreview').html(`<img src="${e.target.result}" class="img-fluid rounded" style="width: 100px; height: 120px; object-fit: cover;">`);
+                    $('#noPhoto').addClass('d-none');
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // Update preview on input changes
+        $('#id_name').on('input', function() {
+            $('#previewName').text($(this).val() || '[Name]');
+        });
+        
+        $('#id_is_wanted').change(function() {
+            if (this.checked) {
+                $('#wantedBadge').removeClass('d-none');
+            } else {
+                $('#wantedBadge').addClass('d-none');
+            }
+        });
+        
+        $('#id_is_active').change(function() {
+            if (this.checked) {
+                $('#activeBadge').removeClass('d-none');
+            } else {
+                $('#activeBadge').addClass('d-none');
+            }
+        });
+        
+        // Form validation
+        $('#criminalForm').on('submit', function(e) {
+            const name = $('#id_name').val().trim();
+            const fatherName = $('#id_father_name').val().trim();
+            
+            if (!name) {
+                alert('Please enter the criminal\'s name.');
+                $('#id_name').focus();
+                e.preventDefault();
+                return false;
+            }
+            
+            if (!fatherName) {
+                alert('Please enter the father\'s name.');
+                $('#id_father_name').focus();
+                e.preventDefault();
+                return false;
+            }
+            
+            // Show loading state
+            $(this).find('button[type="submit"]').prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...');
+        });
+    });
+    
+    function checkSimilar() {
+        const name = $('#id_name').val().trim();
+        if (!name) {
+            alert('Please enter a name first.');
+            return;
+        }
+        
+        $('#similarResults').addClass('d-none');
+        
+        // Simulate AJAX call
+        setTimeout(() => {
+            // This would be an actual AJAX call in production
+            $('#matchDetails').html(`
+                <p><strong>Name:</strong> ${name}</p>
+                <p><strong>Found 3 similar records:</strong></p>
+                <ul>
+                    <li>CRIM-00123 - John Doe (85% match)</li>
+                    <li>CRIM-00456 - Jonathan Doe (78% match)</li>
+                    <li>CRIM-00789 - J. Doe (65% match)</li>
+                </ul>
+                <p class="mb-0">Please review before proceeding.</p>
+            `);
+            $('#similarResults').removeClass('d-none');
+        }, 1000);
+    }
+    
+    function checkAadhaar() {
+        const aadhaar = $('#id_aadhaar_number').val().trim();
+        if (!aadhaar) {
+            alert('Please enter Aadhaar number first.');
+            return;
+        }
+        
+        if (aadhaar.length !== 12) {
+            alert('Please enter valid 12-digit Aadhaar number.');
+            return;
+        }
+        
+        $('#similarResults').addClass('d-none');
+        
+        // Simulate AJAX call
+        setTimeout(() => {
+            // This would be an actual AJAX call in production
+            $('#matchDetails').html(`
+                <p><strong>Aadhaar:</strong> ${aadhaar}</p>
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <strong>Exact match found!</strong>
+                    <p class="mb-0">Criminal record already exists with this Aadhaar number: CRIM-00345</p>
+                </div>
+            `);
+            $('#similarResults').removeClass('d-none');
+        }, 1000);
+    }
+</script>
+
+<style>
+/* ===============================
+   POLICE DESIGN SYSTEM
+================================ */
+:root {
+    --police-dark: #0b1f3a;
+    --police-primary: #003366;
+    --police-accent: #1e40af;
+    --police-light: #f1f5f9;
+    --police-border: #cbd5e1;
+
+    --success: #166534;
+    --warning: #92400e;
+    --danger: #7f1d1d;
+    --info: #1e3a8a;
+}
+
+/* ===============================
+   HEADINGS
+================================ */
+h1, h2, h5, h6 {
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--police-primary);
+}
+
+/* ===============================
+   CARDS
+================================ */
+.card {
+    border: 1px solid var(--police-border);
+    border-radius: 6px;
+    background: #ffffff;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+}
+
+.card-header {
+    background: linear-gradient(90deg, var(--police-dark), var(--police-primary));
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--police-accent);
+}
+
+/* ===============================
+   FORMS
+================================ */
+.form-label {
+    font-weight: 700;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: #0f172a;
+}
+
+.form-control,
+.form-select {
+    border-radius: 5px;
+    border: 1px solid var(--police-border);
+    font-size: 0.85rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--police-primary);
+    box-shadow: 0 0 0 0.15rem rgba(0,51,102,0.25);
+}
+
+/* Required Field */
+.required-field::after {
+    content: " *";
+    color: #b91c1c;
+}
+
+/* ===============================
+   PHOTO FRAME
+================================ */
+.photo-frame {
+    border: 2px dashed var(--police-border);
+    border-radius: 6px;
+    background: #f8fafc;
+}
+
+/* ===============================
+   BUTTONS
+================================ */
+.btn-police {
+    background: var(--police-primary);
+    color: #ffffff;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    border: none;
+}
+
+.btn-police:hover {
+    background: var(--police-accent);
+    color: #ffffff;
+}
+
+.btn-success {
+    font-weight: 700;
+    letter-spacing: 0.4px;
+}
+
+/* ===============================
+   ACCORDION
+================================ */
+.accordion-button {
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+}
+
+.accordion-button:not(.collapsed) {
+    background: #e6efff;
+    color: var(--police-primary);
+}
+
+.accordion-button:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0,51,102,0.25);
+}
+
+/* ===============================
+   CRIMINAL ID CARD
+================================ */
+.criminal-id-card {
+    border: 2px solid var(--police-primary);
+    background: #f8fafc;
+    position: relative;
+}
+
+.criminal-id-card::before {
+    content: "CRIMINAL RECORD";
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--police-primary);
+    color: #ffffff;
+    padding: 3px 12px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+}
+
+/* ===============================
+   BADGES
+================================ */
+.badge {
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.badge.bg-danger {
+    background: #7f1d1d !important;
+}
+
+.badge.bg-success {
+    background: #166534 !important;
+}
+
+/* ===============================
+   SWITCHES
+================================ */
+.form-check-input:checked {
+    background-color: var(--police-primary);
+    border-color: var(--police-primary);
+}
+
+/* ===============================
+   LISTS / TIPS
+================================ */
+.list-unstyled li {
+    font-size: 0.85rem;
+}
+
+/* ===============================
+   ALERTS
+================================ */
+.alert-warning {
+    background: #fff7ed;
+    border-left: 5px solid var(--warning);
+}
+
+.alert-danger {
+    background: #fef2f2;
+    border-left: 5px solid var(--danger);
+}
+
+/* ===============================
+   MOBILE
+================================ */
+@media (max-width: 768px) {
+    h1.h2 {
+        font-size: 1.4rem;
+    }
+}
+</style>
+
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,789 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    /* Police/Law Enforcement Theme */
+    :root {
+        --police-blue: #1e3a8a;
+        --police-dark-blue: #172554;
+        --police-light-blue: #3b82f6;
+        --police-gold: #f59e0b;
+        --police-silver: #9ca3af;
+        --police-red: #dc2626;
+        --police-green: #10b981;
+        --police-gray: #374151;
+        --police-light-gray: #f3f4f6;
+    }
+
+    .dashboard-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 1rem;
+        background: #f8fafc;
+        min-height: calc(100vh - 200px);
+    }
+
+    /* Official Header */
+    .dashboard-header {
+        background: linear-gradient(135deg, var(--police-dark-blue) 0%, var(--police-blue) 100%);
+        padding: 2rem;
+        border-radius: 8px;
+        color: white;
+        margin-bottom: 1.5rem;
+        border-bottom: 4px solid var(--police-gold);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .dashboard-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 10px,
+            var(--police-gold) 10px,
+            var(--police-gold) 20px
+        );
+    }
+
+    .department-seal {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .seal-icon {
+        width: 70px;
+        height: 70px;
+        background: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 3px solid var(--police-gold);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .seal-icon i {
+        font-size: 2rem;
+        color: var(--police-blue);
+    }
+
+    .department-info h1 {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0;
+        letter-spacing: 0.5px;
+    }
+
+    .department-info .subtitle {
+        font-size: 0.9rem;
+        opacity: 0.9;
+        margin: 0.25rem 0 0 0;
+    }
+
+    .welcome-section {
+        border-top: 1px solid rgba(255, 255, 255, 0.2);
+        padding-top: 1rem;
+        margin-top: 1rem;
+    }
+
+    .welcome-section p {
+        margin: 0;
+        font-size: 1.05rem;
+        opacity: 0.95;
+    }
+
+    /* Security Banner */
+    .security-banner {
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        border: 2px solid var(--police-gold);
+        padding: 1rem 1.5rem;
+        margin-bottom: 1.5rem;
+        border-radius: 6px;
+        border-left: 6px solid var(--police-gold);
+    }
+
+    .security-banner h4 {
+        color: #92400e;
+        margin: 0 0 0.5rem 0;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .security-banner p {
+        color: #92400e;
+        margin: 0.5rem 0;
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+
+    /* Role Badge */
+    .role-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        background: var(--police-blue);
+        color: white;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border: 1px solid var(--police-gold);
+    }
+
+    /* Cards - Official Style */
+    .card {
+        background: white;
+        border: 1px solid #e5e7eb;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        border-left: 4px solid var(--police-blue);
+    }
+
+    .card:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transform: translateY(-1px);
+    }
+
+    .card h3 {
+        color: var(--police-blue);
+        font-size: 1.25rem;
+        margin-bottom: 1.25rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid #e5e7eb;
+    }
+
+    .card h3 i {
+        color: var(--police-gold);
+    }
+
+    /* Status Indicators */
+    .status-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-top: 1rem;
+    }
+
+    .status-pending {
+        background: #fef3c7;
+        color: #92400e;
+        border: 1px solid #f59e0b;
+    }
+
+    .status-approved {
+        background: #d1fae5;
+        color: #065f46;
+        border: 1px solid #10b981;
+    }
+
+    .status-warning {
+        background: #fee2e2;
+        color: #991b1b;
+        border: 1px solid #ef4444;
+        padding: 0.75rem 1rem;
+        border-radius: 4px;
+        margin-top: 1rem;
+        font-size: 0.85rem;
+    }
+
+    /* Navigation Lists */
+    .nav-list {
+        list-style: none;
+        padding: 0;
+        margin: 1rem 0;
+    }
+
+    .nav-list li {
+        margin-bottom: 0.5rem;
+    }
+
+    .nav-list a {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.875rem 1rem;
+        background: var(--police-light-gray);
+        border-radius: 4px;
+        color: var(--police-blue);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        border: 1px solid #e5e7eb;
+        transition: all 0.2s ease;
+    }
+
+    .nav-list a:hover {
+        background: #eff6ff;
+        border-color: var(--police-light-blue);
+        transform: translateX(2px);
+    }
+
+    .nav-list a i {
+        color: var(--police-gold);
+        width: 20px;
+        text-align: center;
+    }
+
+    /* Quick Stats - Official Style */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin: 1.5rem 0;
+    }
+
+    .stat-card {
+        background: white;
+        padding: 1.25rem;
+        border-radius: 6px;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .stat-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        background: var(--police-blue);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.25rem;
+        border: 2px solid var(--police-gold);
+    }
+
+    .stat-title {
+        color: var(--police-gray);
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin: 0;
+    }
+
+    .stat-value {
+        color: var(--police-blue);
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin: 0.25rem 0 0 0;
+    }
+
+    /* Recent Items */
+    .recent-section {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        margin-top: 1.5rem;
+        overflow: hidden;
+    }
+
+    .recent-header {
+        background: var(--police-light-gray);
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .recent-header h4 {
+        color: var(--police-blue);
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .recent-item {
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid #f3f4f6;
+        transition: background 0.2s ease;
+    }
+
+    .recent-item:hover {
+        background: #f8fafc;
+    }
+
+    .recent-item:last-child {
+        border-bottom: none;
+    }
+
+    .item-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .item-title {
+        color: var(--police-blue);
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+
+    .item-date {
+        color: var(--police-silver);
+        font-size: 0.85rem;
+    }
+
+    .item-meta {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.85rem;
+    }
+
+    .item-meta span {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        color: var(--police-gray);
+    }
+
+    .item-meta i {
+        color: var(--police-gold);
+    }
+
+    .view-btn {
+        padding: 0.25rem 0.75rem;
+        background: var(--police-blue);
+        color: white;
+        border-radius: 4px;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .view-btn:hover {
+        background: var(--police-dark-blue);
+    }
+
+    /* System Info Box */
+    .system-info {
+        background: #f0f9ff;
+        border: 1px solid #bae6fd;
+        border-left: 4px solid var(--police-blue);
+        padding: 1rem;
+        margin: 1rem 0;
+        border-radius: 4px;
+        font-size: 0.85rem;
+    }
+
+    .system-info p {
+        margin: 0.5rem 0;
+        color: #0369a1;
+    }
+
+    /* Logout Section */
+    .logout-section {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        border-left: 4px solid var(--police-red);
+        padding: 1.5rem;
+        margin-top: 2rem;
+        border-radius: 6px;
+        text-align: center;
+    }
+
+    .logout-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 2rem;
+        background: var(--police-red);
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: 700;
+        font-size: 1rem;
+        border: 1px solid #dc2626;
+        transition: all 0.2s ease;
+    }
+
+    .logout-btn:hover {
+        background: #b91c1c;
+        transform: translateY(-1px);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .dashboard-container {
+            padding: 0.5rem;
+        }
+
+        .dashboard-header {
+            padding: 1.25rem;
+        }
+
+        .department-seal {
+            flex-direction: column;
+            text-align: center;
+            gap: 1rem;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .card {
+            padding: 1.25rem;
+        }
+
+        .nav-list a {
+            padding: 0.75rem;
+        }
+    }
+
+    /* Role-specific card colors */
+    .card.citizen { border-left-color: #3b82f6; }
+    .card.officer { border-left-color: #1e3a8a; }
+    .card.investigator { border-left-color: #9184a9; }
+    .card.forensic { border-left-color: #ec4899; }
+    .card.judge { border-left-color: #f59e0b; }
+    .card.auditor { border-left-color: #10b981; }
+    .card.admin { border-left-color: #dc2626; }
+</style>
+
+<div class="dashboard-container">
+    <!-- Official Department Header -->
+    <div class="dashboard-header">
+        <div class="department-seal">
+            <div class="seal-icon">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <div class="department-info">
+                <h1>CRIMENET LAW ENFORCEMENT SYSTEM</h1>
+                <p class="subtitle">Secure Criminal Database Management System</p>
+            </div>
+        </div>
+        
+        <div class="welcome-section">
+            <p>Welcome back, <strong>{{ request.user.username }}</strong> | Access Level: <span class="role-badge">{{ role }}</span></p>
+        </div>
+    </div>
+
+    <!-- Security Notice -->
+    <div class="security-banner">
+        <h4><i class="fas fa-exclamation-triangle"></i> SECURITY NOTICE</h4>
+        <p>This system contains classified law enforcement information. All activities are monitored and logged. Unauthorized access is prohibited and subject to prosecution.</p>
+    </div>
+
+    <!-- User Status Card -->
+    <div class="card">
+        <h3><i class="fas fa-user-circle"></i> PERSONNEL INFORMATION</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+            <div>
+                <p style="margin: 0.5rem 0; color: var(--police-gray);">
+                    <strong style="color: var(--police-blue);">USERNAME:</strong> {{ request.user.username }}
+                </p>
+                <p style="margin: 0.5rem 0; color: var(--police-gray);">
+                    <strong style="color: var(--police-blue);">CURRENT ROLE:</strong>
+                    <span class="role-badge">{{ role }}</span>
+                </p>
+            </div>
+            <div>
+                {% if requested_role %}
+                    <div class="status-indicator status-pending">
+                        <i class="fas fa-clock"></i>
+                        <div>
+                            <strong>REQUESTED ROLE:</strong> {{ requested_role }}<br>
+                            <small>Status: Pending Approval</small>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="status-indicator status-approved">
+                        <i class="fas fa-check-circle"></i>
+                        <strong>ROLE STATUS: APPROVED</strong>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== CITIZEN PANEL ===================== -->
+    {% if role == "CITIZEN" and not requested_role %}
+    <div class="card citizen">
+        <h3><i class="fas fa-users"></i> CITIZEN HELPLINE SERVICES</h3>
+        <ul class="nav-list">
+            <li><a href="/complaints/new/"><i class="fas fa-file-alt"></i> Register New Complaint</a></li>
+            <li><a href="/complaints/mine/"><i class="fas fa-chart-bar"></i> Track My Complaints</a></li>
+            <li><a href="#"><i class="fas fa-gavel"></i> View Public Court Judgments</a></li>
+        </ul>
+        
+        <div class="system-info">
+            <p><i class="fas fa-check-circle"></i> This helpline allows citizens to submit complaints directly to authorities.</p>
+            <p><i class="fas fa-check-circle"></i> All actions are logged and reviewed to prevent favoritism or misuse.</p>
+        </div>
+        
+        <div class="status-warning">
+            <i class="fas fa-exclamation-circle"></i>
+            <strong>Citizens do NOT have access to crime databases, FIRs, or biometrics.</strong>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- ===================== OFFICER PANEL ===================== -->
+    {% if role == "OFFICER" %}
+    <div class="card officer">
+        <h3><i class="fas fa-badge"></i> OFFICER OPERATIONS PANEL</h3>
+        
+        <!-- Quick Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div>
+                        <h4 class="stat-title">FIRs Registered</h4>
+                        <p class="stat-value">{{ registered_firs|default:0 }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-fingerprint"></i>
+                    </div>
+                    <div>
+                        <h4 class="stat-title">Pending Biometric</h4>
+                        <p class="stat-value">{{ pending_verification|default:0 }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <div>
+                        <h4 class="stat-title">Investigating</h4>
+                        <p class="stat-value">{{ investigating_firs|default:0 }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div>
+                        <h4 class="stat-title">This Week</h4>
+                        <p class="stat-value">{{ weekly_firs|default:0 }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Operations Navigation -->
+        <ul class="nav-list">
+            <li><a href="/crimes/fir/create/"><i class="fas fa-plus-circle"></i> Register New FIR</a></li>
+            <li><a href="/crimes/fir/list/"><i class="fas fa-folder-open"></i> View All FIRs</a></li>
+            <li><a href="/crimes/fir/list/?biometric_status=NOT_CAPTURED"><i class="fas fa-fingerprint"></i> Pending Biometric ({{ pending_verification|default:0 }})</a></li>
+            <li><a href="/crimes/criminal/"><i class="fas fa-database"></i> Criminal Database</a></li>
+            <li><a href="/crimes/criminal/add/"><i class="fas fa-user-plus"></i> Add Criminal Record</a></li>
+            <li><a href="/crimes/reports/"><i class="fas fa-chart-pie"></i> Generate Reports</a></li>
+        </ul>
+        
+        <!-- Recent FIRs -->
+        {% if recent_firs %}
+        <div class="recent-section">
+            <div class="recent-header">
+                <h4><i class="fas fa-history"></i> RECENT FIRs</h4>
+            </div>
+            {% for fir in recent_firs|slice:":3" %}
+            <div class="recent-item">
+                <div class="item-header">
+                    <div>
+                        <div class="item-title">FIR #{{ fir.fir_number|default:"N/A" }}</div>
+                        <div class="item-date">{{ fir.date_registered|date:"d/m/Y H:i"|default:"N/A" }}</div>
+                    </div>
+                    <a href="/crimes/fir/{{ fir.pk }}/" class="view-btn">View</a>
+                </div>
+                <div class="item-meta">
+                    <span><i class="fas fa-user"></i> {{ fir.informant_name|default:"N/A" }}</span>
+                    <span><i class="fas fa-balance-scale"></i> {{ fir.crime_category.section|default:"N/A" }}</span>
+                    <span><i class="fas fa-map-marker-alt"></i> {{ fir.police_station.code|default:"N/A" }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <div class="system-info">
+            <p><i class="fas fa-exclamation-triangle"></i> All actions are logged and subject to audit.</p>
+            <p><i class="fas fa-file-contract"></i> Use FIR system for formal crime registration only.</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- ===================== INVESTIGATOR PANEL ===================== -->
+     {% if role == "INVESTIGATOR" %}
+    <div class="card investigator">
+        <h3><i class="fas fa-search"></i> INVESTIGATING OFFICER PANEL</h3>
+
+<ul class="nav-list">
+
+    <!-- <li>
+        <button type="button" onclick="showAllCrimeRecords()" class="nav-btn">
+            <i class="fas fa-folder"></i> All Crime Records
+        </button>
+    </li>
+
+    <li>
+        <button type="button" onclick="suspectAnalysis()" class="nav-btn">
+            <i class="fas fa-robot"></i> Suspect Analysis (AI Assisted)
+        </button>
+    </li>
+
+    <li>
+        <button type="button" onclick="timelineReconstruction()" class="nav-btn">
+            <i class="fas fa-timeline"></i> Timeline Reconstruction
+        </button>
+    </li>
+
+    <li>
+        <button type="button" onclick="interStateTransfer()" class="nav-btn">
+            <i class="fas fa-exchange-alt"></i> Inter-state Case Transfer
+        </button>
+    </li> -->
+
+    <li>
+        <a href="/complaints/police/">
+            <i class="fas fa-comment-alt"></i> Citizen Complaints (Escalated)
+        </a>
+    </li>
+
+</ul>
+
+
+        <div class="system-info">
+            <p><i class="fas fa-info-circle"></i> AI suggestions are advisory only.</p>
+            <p><i class="fas fa-clipboard-check"></i> All access is logged.</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- ===================== LOGOUT ===================== -->
+    <div class="logout-section">
+        <a href="{% url 'logout' %}" class="logout-btn">
+            <i class="fas fa-sign-out-alt"></i> SECURE LOGOUT
+        </a>
+    </div>
+
+</div>
+
+<!-- ===================== ✅ JAVASCRIPT (CORRECT PLACE) ===================== -->
+<script src="{% static 'js/dashboard.js' %}"></script>
+
+
+
+    <!-- ===================== OTHER ROLES ===================== -->
+    {% if role == "FORENSIC" %}
+    <div class="card forensic">
+        <h3><i class="fas fa-dna"></i> FORENSIC ANALYST PANEL</h3>
+        <ul class="nav-list">
+            <li><a href="/biometrics/analytics/"><i class="fas fa-chart-bar"></i> Forensic Analytics</a></li>
+            <li><a href="{% url 'crimes:forensic_upload' %}"><i class="fas fa-upload"></i> Upload DNA/Fingerprint Reports</a></li>
+            <li><a href="{% url 'crimes:forensic_biometric' %}"><i class="fas fa-fingerprint"></i> Biometric Matching (Warrant Required)</a></li>
+            <li><a href="{% url 'crimes:forensic_evidence' %}"><i class="fas fa-check-double"></i> Evidence Verification</a></li>
+        </ul>
+    </div>
+    {% endif %}
+
+    {% if role == "JUDGE" %}
+    <div class="card judge">
+        <h3><i class="fas fa-gavel"></i> JUDICIAL DASHBOARD</h3>
+        <ul class="nav-list">
+            <li><a href="{% url 'crimes:review_evidence_chain' %}"><i class="fas fa-file-contract"></i> Review Evidence & Chain of Custody</a></li>
+            <li><a href="{% url 'crimes:ai_match_explanations' %}"><i class="fas fa-robot"></i> View AI Match Explanations</a></li>
+            <li><a href="{% url 'crimes:authorize_warrants' %}"><i class="fas fa-file-signature"></i> Authorize Warrants</a></li>
+            <li><a href="{% url 'crimes:review_complaint_rejections' %}"><i class="fas fa-search-minus"></i> Review Complaint Rejections</a></li>
+        </ul>
+        <div class="system-info">
+            <p><i class="fas fa-chart-line"></i> AI confidence & error margins are clearly displayed.</p>
+            <p><i class="fas fa-clipboard-list"></i> Judicial audit access is enabled.</p>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if role == "AUDITOR" %}
+    <div class="card auditor">
+        <h3><i class="fas fa-clipboard-check"></i> JUDICIAL AUDIT PANEL</h3>
+        <ul class="nav-list">
+            <li><a href="#"><i class="fas fa-history"></i> System Access Logs</a></li>
+            <li><a href="#"><i class="fas fa-chart-line"></i> Complaint Rejection Patterns</a></li>
+            <li><a href="#"><i class="fas fa-shield-alt"></i> RBAC Policy Reviews</a></li>
+        </ul>
+        <div class="status-warning">
+            <i class="fas fa-eye"></i>
+            <strong>READ-ONLY ACCESS. No operational permissions granted.</strong>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if role == "ADMIN" %}
+    <div class="card admin">
+        <h3><i class="fas fa-cogs"></i> SYSTEM ADMINISTRATION</h3>
+        <ul class="nav-list">
+            <li><a href="#"><i class="fas fa-user-check"></i> User Role Approvals</a></li>
+            <li><a href="#"><i class="fas fa-shield-alt"></i> RBAC Policy Management</a></li>
+            <li><a href="#"><i class="fas fa-heartbeat"></i> System Health Monitoring</a></li>
+            <li><a href="/admin-panel/"><i class="fas fa-tachometer-alt"></i> Open Admin Panel</a></li>
+            <li><a href="/admin/"><i class="fas fa-tools"></i> Open Django Admin</a></li>
+        </ul>
+        <div class="status-warning">
+            <i class="fas fa-exclamation-circle"></i>
+            <strong>System Administrators cannot access crime or biometric data.</strong>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- ===================== LOGOUT SECTION ===================== -->
+    <!-- <div class="logout-section">
+        <a href="{% url 'logout' %}" class="logout-btn">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>SECURE LOGOUT</span>
+        </a>
+        <p style="margin-top: 1rem; color: #991b1b; font-size: 0.85rem;">
+            <i class="fas fa-info-circle"></i> Always logout after completing your session.
+        </p>
+    </div>
+</div> -->
+
+<!-- Font Awesome for Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+{% endblock %}

@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+:root {
+    --police-blue: #0b1f3a;
+    --police-gold: #c9a227;
+    --border: #d1d5db;
+    --bg-light: #f4f6f9;
+    --text-dark: #111827;
+    --text-muted: #6b7280;
+    --alert-bg: #fef3c7;
+    --alert-border: #f59e0b;
+}
+
+body {
+    background: var(--bg-light);
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+}
+
+/* ===== CARD ===== */
+.appeal-card {
+    max-width: 750px;
+    margin: 4rem auto;
+    background: white;
+    border: 1px solid var(--border);
+    padding: 2rem;
+}
+
+/* ===== TITLE ===== */
+.appeal-card h2 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--police-blue);
+    text-transform: uppercase;
+    border-bottom: 3px solid var(--police-gold);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* ===== BLOCK REASON ===== */
+.block-reason {
+    background: var(--alert-bg);
+    border-left: 5px solid var(--alert-border);
+    padding: 1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 1.5rem;
+}
+
+/* ===== FORM ===== */
+.form-group label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--police-blue);
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.form-group textarea {
+    width: 100%;
+    min-height: 160px;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    font-size: 0.85rem;
+    font-family: inherit;
+    resize: vertical;
+}
+
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--police-blue);
+}
+
+/* ===== BUTTON ===== */
+.btn-submit {
+    margin-top: 1.5rem;
+    padding: 0.6rem 2rem;
+    background: var(--police-blue);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.btn-submit:hover {
+    background: #06142b;
+}
+
+/* ===== NOTICE ===== */
+.audit-note {
+    margin-top: 1rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+</style>
+<div class="appeal-card">
+    <h2>Submit Appeal</h2>
+
+    <div class="block-reason">
+        <strong>Account Block Reason:</strong><br>
+        {{ request.user.block_reason }}
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="reason">
+                Explanation for Review
+            </label>
+            <textarea name="reason" required
+                placeholder="Provide a clear and factual explanation for review..."></textarea>
+        </div>
+
+        <button type="submit" class="btn-submit">
+            Submit Appeal
+        </button>
+    </form>
+
+    <div class="audit-note">
+        All appeals are formally reviewed. Submitting false information may result in permanent restrictions.
+    </div>
+</div>
+
+{% endblock %}

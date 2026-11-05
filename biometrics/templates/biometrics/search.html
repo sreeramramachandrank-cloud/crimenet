@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+:root {
+    --police-blue: #0b1f3a;
+    --police-gold: #c9a227;
+    --danger-red: #7f1d1d;
+    --border: #d1d5db;
+    --bg-light: #f4f6f9;
+    --text-dark: #111827;
+    --text-muted: #6b7280;
+}
+
+body {
+    background: var(--bg-light);
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+}
+
+/* ===== CARD ===== */
+.search-card {
+    max-width: 900px;
+    margin: 3rem auto;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    padding: 2rem;
+}
+
+/* ===== HEADER ===== */
+.search-card h2 {
+    font-size: 1.1rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--police-blue);
+    border-bottom: 3px solid var(--police-gold);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* ===== WARNING ===== */
+.warning-box {
+    background: #fff1f2;
+    border-left: 6px solid var(--danger-red);
+    padding: 1rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--danger-red);
+    margin-bottom: 2rem;
+}
+
+/* ===== FORM ===== */
+.search-form {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+}
+
+.search-form input {
+    flex: 1;
+    padding: 0.65rem;
+    font-size: 0.85rem;
+    border: 1px solid var(--border);
+}
+
+.search-form button {
+    padding: 0.65rem 1.25rem;
+    background: var(--police-blue);
+    color: white;
+    border: none;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.search-form button:hover {
+    background: #132c52;
+}
+
+/* ===== RESULTS ===== */
+.results-title {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: var(--police-blue);
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+}
+
+.results-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+}
+
+.results-table th {
+    background: #e5e7eb;
+    text-align: left;
+    padding: 0.6rem;
+    border: 1px solid var(--border);
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.results-table td {
+    padding: 0.6rem;
+    border: 1px solid var(--border);
+}
+
+.confidence-high {
+    color: #14532d;
+    font-weight: 800;
+}
+
+.confidence-medium {
+    color: #92400e;
+    font-weight: 800;
+}
+
+.confidence-low {
+    color: #7f1d1d;
+    font-weight: 800;
+}
+
+/* ===== EMPTY ===== */
+.no-results {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-style: italic;
+}
+</style>
+<div class="search-card">
+
+    <h2>Biometric Search</h2>
+
+    <div class="warning-box">
+        ⚠ JUDICIAL WARRANT REQUIRED<br>
+        All biometric searches are logged, monitored, and subject to audit review.
+    </div>
+
+    <form method="post" class="search-form">
+        {% csrf_token %}
+        <input
+            name="query"
+            placeholder="Fingerprint hash fragment"
+            required
+        >
+        <button type="submit">Execute Search</button>
+    </form>
+
+    {% if records is not None %}
+        {% if records %}
+            <div class="results-title">Search Results</div>
+
+            <table class="results-table">
+                <tr>
+                    <th>User</th>
+                    <th>Confidence</th>
+                </tr>
+                {% for r in records %}
+                <tr>
+                    <td>{{ r.user.username }}</td>
+                    <td class="
+                        {% if r.confidence >= 90 %}
+                            confidence-high
+                        {% elif r.confidence >= 70 %}
+                            confidence-medium
+                        {% else %}
+                            confidence-low
+                        {% endif %}
+                    ">
+                        {{ r.confidence }}%
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+            <p class="no-results">
+                ❌ No biometric records found matching the provided data.
+            </p>
+        {% endif %}
+    {% endif %}
+
+</div>
+{% endblock %}

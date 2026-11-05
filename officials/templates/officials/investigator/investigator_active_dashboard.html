@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Active Investigation Access{% endblock %}
+
+{% block content %}
+
+<!-- ALWAYS EXISTS – SAFE FOR JS -->
+<div id="mainContent" class="card">
+    <h3><i class="fas fa-briefcase"></i> Active Investigation Dashboard</h3>
+
+    <p>Welcome <strong>{{ user.username }}</strong>.</p>
+
+    <p>You have active investigation access.</p>
+</div>
+
+<div class="card">
+    <h3><i class="fas fa-search"></i> Investigation Tools</h3>
+
+    <ul class="nav-list">
+        <li>
+            <button onclick="showAllCrimeRecords()">
+                <i class="fas fa-folder"></i> All Crime Records
+            </button>
+        </li>
+
+        <li>
+            <button onclick="suspectAnalysis()">
+                <i class="fas fa-robot"></i> Suspect Analysis (AI Assisted)
+            </button>
+        </li>
+
+        <li>
+            <button onclick="timelineReconstruction()">
+                <i class="fas fa-timeline"></i> Timeline Reconstruction
+            </button>
+        </li>
+
+        <li>
+            <button onclick="interStateTransfer()">
+                <i class="fas fa-exchange-alt"></i> Inter-state Case Transfer
+            </button>
+        </li>
+
+        <li>
+            <a href="/complaints/police/">
+                <i class="fas fa-comment-alt"></i> Citizen Complaints (Escalated)
+            </a>
+        </li>
+    </ul>
+</div>
+
+<div class="logout">
+    <a href="{% url 'logout' %}">
+        <i class="fas fa-sign-out-alt"></i> Secure Logout
+    </a>
+</div>
+
+<script defer>
+function render(html) {
+    const el = document.getElementById("mainContent");
+    if (!el) return;
+    el.innerHTML = html;
+}
+
+function showAllCrimeRecords() {
+    render("<h3>All Crime Records</h3><p>Fetching records…</p>");
+}
+
+function suspectAnalysis() {
+    render("<h3>AI Suspect Analysis</h3><p>Running AI models…</p>");
+}
+
+function timelineReconstruction() {
+    render("<h3>Timeline Reconstruction</h3><p>Rebuilding case timeline…</p>");
+}
+
+function interStateTransfer() {
+    render("<h3>Inter-state Case Transfer</h3><p>Authorization required.</p>");
+}
+</script>
+
+{% endblock %}

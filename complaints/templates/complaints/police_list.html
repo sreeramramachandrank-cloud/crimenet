@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+:root {
+    --police-blue: #0b1f3a;
+    --police-gold: #c9a227;
+    --border: #d1d5db;
+    --bg-light: #f4f6f9;
+    --text-dark: #111827;
+    --text-muted: #6b7280;
+    --green: #14532d;
+}
+
+body {
+    background: var(--bg-light);
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+}
+
+/* ===== MAIN CONTAINER ===== */
+.queue-card {
+    max-width: 1100px;
+    margin: 3rem auto;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    padding: 2rem;
+}
+
+/* ===== HEADER ===== */
+.queue-card h2 {
+    font-size: 1.1rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--police-blue);
+    border-bottom: 3px solid var(--police-gold);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* ===== TABLE ===== */
+.queue-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.queue-table th {
+    background: var(--police-blue);
+    color: white;
+    padding: 0.75rem;
+    text-align: left;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+}
+
+.queue-table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-dark);
+}
+
+.queue-table tr:nth-child(even) {
+    background: #f9fafb;
+}
+
+/* ===== STATUS BADGE ===== */
+.status-badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.25rem 0.6rem;
+    border-radius: 3px;
+    text-transform: uppercase;
+}
+
+.status-pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-in_progress {
+    background: #dcfce7;
+    color: var(--green);
+}
+
+.status-closed {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+/* ===== ACTION BUTTON ===== */
+.review-btn {
+    display: inline-block;
+    padding: 0.35rem 0.75rem;
+    background: var(--police-blue);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-decoration: none;
+    border-radius: 3px;
+}
+
+.review-btn:hover {
+    background: #132f57;
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-row {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    padding: 1.5rem;
+}
+</style>
+<div class="queue-card">
+
+    <h2>Police Complaint Queue</h2>
+
+    <table class="queue-table">
+        <thead>
+            <tr>
+                <th>Citizen</th>
+                <th>Subject</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for c in complaints %}
+            <tr>
+                <td><strong>{{ c.citizen.username }}</strong></td>
+                <td>{{ c.subject }}</td>
+                <td>
+                    <span class="status-badge status-{{ c.status|lower }}">
+                        {{ c.status }}
+                    </span>
+                </td>
+                <td>
+                    <a href="{% url 'update_complaint_status' c.id 'IN_PROGRESS' %}"
+                       class="review-btn">
+                        Review
+                    </a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="empty-row">
+                    No complaints pending review.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+{% endblock %}

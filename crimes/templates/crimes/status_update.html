@@ -1,0 +1,298 @@
+{% extends 'crimes/base.html' %}
+
+{% block title %}Update FIR Status - {{ fir.fir_number }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <div>
+        <h1 class="h2">Update FIR Status</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'crimes:dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'crimes:fir_detail' fir.id %}">FIR {{ fir.fir_number }}</a></li>
+                <li class="breadcrumb-item active">Update Status</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'crimes:fir_detail' fir.id %}" class="btn btn-sm btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Back to FIR
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Update Status for FIR: {{ fir.fir_number }}</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Current Status:</strong> {{ fir.get_status_display }}
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="status" class="form-label">Select New Status</label>
+                        <select class="form-select" id="status" name="status" required>
+                            <option value="">Select status...</option>
+                            {% for code, name in status_choices %}
+                                {% if code != fir.status %}
+                                <option value="{{ code }}">{{ name }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="remarks" class="form-label">Remarks/Reason for Status Change</label>
+                        <textarea class="form-control" id="remarks" name="remarks" rows="3" 
+                                  placeholder="Enter remarks or reason for status change..." required></textarea>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-check-circle"></i> Update Status
+                        </button>
+                        <a href="{% url 'crimes:fir_detail' fir.id %}" class="btn btn-outline-secondary">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <!-- Status Flow Info -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">Status Flow</h6>
+            </div>
+            <div class="card-body">
+                <div class="status-flow">
+                    <div class="status-step {% if fir.status == 'DRAFT' %}active{% endif %}">
+                        <div class="step-number">1</div>
+                        <div class="step-label">Draft</div>
+                    </div>
+                    <div class="status-step {% if fir.status == 'REGISTERED' %}active{% endif %}">
+                        <div class="step-number">2</div>
+                        <div class="step-label">Registered</div>
+                    </div>
+                    <div class="status-step {% if fir.status == 'VERIFIED' %}active{% endif %}">
+                        <div class="step-number">3</div>
+                        <div class="step-label">Verified</div>
+                    </div>
+                    <div class="status-step {% if fir.status == 'INVESTIGATION' %}active{% endif %}">
+                        <div class="step-number">4</div>
+                        <div class="step-label">Investigation</div>
+                    </div>
+                    <div class="status-step {% if fir.status == 'CHARGESHEET_FILED' %}active{% endif %}">
+                        <div class="step-number">5</div>
+                        <div class="step-label">Chargesheet</div>
+                    </div>
+                    <div class="status-step {% if fir.status == 'COURT' %}active{% endif %}">
+                        <div class="step-number">6</div>
+                        <div class="step-label">Court</div>
+                    </div>
+                    <div class="status-step {% if fir.status == 'CONVICTED' or fir.status == 'ACQUITTED' %}active{% endif %}">
+                        <div class="step-number">7</div>
+                        <div class="step-label">Verdict</div>
+                    </div>
+                    <div class="status-step {% if fir.status == 'CLOSED' %}active{% endif %}">
+                        <div class="step-number">8</div>
+                        <div class="step-label">Closed</div>
+                    </div>
+                </div>
+                
+                <div class="alert alert-warning mt-3">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Status changes are logged and cannot be reversed.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Add status change validation
+        $('#status').change(function() {
+            const currentStatus = '{{ fir.status }}';
+            const newStatus = $(this).val();
+            
+            // You can add validation logic here
+            console.log(`Changing from ${currentStatus} to ${newStatus}`);
+        });
+    });
+</script>
+
+<style>
+/* =====================================================
+   CRIMENET – FIR STATUS UPDATE (POLICE UI)
+===================================================== */
+
+:root {
+    --police-navy: #0b1f3a;
+    --police-blue: #1e3a8a;
+    --police-green: #14532d;
+    --police-gold: #c9a227;
+    --police-gray: #475569;
+    --police-border: #cbd5e1;
+    --police-bg: #f8fafc;
+}
+
+/* ---------- PAGE TITLE ---------- */
+h1.h2 {
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--police-navy);
+}
+
+/* ---------- CARD ---------- */
+.card {
+    border: 2px solid var(--police-border);
+    border-radius: 4px;
+    box-shadow: none;
+}
+
+.card-header {
+    background: var(--police-bg);
+    border-bottom: 3px solid var(--police-gold);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--police-navy);
+}
+
+/* ---------- ALERT ---------- */
+.alert-info {
+    background: #e0f2fe;
+    border-left: 5px solid #0369a1;
+    color: #0c4a6e;
+    font-weight: 700;
+}
+
+.alert-warning {
+    background: #fff7ed;
+    border-left: 5px solid #92400e;
+    color: #7c2d12;
+    font-weight: 700;
+}
+
+/* ---------- FORM LABELS ---------- */
+.form-label {
+    font-weight: 900;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.6px;
+    color: var(--police-gray);
+}
+
+/* ---------- INPUTS ---------- */
+.form-control,
+.form-select {
+    border-radius: 4px;
+    border: 2px solid var(--police-border);
+    font-weight: 700;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--police-blue);
+    box-shadow: none;
+}
+
+/* ---------- BUTTONS ---------- */
+.btn-success {
+    background: var(--police-green);
+    border: none;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+}
+
+.btn-success:hover {
+    background: #052e16;
+}
+
+.btn-outline-secondary {
+    border: 2px solid var(--police-gray);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+}
+
+/* ---------- STATUS FLOW ---------- */
+.status-flow {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 0;
+}
+
+.status-step {
+    text-align: center;
+    flex: 1;
+    position: relative;
+}
+
+.status-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 14px;
+    right: -50%;
+    width: 100%;
+    height: 3px;
+    background: #e5e7eb;
+    z-index: 1;
+}
+
+.status-step.active:not(:last-child)::after {
+    background: var(--police-blue);
+}
+
+.step-number {
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    border-radius: 50%;
+    background: #e5e7eb;
+    color: #374151;
+    margin: 0 auto 8px;
+    font-weight: 900;
+    position: relative;
+    z-index: 2;
+    font-size: 0.8rem;
+}
+
+.status-step.active .step-number {
+    background: var(--police-blue);
+    color: white;
+}
+
+.step-label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: #6b7280;
+}
+
+.status-step.active .step-label {
+    color: var(--police-blue);
+}
+
+/* ---------- HARDEN UI ---------- */
+* {
+    animation: none !important;
+    transition: none !important;
+}
+</style>
+
+{% endblock %}

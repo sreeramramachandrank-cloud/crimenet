@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CrimeNet</title>
+<style>
+/* ===============================
+   RESET
+================================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ===============================
+   COLOR SYSTEM (GOV / POLICE)
+================================ */
+:root {
+    --navy: #0f2a5f;
+    --navy-dark: #0b1f47;
+    --gold: #f5b000;
+    --white: #ffffff;
+    --bg: #f4f6f9;
+    --muted: #cbd5e1;
+}
+/* ===============================
+   BODY
+================================ */
+body {
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+    background: var(--bg);
+    color: #111;
+}
+
+
+
+
+/* ===============================
+   NAVBAR
+================================ */
+
+
+/* Navbar text -> pure white */
+nav a {
+    color: #ffffff;
+}
+
+/* System name stays gold (already correct) */
+nav a:first-child {
+    color: var(--gold);
+}
+
+/* Content text -> readable dark gray */
+.content-wrapper p {
+    color: #374151; /* darker for white background */
+}
+
+/* Headings remain navy (official look) */
+.content-wrapper h1,
+.content-wrapper h2,
+.content-wrapper h3 {
+    color: var(--navy);
+}
+nav {
+    background: linear-gradient(
+        to bottom,
+        var(--navy),
+        var(--navy-dark)
+    );
+    border-bottom: 4px solid var(--gold);
+    padding: 1rem 2.5rem;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+.dashboard-header,
+.dashboard-header h1,
+.dashboard-header h2,
+.dashboard-header h3,
+.dashboard-header p,
+.dashboard-header span,
+.dashboard-header div {
+    color: #ffffff !important;
+}
+
+/* Muted subtitle text (slightly softer white) */
+.dashboard-header p {
+    color: #e5e7eb !important;
+}
+
+/* Officer name highlight */
+.dashboard-header strong {
+    color: #ffffff !important;
+}
+
+/* OFFICER badge text */
+.dashboard-header .role-badge {
+    color: #ffffff !important;
+}
+/* SYSTEM NAME */
+nav a:first-child {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: var(--gold);
+    letter-spacing: 2px;
+    margin-right: auto;
+    text-transform: uppercase;
+    text-decoration: none;
+}
+
+/* NAV LINKS */
+nav a {
+    color: #e5e7eb;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 0.55rem 1.1rem;
+    margin-left: 0.25rem;
+    border-radius: 2px;
+    transition: background 0.15s ease;
+    text-transform: uppercase;
+}
+
+nav a:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+/* SEPARATOR */
+.separator {
+    color: rgba(255, 255, 255, 0.4);
+    margin: 0 0.25rem;
+    font-weight: 700;
+}
+
+/* LOGOUT BUTTON */
+.logout-btn {
+    background: #7f1d1d;
+    color: #fee2e2 !important;
+}
+
+.logout-btn:hover {
+    background: #991b1b;
+}
+
+/* ===============================
+   CONTENT WRAPPER
+================================ */
+.content-wrapper {
+    max-width: 1200px;
+    margin: 2.5rem auto;
+    padding: 2.5rem;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    min-height: 500px;
+}
+
+/* ===============================
+   HEADINGS
+================================ */
+.content-wrapper h1,
+.content-wrapper h2,
+.content-wrapper h3 {
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 1.25rem;
+    text-transform: uppercase;
+    border-bottom: 3px solid var(--gold);
+    padding-bottom: 0.4rem;
+    letter-spacing: 1px;
+}
+
+/* ===============================
+   PARAGRAPHS
+================================ */
+.content-wrapper p {
+    color: var(--muted);
+    line-height: 1.8;
+    font-size: 1rem;
+    max-width: 80ch;
+}
+
+/* ===============================
+   MOBILE
+================================ */
+@media (max-width: 768px) {
+    nav {
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 1rem;
+    }
+
+    nav a:first-child {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 0.75rem;
+    }
+}
+
+</style>
+
+
+</head>
+<body>
+
+<nav>
+    <a href="/">CrimeNet</a>
+
+    {% if request.user.is_authenticated %}
+        <a href="{% url 'dashboard' %}">Dashboard</a>
+        <span class="separator">|</span>
+        <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+    {% else %}
+        <a href="{% url 'login' %}">Login</a>
+        <span class="separator">|</span>
+        <a href="{% url 'register' %}">Register</a>
+    {% endif %}
+</nav>
+
+<div class="content-wrapper">
+    {% block content %}
+    <h1>Welcome to CrimeNet</h1>
+    <p>Your content goes here...</p>
+    {% endblock %}
+</div>
+
+</body>
+</html>

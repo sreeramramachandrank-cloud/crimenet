@@ -1,0 +1,21 @@
+__pycache__/
+*.py[cod]
+*.sqlite3
+venv/
+env/
+.venv/
+.env
+.env.*
+staticfiles/
+media/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Sensitive crime and personal records
+fir/
+fir_qr_codes/
+criminals/front/
+appointments/criminal_records_1*.pdf
+

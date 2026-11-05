@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+:root {
+    --police-blue: #0b1f3a;
+    --police-gold: #c9a227;
+    --border: #d1d5db;
+    --bg-light: #f4f6f9;
+    --text-dark: #111827;
+    --text-muted: #6b7280;
+    --success: #14532d;
+}
+
+body {
+    background: var(--bg-light);
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+}
+
+/* ===== MAIN CARD ===== */
+.complaint-card {
+    max-width: 750px;
+    margin: 3rem auto;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    padding: 2rem;
+}
+
+/* ===== HEADER ===== */
+.complaint-card h2 {
+    font-size: 1.1rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--police-blue);
+    border-bottom: 3px solid var(--police-gold);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* ===== FORM ===== */
+.complaint-form label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-dark);
+    display: block;
+    margin-bottom: 0.3rem;
+}
+
+.complaint-form input,
+.complaint-form textarea,
+.complaint-form select {
+    width: 100%;
+    padding: 0.6rem;
+    border: 1px solid var(--border);
+    font-size: 0.85rem;
+    margin-bottom: 1.2rem;
+}
+
+.complaint-form textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+/* ===== SUBMIT BUTTON ===== */
+.submit-btn {
+    background: var(--police-blue);
+    color: #ffffff;
+    padding: 0.7rem 1.5rem;
+    border: none;
+    font-size: 0.85rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.submit-btn:hover {
+    background: #08162a;
+}
+
+/* ===== NOTE ===== */
+.form-note {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+    border-left: 4px solid var(--police-gold);
+    padding-left: 0.75rem;
+}
+</style>
+<div class="complaint-card">
+
+    <h2>Register Complaint</h2>
+
+    <div class="form-note">
+        Please provide accurate information. All complaints are officially recorded
+        and reviewed by the police department.
+    </div>
+
+    <form method="post" class="complaint-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button type="submit" class="submit-btn">
+            Submit Complaint
+        </button>
+    </form>
+
+</div>
+{% endblock %}

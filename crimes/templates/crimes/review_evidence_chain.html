@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Review Evidence & Chain of Custody | CrimeNet{% endblock %}
+
+{% block content %}
+<div class="page-wrapper">
+    <h1>Review Evidence & Chain of Custody</h1>
+    <p class="subtitle">
+        Official review of evidence handling and custody trail.
+        All actions are logged for accountability.
+    </p>
+
+    <div class="card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Evidence ID</th>
+                    <th>FIR No</th>
+                    <th>Collected By</th>
+                    <th>Current Status</th>
+                    <th>Last Updated</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>EVD-1023</td>
+                    <td>FIR-4589</td>
+                    <td>Forensic Officer</td>
+                    <td>Verified</td>
+                    <td>28-01-2026</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+.page-wrapper {
+    max-width: 1200px;
+    margin: 2rem auto;
+    background: #ffffff;
+    padding: 2rem;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+h1 {
+    color: #0b1f47;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.subtitle {
+    color: #4b5563;
+    margin-bottom: 2rem;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+th {
+    background: #0b1f47;
+    color: #ffffff;
+    padding: 0.75rem;
+    text-align: left;
+}
+td {
+    padding: 0.75rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+</style>
+{% endblock %}

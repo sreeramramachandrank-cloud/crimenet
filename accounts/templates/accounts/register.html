@@ -1,0 +1,591 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* ===============================
+   PROFESSIONAL REGISTRATION - WHITE THEME
+================================ */
+body {
+    background: #f5f7fa;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* ===============================
+   CONTAINER
+================================ */
+.register-container {
+    max-width: 800px;
+    margin: 3rem auto;
+    padding: 0 1rem;
+}
+
+/* ===============================
+   HEADER
+================================ */
+.register-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #1a4d8f;
+}
+
+.register-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #1a4d8f, #2563eb);
+    border-radius: 50%;
+    border: 3px solid #ffd700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    margin: 0 auto 1rem;
+    box-shadow: 0 4px 12px rgba(26, 77, 143, 0.2);
+}
+
+.register-header h2 {
+    font-size: 2rem;
+    color: #0f172a;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+}
+
+.register-header p {
+    color: #64748b;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+/* ===============================
+   CARD
+================================ */
+.register-card {
+    background: white;
+    border: none;
+    border-radius: 12px;
+    padding: 2.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* ===============================
+   ERROR ALERT
+================================ */
+.alert-error {
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+    border: 2px solid rgba(239, 68, 68, 0.3);
+    border-left: 6px solid #dc2626;
+    padding: 1.25rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+.alert-error strong {
+    font-size: 1rem;
+    display: block;
+    margin-bottom: 0.75rem;
+    font-weight: 700;
+}
+
+.alert-error ul {
+    margin: 0;
+    padding-left: 1.5rem;
+}
+
+.alert-error li {
+    padding: 0.25rem 0;
+    font-weight: 600;
+}
+
+/* ===============================
+   FORM GROUPS
+================================ */
+.form-group {
+    margin-bottom: 1.75rem;
+}
+
+.form-group label {
+    display: block;
+    color: #1f2937;
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+}
+
+.required-indicator {
+    color: #ef4444;
+    font-weight: 700;
+}
+
+/* ===============================
+   INPUTS
+================================ */
+.form-group input[type="text"],
+.form-group input[type="password"],
+.form-group input[type="file"],
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: 'Inter', sans-serif;
+    background: #f9fafb;
+    color: #1f2937;
+    transition: all 0.2s ease;
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="password"]:focus,
+.form-group input[type="file"]:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #1a4d8f;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(26, 77, 143, 0.1);
+}
+
+.form-group select {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%231f2937' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    padding-right: 2.5rem;
+    appearance: none;
+}
+
+.form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.form-group input[type="file"] {
+    padding: 0.5rem;
+    cursor: pointer;
+}
+
+/* ===============================
+   ROLE BOXES
+================================ */
+.role-box {
+    display: none;
+    border: 2px solid #e5e7eb;
+    padding: 2rem;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+    background: #f9fafb;
+    border-radius: 10px;
+    border-left: 4px solid #1a4d8f;
+}
+
+.role-box h4 {
+    color: #1a4d8f;
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #e5e7eb;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* ===============================
+   BUTTON
+================================ */
+.btn-register {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, #1a4d8f, #2563eb);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(26, 77, 143, 0.3);
+}
+
+.btn-register:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(26, 77, 143, 0.4);
+    background: linear-gradient(135deg, #2563eb, #1a4d8f);
+}
+
+.btn-register:active {
+    transform: translateY(0);
+}
+
+/* ===============================
+   INFO SECTION
+================================ */
+.info-section {
+    background: #f8f9fb;
+    border: 2px solid #e5e7eb;
+    border-left: 4px solid #06b6d4;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-top: 2rem;
+}
+
+.info-section strong {
+    color: #0f172a;
+    font-size: 1rem;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.info-section ul {
+    margin: 0;
+    padding-left: 1.5rem;
+    color: #475569;
+}
+
+.info-section li {
+    padding: 0.4rem 0;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* ===============================
+   LOGIN LINK
+================================ */
+.login-link {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid #e5e7eb;
+}
+
+.login-link p {
+    color: #64748b;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+}
+
+.login-link a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #1a4d8f;
+    font-weight: 700;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+}
+
+.login-link a:hover {
+    background: rgba(26, 77, 143, 0.1);
+    color: #2563eb;
+    text-decoration: none;
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+@media (max-width: 768px) {
+    .register-container {
+        margin: 1rem auto;
+    }
+
+    .register-header {
+        padding: 1.5rem;
+    }
+
+    .register-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .register-card {
+        padding: 1.5rem;
+    }
+
+    .role-box {
+        padding: 1.5rem;
+    }
+}
+
+/* ===============================
+   ADDITIONAL ENHANCEMENTS
+================================ */
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: #94a3b8;
+    font-style: italic;
+}
+
+/* File input styling */
+.form-group input[type="file"]::file-selector-button {
+    background: #1a4d8f;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-right: 1rem;
+    transition: all 0.2s ease;
+}
+
+.form-group input[type="file"]::file-selector-button:hover {
+    background: #2563eb;
+}
+</style>
+
+<div class="register-container">
+    <div class="register-header">
+        <div class="register-icon">🛡️</div>
+        <h2>Create Account</h2>
+        <p>Official Kerala Police CrimeNET Registration Portal</p>
+    </div>
+
+    <div class="register-card">
+        {% if form.errors %}
+        <div class="alert-error">
+            <strong>⚠️ Registration Failed</strong>
+            <ul>
+                {% for field, errors in form.errors.items %}
+                    {% for error in errors %}
+                        <li><b>{{ field|capfirst }}</b>: {{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label>👤 Username <span class="required-indicator">*</span></label>
+                {{ form.username }}
+            </div>
+
+            <div class="form-group">
+                <label>🔑 Password <span class="required-indicator">*</span></label>
+                {{ form.password }}
+            </div>
+
+            <div class="form-group">
+                <label>🔒 Confirm Password <span class="required-indicator">*</span></label>
+                {{ form.confirm_password }}
+            </div>
+
+            <div class="form-group">
+                <label>🎯 Register As <span class="required-indicator">*</span></label>
+                {{ form.requested_role }}
+            </div>
+
+            <!-- OFFICER FIELDS -->
+            <div id="officer-fields" class="role-box">
+                <h4>👮 Police Officer Verification</h4>
+                <div class="form-group">
+                    <label>Rank</label>
+                    {{ form.rank }}
+                </div>
+                <div class="form-group">
+                    <label>Badge ID <span class="required-indicator">*</span></label>
+                    <input type="text" name="badge_id" id="id_badge_id" class="role-specific" placeholder="Enter your badge identification number">
+                </div>
+                <div class="form-group">
+                    <label>Department <span class="required-indicator">*</span></label>
+                    <input type="text" name="department" id="id_department" class="role-specific" placeholder="Enter your department name">
+                </div>
+                <div class="form-group">
+                    <label>Reason for Access <span class="required-indicator">*</span></label>
+                    <textarea
+                        name="reason_for_access"
+                        id="id_reason_for_access_officer"
+                        rows="4"
+                        class="role-specific"
+                        placeholder="Please explain why you need access to the CrimeNET system"></textarea>
+                </div>
+            </div>
+
+            <!-- INVESTIGATOR FIELDS -->
+            <div id="investigator-fields" class="role-box">
+                <h4>🕵️ Investigating Officer Verification</h4>
+                <div class="form-group">
+                    <label>Rank <span class="required-indicator">*</span></label>
+                    <input type="text" name="rank_investigator" id="id_rank_investigator" class="role-specific" placeholder="Enter your rank">
+                </div>
+                <div class="form-group">
+                    <label>📎 Appointment Order <span class="required-indicator">*</span></label>
+                    <input type="file" name="appointment_order" id="id_appointment_order" class="role-specific" accept=".pdf,.jpg,.jpeg,.png">
+                </div>
+                <!-- <div class="form-group">
+                    <label>Reason for Access <span class="required-indicator">*</span></label>
+                    <textarea
+                        name="reason_for_access"
+                        id="id_reason_for_access_investigator"
+                        rows="4"
+                        class="role-specific"
+                        placeholder="Please explain the nature of your investigation"></textarea>
+                </div> -->
+            </div>
+
+            <!-- FORENSIC FIELDS -->
+            <div id="forensic-fields" class="role-box">
+                <h4>🧬 Forensic Analyst Verification</h4>
+                <div class="form-group">
+                    <label>Lab Affiliation <span class="required-indicator">*</span></label>
+                    <input type="text" name="lab_affiliation" id="id_lab_affiliation" class="role-specific" placeholder="Enter your laboratory name">
+                </div>
+                <div class="form-group">
+                    <label>📎 Forensic License <span class="required-indicator">*</span></label>
+                    <input type="file" name="forensic_license" id="id_forensic_license" class="role-specific" accept=".pdf,.jpg,.jpeg,.png">
+                </div>
+                <div class="form-group">
+                    <label>Jurisdiction <span class="required-indicator">*</span></label>
+                    <input type="text" name="jurisdiction_forensic" id="id_jurisdiction_forensic" class="role-specific" placeholder="Enter your jurisdiction">
+                </div>
+                <div class="form-group">
+                    <label>Reason for Access <span class="required-indicator">*</span></label>
+                    <textarea
+                        name="reason_for_access"
+                        id="id_reason_for_access_forensic"
+                        rows="4"
+                        class="role-specific"
+                        placeholder="Please explain your forensic analysis requirements"></textarea>
+                </div>
+            </div>
+
+            <!-- JUDGE FIELDS -->
+            <div id="judge-fields" class="role-box">
+                <h4>⚖️ Judge Verification</h4>
+                <div class="form-group">
+                    <label>Judicial ID <span class="required-indicator">*</span></label>
+                    <input type="text" name="judicial_id" id="id_judicial_id" class="role-specific" placeholder="Enter your judicial identification">
+                </div>
+                <div class="form-group">
+                    <label>Court Name <span class="required-indicator">*</span></label>
+                    <input type="text" name="court_name" id="id_court_name" class="role-specific" placeholder="Enter the name of your court">
+                </div>
+                <div class="form-group">
+                    <label>Jurisdiction <span class="required-indicator">*</span></label>
+                    <input type="text" name="jurisdiction_judge" id="id_jurisdiction_judge" class="role-specific" placeholder="Enter your jurisdiction">
+                </div>
+            </div>
+
+            <!-- AUDITOR FIELDS -->
+            <div id="auditor-fields" class="role-box">
+                <h4>🧾 Judicial Auditor Verification</h4>
+                <div class="form-group">
+                    <label>📎 Authority Letter <span class="required-indicator">*</span></label>
+                    <input type="file" name="authority_letter" id="id_authority_letter" class="role-specific" accept=".pdf,.jpg,.jpeg,.png">
+                </div>
+                <div class="form-group">
+                    <label>Jurisdiction <span class="required-indicator">*</span></label>
+                    <input type="text" name="jurisdiction_auditor" id="id_jurisdiction_auditor" class="role-specific" placeholder="Enter your jurisdiction">
+                </div>
+            </div>
+
+            <button type="submit" class="btn-register">Create Account</button>
+        </form>
+
+        <div class="info-section">
+            <strong>📋 Role Requirements</strong>
+            <ul>
+                <li><strong>Citizen</strong> → Direct access for filing complaints</li>
+                <li><strong>Officer</strong> → Badge & department verification required</li>
+                <li><strong>Investigator</strong> → Case-based access with time limitations</li>
+                <li><strong>Forensic</strong> → Lab affiliation & license verification</li>
+                <li><strong>Judge</strong> → Court & judicial ID verification</li>
+                <li><strong>Auditor</strong> → Authority letter verification required</li>
+            </ul>
+        </div>
+
+        <div class="login-link">
+            <p>Already have an account?</p>
+            <a href="{% url 'login' %}">
+                <span>Login to CrimeNET</span>
+                <span>→</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+const roleField = document.querySelector('[name="requested_role"]');
+const boxes = {
+    OFFICER: document.getElementById('officer-fields'),
+    INVESTIGATOR: document.getElementById('investigator-fields'),
+    FORENSIC: document.getElementById('forensic-fields'),
+    JUDGE: document.getElementById('judge-fields'),
+    AUDITOR: document.getElementById('auditor-fields')
+};
+
+function hideAll() {
+    Object.values(boxes).forEach(b => {
+        if (b) b.style.display = 'none';
+    });
+}
+
+roleField.addEventListener('change', function() {
+    hideAll();
+    
+    // Clear all role-specific fields
+    document.querySelectorAll('.role-specific').forEach(input => {
+        input.value = '';
+        if (input.type === 'file') {
+            input.value = '';
+        }
+    });
+    
+    const role = this.value;
+    if (boxes[role]) {
+        boxes[role].style.display = 'block';
+    }
+});
+
+// Hide all on page load
+hideAll();
+
+// Dynamic required fields based on role
+roleField.addEventListener('change', function() {
+    const role = this.value;
+    const requiredFields = {
+        'OFFICER': ['badge_id', 'department', 'reason_for_access_officer'],
+        'INVESTIGATOR': ['rank_investigator', 'appointment_order', 'reason_for_access_investigator'],
+        'FORENSIC': ['lab_affiliation', 'forensic_license', 'jurisdiction_forensic', 'reason_for_access_forensic'],
+        'JUDGE': ['judicial_id', 'court_name', 'jurisdiction_judge'],
+        'AUDITOR': ['authority_letter', 'jurisdiction_auditor']
+    };
+    
+    // Remove all required attributes
+    document.querySelectorAll('.role-specific').forEach(field => {
+        field.removeAttribute('required');
+    });
+    
+    // Add required attributes for selected role
+    if (requiredFields[role]) {
+        requiredFields[role].forEach(fieldName => {
+            const field = document.querySelector(`[name="${fieldName}"], #id_${fieldName}`);
+            if (field) {
+                field.setAttribute('required', 'required');
+            }
+        });
+    }
+});
+</script>
+
+{% endblock %}

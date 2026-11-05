@@ -1,0 +1,321 @@
+{% extends "base.html" %}
+{% block title %}Edit Criminal Record | CrimeNet{% endblock %}
+
+{% block content %}
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* ==================================================
+   PROFESSIONAL CRIMINAL RECORD EDIT - WHITE THEME
+================================================== */
+
+.criminal-edit-page {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #f5f7fa;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+}
+
+.edit-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* Header Section - IMPROVED READABILITY */
+.page-header {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #1a4d8f;
+}
+
+.page-header-content {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.page-header-icon {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, #1a4d8f, #2563eb);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    box-shadow: 0 4px 12px rgba(26, 77, 143, 0.2);
+}
+
+.page-header-text h1 {
+    color: #f1f4f9;  /* Dark text for readability */
+    font-size: 1.75rem;
+    font-weight: 800;
+    margin: 0 0 0.5rem 0;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+}
+
+.page-header-text p {
+    color: #c1c6cc;  /* Gray text for secondary info */
+    font-size: 0.9rem;
+    margin: 0;
+    font-weight: 500;
+}
+
+.record-id {
+    display: inline-block;
+    background: rgba(26, 77, 143, 0.1);
+    color: #1a4d8f;
+    padding: 0.25rem 0.75rem;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.875rem;
+}
+
+/* Form Card */
+.edit-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.edit-body {
+    padding: 2.5rem;
+}
+
+/* Form Styling */
+.edit-body form p {
+    margin-bottom: 1.75rem;
+}
+
+.edit-body label {
+    display: block;
+    font-weight: 700;
+    color: #1f2937;  /* Dark gray for labels */
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.edit-body input[type="text"],
+.edit-body input[type="email"],
+.edit-body input[type="number"],
+.edit-body input[type="date"],
+.edit-body input[type="tel"],
+.edit-body select,
+.edit-body textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.2s ease;
+    background: #f9fafb;
+    color: #1f2937;
+}
+
+.edit-body input[type="text"]:focus,
+.edit-body input[type="email"]:focus,
+.edit-body input[type="number"]:focus,
+.edit-body input[type="date"]:focus,
+.edit-body input[type="tel"]:focus,
+.edit-body select:focus,
+.edit-body textarea:focus {
+    outline: none;
+    border-color: #1a4d8f;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(26, 77, 143, 0.1);
+}
+
+.edit-body textarea {
+    min-height: 120px;
+    resize: vertical;
+    font-family: 'Inter', sans-serif;
+}
+
+.edit-body select {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%231f2937' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    padding-right: 2.5rem;
+    appearance: none;
+}
+
+/* Help Text */
+.edit-body .helptext {
+    display: block;
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-top: 0.25rem;
+    font-style: italic;
+}
+
+/* Error Messages */
+.edit-body .errorlist {
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0 0 0;
+}
+
+.edit-body .errorlist li {
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-left: 3px solid #dc2626;
+    margin-top: 0.25rem;
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid #f1f5f9;
+    margin-top: 2rem;
+}
+
+.btn-save {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, #1a4d8f, #2563eb);
+    color: white;
+    font-weight: 700;
+    font-size: 0.95rem;
+    padding: 0.875rem 2rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(26, 77, 143, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.btn-save:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(26, 77, 143, 0.4);
+    background: linear-gradient(135deg, #2563eb, #1a4d8f);
+}
+
+.btn-save:active {
+    transform: translateY(0);
+}
+
+.btn-cancel {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #f1f5f9;
+    color: #1f2937;
+    font-weight: 700;
+    font-size: 0.95rem;
+    padding: 0.875rem 2rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.btn-cancel:hover {
+    background: white;
+    border-color: #cbd5e1;
+    color: #1f2937;
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Required Field Indicator */
+.edit-body label.required::after {
+    content: " *";
+    color: #ef4444;
+    font-weight: 700;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .criminal-edit-page {
+        padding: 1rem 0.5rem;
+    }
+
+    .page-header {
+        padding: 1.5rem;
+    }
+
+    .page-header-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .page-header-text h1 {
+        font-size: 1.5rem;
+    }
+
+    .edit-body {
+        padding: 1.5rem;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .btn-save,
+    .btn-cancel {
+        width: 100%;
+        justify-content: center;
+    }
+}
+</style>
+
+<section class="criminal-edit-page">
+    <article class="edit-container">
+        <!-- Page Header - WHITE BACKGROUND FOR READABILITY -->
+        <header class="page-header">
+            <nav class="page-header-content">
+                <span class="page-header-icon">
+                    ✏️
+                </span>
+                <hgroup class="page-header-text">
+                    <h1>Edit Criminal Record</h1>
+                    <p>Record ID: <span class="record-id">#{{ criminal.id }}</span></p>
+                </hgroup>
+            </nav>
+        </header>
+
+        <!-- Edit Form -->
+        <article class="edit-card">
+            <section class="edit-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    {{ form.as_p }}
+
+                    <nav class="form-actions">
+                        <button type="submit" class="btn-save">
+                            <i class="fas fa-save"></i>
+                            Save Changes
+                        </button>
+                        <a href="{% url 'crimes:criminal_list' %}" class="btn-cancel">
+                            <i class="fas fa-times"></i>
+                            Cancel
+                        </a>
+                    </nav>
+                </form>
+            </section>
+        </article>
+    </article>
+</section>
+{% endblock %}

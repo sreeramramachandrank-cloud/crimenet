@@ -1,0 +1,528 @@
+{% extends 'crimes/base.html' %}
+
+
+{% block title %}Add Witness - FIR {{ fir.fir_number }} - CrimeNET{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <div>
+        <h1 class="h2">Add Witness</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'crimes:dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'crimes:fir_detail' fir.id %}">FIR {{ fir.fir_number }}</a></li>
+                <li class="breadcrumb-item active">Add Witness</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'crimes:fir_detail' fir.id %}" class="btn btn-sm btn-outline-secondary me-2">
+            <i class="fas fa-arrow-left"></i> Back to FIR
+        </a>
+        <a href="{% url 'crimes:dashboard' %}" class="btn btn-sm btn-police">
+            <i class="fas fa-home"></i> Dashboard
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Witness Information for FIR: {{ fir.fir_number }}</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" id="witnessForm">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.name.id_for_label }}" class="form-label required-field">Witness Name</label>
+                                {{ form.name }}
+                                {% if form.name.errors %}
+                                <div class="text-danger">{{ form.name.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.age.id_for_label }}" class="form-label required-field">Age</label>
+                                {{ form.age }}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Father's Name</label>
+                                <input type="text" class="form-control" name="father_name">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Gender</label>
+                                <select class="form-select" name="gender">
+                                    <option value="">Select</option>
+                                    <option value="MALE">Male</option>
+                                    <option value="FEMALE">Female</option>
+                                    <option value="OTHER">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.address.id_for_label }}" class="form-label required-field">Address</label>
+                        {{ form.address }}
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="{{ form.mobile.id_for_label }}" class="form-label">Mobile Number</label>
+                                {{ form.mobile }}
+                                <div class="form-text">10-digit mobile number</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Email Address</label>
+                                <input type="email" class="form-control" name="email">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Aadhaar Number</label>
+                                <input type="text" class="form-control" name="aadhaar_number" pattern="\d{12}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Occupation</label>
+                                <input type="text" class="form-control" name="occupation">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Relation to Case</label>
+                        <textarea class="form-control" name="relation_to_case" rows="2" placeholder="How is the witness related to this case?"></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.statement.id_for_label }}" class="form-label required-field">Witness Statement</label>
+                        {{ form.statement }}
+                        <div class="form-text">Detailed statement of what the witness saw/heard</div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Statement Recorded By</label>
+                                <select class="form-select" name="statement_recorded_by">
+                                    <option value="{{ user.id }}">{{ user.get_full_name }} (Current User)</option>
+                                    <!-- Other officers would be populated here -->
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Statement Date & Time</label>
+                                <input type="datetime-local" class="form-control" name="statement_date" value="{% now 'Y-m-d\TH:i' %}">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Additional Options -->
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h6 class="mb-0">Additional Information</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" name="requires_protection" id="requiresProtection">
+                                        <label class="form-check-label" for="requiresProtection">
+                                            Witness Requires Protection
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" name="is_hostile" id="isHostile">
+                                        <label class="form-check-label" for="isHostile">
+                                            Hostile Witness
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="protectionDetails" class="form-label">Protection Requirements</label>
+                                <textarea class="form-control" id="protectionDetails" name="protection_details" rows="2" placeholder="Details of protection required..." disabled></textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Witness Photo</label>
+                                <input type="file" class="form-control" name="photo" accept="image/*">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="fas fa-save"></i> Save Witness Record
+                        </button>
+                        <button type="reset" class="btn btn-outline-secondary">
+                            <i class="fas fa-redo"></i> Reset Form
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <!-- FIR Summary -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">FIR Summary</h6>
+            </div>
+            <div class="card-body">
+                <p><strong>FIR Number:</strong> {{ fir.fir_number }}</p>
+                <p><strong>Crime:</strong> {{ fir.crime_category.section }}</p>
+                <p><strong>Informant:</strong> {{ fir.informant_name }}</p>
+                <p><strong>Incident Date:</strong> {{ fir.incident_date|date:"d/m/Y" }}</p>
+                <p><strong>Location:</strong> {{ fir.incident_location|truncatechars:50 }}</p>
+                <hr>
+                <p><strong>Existing Witnesses:</strong> {{ fir.witnesses.count }}</p>
+            </div>
+        </div>
+        
+        <!-- Witness Guidelines -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="fas fa-clipboard-check"></i> Witness Guidelines</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Record witness statement verbatim
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Verify contact details
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Note witness demeanor and cooperation
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Assess need for protection
+                    </li>
+                    <li>
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Record statement date and time accurately
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="fas fa-bolt"></i> Quick Actions</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'crimes:fir_detail' fir.id %}" class="btn btn-outline-primary">
+                        <i class="fas fa-eye"></i> View FIR Details
+                    </a>
+                    <a href="#" class="btn btn-outline-success">
+                        <i class="fas fa-print"></i> Print Witness Form
+                    </a>
+                    <a href="#" class="btn btn-outline-warning">
+                        <i class="fas fa-camera"></i> Take Photo
+                    </a>
+                    <button type="button" class="btn btn-outline-info" onclick="fillSampleData()">
+                        <i class="fas fa-magic"></i> Fill Sample Data
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Enable/disable protection details
+        $('#requiresProtection').change(function() {
+            if (this.checked) {
+                $('#protectionDetails').prop('disabled', false).focus();
+            } else {
+                $('#protectionDetails').prop('disabled', true).val('');
+            }
+        });
+        
+        // Mobile number validation
+        $('input[name="mobile"]').on('blur', function() {
+            const mobile = $(this).val().trim();
+            if (mobile && !/^[6-9]\d{9}$/.test(mobile)) {
+                alert('Please enter a valid 10-digit Indian mobile number starting with 6-9.');
+                $(this).focus();
+            }
+        });
+        
+        // Aadhaar validation
+        $('input[name="aadhaar_number"]').on('blur', function() {
+            const aadhaar = $(this).val().trim();
+            if (aadhaar && !/^\d{12}$/.test(aadhaar)) {
+                alert('Please enter a valid 12-digit Aadhaar number.');
+                $(this).focus();
+            }
+        });
+        
+        // Form validation
+        $('#witnessForm').on('submit', function(e) {
+            const name = $('input[name="name"]').val().trim();
+            const age = $('input[name="age"]').val().trim();
+            const address = $('textarea[name="address"]').val().trim();
+            const statement = $('textarea[name="statement"]').val().trim();
+            
+            let isValid = true;
+            
+            if (!name) {
+                alert('Please enter witness name.');
+                $('input[name="name"]').focus();
+                isValid = false;
+            } else if (!age || age < 1 || age > 120) {
+                alert('Please enter valid age (1-120).');
+                $('input[name="age"]').focus();
+                isValid = false;
+            } else if (!address) {
+                alert('Please enter witness address.');
+                $('textarea[name="address"]').focus();
+                isValid = false;
+            } else if (!statement) {
+                alert('Please enter witness statement.');
+                $('textarea[name="statement"]').focus();
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Show loading state
+            $(this).find('button[type="submit"]').prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...');
+        });
+    });
+    
+    function fillSampleData() {
+        if (confirm('Fill form with sample data for testing?')) {
+            $('input[name="name"]').val('Rajesh Kumar');
+            $('input[name="age"]').val('35');
+            $('input[name="father_name"]').val('Suresh Kumar');
+            $('select[name="gender"]').val('MALE');
+            $('textarea[name="address"]').val('House No. 123, Gandhi Nagar, Trivandrum, Kerala - 695001');
+            $('input[name="mobile"]').val('9876543210');
+            $('input[name="email"]').val('rajesh.kumar@example.com');
+            $('input[name="aadhaar_number"]').val('123456789012');
+            $('input[name="occupation"]').val('Shopkeeper');
+            $('textarea[name="relation_to_case"]').val('Neighbor who saw the incident from his balcony');
+            $('textarea[name="statement"]').val('I was on my balcony at around 8:30 PM when I saw two persons arguing near the park. One person pushed the other and then ran away with a bag. I immediately called the police and came to the station to report what I saw.');
+            $('select[name="statement_recorded_by"]').val('{{ user.id }}');
+            
+            alert('Sample data filled. Please review before submitting.');
+        }
+    }
+</script>
+<style>
+/* ===============================
+   POLICE THEME VARIABLES
+================================ */
+:root {
+    --police-dark: #0b1f3a;
+    --police-primary: #003366;
+    --police-accent: #1e40af;
+    --police-light: #f1f5f9;
+    --police-border: #cbd5e1;
+
+    --success: #166534;
+    --warning: #92400e;
+    --danger: #7f1d1d;
+    --info: #1e3a8a;
+}
+
+/* ===============================
+   HEADINGS
+================================ */
+h1, h2, h5, h6 {
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: var(--police-primary);
+}
+
+/* ===============================
+   CARD DESIGN
+================================ */
+.card {
+    background: #ffffff;
+    border: 1px solid var(--police-border);
+    border-radius: 6px;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+}
+
+.card-header {
+    background: linear-gradient(90deg, var(--police-dark), var(--police-primary));
+    color: #ffffff;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--police-accent);
+}
+
+/* ===============================
+   FORM ELEMENTS
+================================ */
+.form-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: #0f172a;
+}
+
+.form-control,
+.form-select,
+textarea {
+    font-size: 0.85rem;
+    border-radius: 5px;
+    border: 1px solid var(--police-border);
+}
+
+.form-control:focus,
+.form-select:focus,
+textarea:focus {
+    border-color: var(--police-primary);
+    box-shadow: 0 0 0 0.15rem rgba(0,51,102,0.25);
+}
+
+/* Required Field */
+.required-field::after {
+    content: " *";
+    color: #b91c1c;
+}
+
+/* ===============================
+   CHECKBOXES
+================================ */
+.form-check-input:checked {
+    background-color: var(--police-primary);
+    border-color: var(--police-primary);
+}
+
+/* ===============================
+   BUTTONS
+================================ */
+.btn-police {
+    background: var(--police-primary);
+    color: #ffffff;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    border: none;
+}
+
+.btn-police:hover {
+    background: var(--police-accent);
+    color: #ffffff;
+}
+
+.btn-success {
+    background: var(--success);
+    border-color: var(--success);
+    font-weight: 700;
+}
+
+.btn-success:hover {
+    background: #14532d;
+}
+
+/* ===============================
+   LISTS & GUIDELINES
+================================ */
+.list-unstyled li {
+    font-size: 0.85rem;
+}
+
+.list-unstyled i {
+    color: var(--success);
+}
+
+/* ===============================
+   QUICK ACTION BUTTONS
+================================ */
+.btn-outline-primary,
+.btn-outline-success,
+.btn-outline-warning,
+.btn-outline-info {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* ===============================
+   ALERTS (IF USED)
+================================ */
+.alert {
+    font-size: 0.85rem;
+    border-radius: 4px;
+}
+
+.alert-info {
+    background: #e0f2fe;
+    border-left: 5px solid var(--info);
+}
+
+.alert-warning {
+    background: #fff7ed;
+    border-left: 5px solid var(--warning);
+}
+
+.alert-danger {
+    background: #fef2f2;
+    border-left: 5px solid var(--danger);
+}
+
+/* ===============================
+   FILE INPUT
+================================ */
+input[type="file"] {
+    font-size: 0.8rem;
+}
+
+/* ===============================
+   MOBILE OPTIMIZATION
+================================ */
+@media (max-width: 768px) {
+    h1.h2 {
+        font-size: 1.4rem;
+    }
+}
+</style>
+
+{% endblock %}
+{% endblock %}

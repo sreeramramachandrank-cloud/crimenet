@@ -1,0 +1,394 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    :root {
+        --police-blue: #7088a5;
+        --police-blue-dark: #8da0bd;
+        --police-gold: #c9a227;
+
+        --border: #d1d5db;
+        --bg-light: #f1f5f9;
+
+        --text-dark: #111827;
+        --text-muted: #6b7280;
+
+        --danger: #7f1d1d;
+        --info: #1e40af;
+        --success: #065f46;
+        --warning: #92400e;
+    }
+
+    body {
+        background: var(--bg-light);
+        font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+    }
+
+    .admin-panel-container {
+        max-width: 1400px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+
+    /* ===== HEADER ===== */
+    .admin-header {
+        background: var(--police-blue);
+        color: white;
+        padding: 2.5rem;
+        border-radius: 6px;
+        border-left: 10px solid var(--police-gold);
+        margin-bottom: 2.5rem;
+    }
+
+    .admin-header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+    }
+
+    .admin-title-text h2 {
+        font-size: 2.4rem;
+        margin: 0 0 0.4rem;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+    }
+
+    .admin-title-text p {
+        margin: 0;
+        font-size: 0.95rem;
+        color: #d1d5db;
+    }
+
+    .admin-badge {
+        border: 1px solid var(--police-gold);
+        padding: 0.6rem 1.25rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        background: var(--police-blue-dark);
+    }
+
+    /* ===== STATS ===== */
+    .stats-overview {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.25rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .stat-card {
+        background: white;
+        border: 1px solid var(--border);
+        padding: 1.25rem;
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        background: var(--police-blue);
+        color: var(--police-gold);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        border-radius: 4px;
+    }
+
+    .stat-content h4 {
+        margin: 0 0 0.25rem;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-muted);
+        font-weight: 700;
+    }
+
+    .stat-value {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: var(--text-dark);
+    }
+
+    /* ===== SECTIONS ===== */
+    .sections-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+        gap: 2rem;
+    }
+
+    .section-card {
+        background: white;
+        border: 1px solid var(--border);
+    }
+
+    .section-header {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 2px solid var(--border);
+        font-weight: 800;
+        font-size: 1.1rem;
+        color: var(--police-blue);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .section-content {
+        padding: 1.5rem;
+    }
+
+    /* ===== MENU ===== */
+    .menu-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .menu-list li {
+        margin-bottom: 0.5rem;
+    }
+
+    .menu-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--border);
+        text-decoration: none;
+        color: var(--text-dark);
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+
+    .menu-item:hover {
+        background: var(--police-blue);
+        color: white;
+        border-color: var(--police-blue);
+    }
+
+    /* ===== INLINE STATS ===== */
+    .stat-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--border);
+        margin-bottom: 1rem;
+        font-size: 0.85rem;
+    }
+
+    .stat-label {
+        font-weight: 700;
+        color: var(--text-muted);
+    }
+
+    .stat-number {
+        font-weight: 800;
+        color: var(--police-blue);
+    }
+
+    /* ===== NOTIFICATIONS ===== */
+    .notifications-section {
+        background: white;
+        border: 1px solid var(--border);
+        margin-top: 2.5rem;
+    }
+
+    .notifications-header {
+        padding: 1.25rem 1.5rem;
+        background: #fef2f2;
+        border-bottom: 2px solid var(--danger);
+        font-weight: 800;
+        color: var(--danger);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .notifications-content {
+        padding: 1.25rem 1.5rem;
+    }
+
+    .notification-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .notification-item {
+        padding: 0.75rem 1rem;
+        border: 1px solid #fecaca;
+        border-left: 6px solid var(--danger);
+        margin-bottom: 0.5rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--danger);
+        background: #fef2f2;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 900px) {
+        .sections-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .admin-header-content {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+</style>
+
+
+<div class="admin-panel-container">
+    <div class="admin-header">
+        <div class="admin-header-content">
+            <div class="admin-title-section">
+                <div class="admin-shield-icon">🛡</div>
+                <div class="admin-title-text">
+                    <h2>System Admin Panel</h2>
+                    <p>Complete control and oversight of CrimeNet</p>
+                </div>
+            </div>
+            <div class="admin-badge">
+                Administrator Access
+            </div>
+        </div>
+    </div>
+
+    <div class="stats-overview">
+        <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-content">
+                <h4>Total Users</h4>
+                <div class="stat-value">{{ total_users }}</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">📊</div>
+            <div class="stat-content">
+                <h4>Active Sessions</h4>
+                <div class="stat-value">{{ total_users|default:"0" }}</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🔔</div>
+            <div class="stat-content">
+                <h4>Notifications</h4>
+                <div class="stat-value">{{ notifications|length|default:"0" }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="sections-grid">
+        <!-- User Management Section -->
+        <div class="section-card">
+            <div class="section-header user-management">
+                <div class="section-icon">👥</div>
+                <h3>User Management</h3>
+            </div>
+            <div class="section-content">
+                <div class="stat-item">
+                    <span class="stat-label">Total Users</span>
+                    <span class="stat-number">{{ total_users }}</span>
+                </div>
+                <ul class="menu-list">
+                    <li>
+                        <a href="{% url 'admin_users_list' %}" class="menu-item">
+                            <span class="menu-icon">📋</span>
+                            <span class="menu-text">Users List</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'admin_role_requests' %}" class="menu-item">
+                            <span class="menu-icon">🧾</span>
+                            <span class="menu-text">Role Requests</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'admin_appeals' %}" class="menu-item">
+                            <span class="menu-icon">⚖</span>
+                            <span class="menu-text">User Appeals</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- System Monitoring Section -->
+        <div class="section-card">
+            <div class="section-header monitoring">
+                <div class="section-icon">📊</div>
+                <h3>System Monitoring</h3>
+            </div>
+            <div class="section-content">
+                <ul class="menu-list">
+                    <li>
+                        <a href="{% url 'admin_analytics' %}" class="menu-item">
+                            <span class="menu-icon">📈</span>
+                            <span class="menu-text">Analytics Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'admin_sla_check' %}" class="menu-item">
+                            <span class="menu-icon">⏱</span>
+                            <span class="menu-text">SLA Breach Monitor</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Audit & Oversight Section -->
+        <div class="section-card">
+            <div class="section-header audit">
+                <div class="section-icon">🧾</div>
+                <h3>Audit & Oversight</h3>
+            </div>
+            <div class="section-content">
+                <ul class="menu-list">
+                    <li>
+                        <a href="{% url 'admin_audit_logs' %}" class="menu-item">
+                            <span class="menu-icon">🕵</span>
+                            <span class="menu-text">Audit Logs</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'admin_biometric_logs' %}" class="menu-item">
+                            <span class="menu-icon">🧬</span>
+                            <span class="menu-text">Biometric Access Logs</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    {% if notifications %}
+    <div class="notifications-section">
+        <div class="notifications-header">
+            <div class="section-icon">🔔</div>
+            <h4>System Notifications</h4>
+        </div>
+        <div class="notifications-content">
+            <ul class="notification-list">
+                {% for n in notifications %}
+                <li class="notification-item">
+                    <span class="notification-icon">⚠️</span>
+                    <span>{{ n.message }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

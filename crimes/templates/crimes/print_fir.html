@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Print FIR</title>
+    <style>
+        body {
+            font-family: "Times New Roman", serif;
+            margin: 40px;
+        }
+        h1 {
+            text-align: center;
+            text-decoration: underline;
+        }
+        .section {
+            margin-bottom: 15px;
+        }
+        strong {
+            width: 200px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body onload="window.print()">
+
+<h1>First Information Report (FIR)</h1>
+
+<div class="section"><strong>FIR Number:</strong> {{ fir.fir_number }}</div>
+<div class="section"><strong>Police Station:</strong> {{ fir.police_station.name }}</div>
+<div class="section"><strong>Informant Name:</strong> {{ fir.informant_name }}</div>
+<div class="section"><strong>Crime Category:</strong> {{ fir.crime_category.name }}</div>
+<div class="section"><strong>Date Registered:</strong> {{ fir.date_registered }}</div>
+<div class="section"><strong>Status:</strong> {{ fir.get_status_display }}</div>
+
+<hr>
+
+<p>
+    This FIR is generated electronically and is valid without signature.
+</p>
+
+</body>
+</html>
+

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Investigator Dashboard{% endblock %}
+
+{% block content %}
+
+<div class="card">
+    <h3><i class="fas fa-user-shield"></i> Investigator Dashboard</h3>
+
+    <p>Welcome <strong>{{ user.username }}</strong>.</p>
+
+    <div class="status">
+        <i class="fas fa-clock"></i>
+        You currently do <strong>not</strong> have any active case access.
+    </div>
+</div>
+
+<div class="logout">
+    <a href="{% url 'logout' %}">
+        <i class="fas fa-sign-out-alt"></i> Secure Logout
+    </a>
+</div>
+
+{% endblock %}

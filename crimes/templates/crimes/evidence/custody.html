@@ -1,0 +1,349 @@
+{% extends 'crimes/base.html' %}
+
+{% block title %}Update Evidence Custody - {{ evidence.evidence_bag_number }}{% endblock %}
+
+{% block content %}
+<style>
+/* ==================================================
+   POLICE EVIDENCE CUSTODY – OFFICIAL STYLE
+================================================== */
+
+:root {
+    --police-navy: #0b1f3a;
+    --police-blue: #1e3a8a;
+    --police-gold: #c9a227;
+    --police-gray: #f1f5f9;
+    --police-border: #cbd5e1;
+    --alert-red: #7f1d1d;
+    --alert-yellow: #92400e;
+}
+
+/* ---------- PAGE TITLE ---------- */
+h1.h2 {
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--police-navy);
+}
+
+/* ---------- BREADCRUMB ---------- */
+.breadcrumb {
+    background: transparent;
+    font-weight: 700;
+}
+
+.breadcrumb a {
+    color: var(--police-blue);
+    text-decoration: none;
+}
+
+/* ---------- CARDS ---------- */
+.card {
+    border: 1.5px solid var(--police-border);
+    border-radius: 4px;
+    box-shadow: none;
+}
+
+.card-header {
+    background: #f8fafc;
+    border-bottom: 2px solid var(--police-gold);
+    font-weight: 900;
+    color: var(--police-navy);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+
+/* ---------- ALERTS ---------- */
+.alert {
+    border-radius: 4px;
+    font-weight: 700;
+}
+
+.alert-info {
+    background: #eff6ff;
+    border-left: 6px solid var(--police-blue);
+    color: #0f172a;
+}
+
+.alert-warning {
+    background: #fff7ed;
+    border-left: 6px solid var(--alert-yellow);
+    color: #7c2d12;
+}
+
+/* ---------- FORM LABELS ---------- */
+.form-label {
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--police-navy);
+}
+
+/* ---------- INPUTS ---------- */
+.form-control,
+.form-select {
+    border-radius: 3px;
+    border: 1.5px solid var(--police-border);
+    font-weight: 600;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--police-blue);
+    box-shadow: none;
+}
+
+/* ---------- BUTTONS ---------- */
+.btn {
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    border-radius: 4px;
+}
+
+.btn-success {
+    background: #14532d;
+    border: none;
+}
+
+.btn-success:hover {
+    background: #052e16;
+}
+
+.btn-outline-secondary {
+    border: 2px solid var(--police-border);
+    font-weight: 700;
+}
+
+/* ---------- BADGES ---------- */
+.badge {
+    font-weight: 900;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+}
+
+.bg-success {
+    background: #14532d !important;
+}
+
+.bg-warning {
+    background: #92400e !important;
+    color: #fff !important;
+}
+
+/* ---------- TABLE ---------- */
+.table th {
+    background: var(--police-gray);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    color: var(--police-navy);
+}
+
+.table td {
+    font-weight: 600;
+    color: #111827;
+}
+
+/* ---------- TIMELINE (CHAIN OF CUSTODY) ---------- */
+.timeline {
+    position: relative;
+    padding-left: 20px;
+    border-left: 3px solid var(--police-border);
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.timeline-point {
+    position: absolute;
+    left: -11px;
+    top: 6px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--police-border);
+}
+
+.timeline-point-success {
+    background: #14532d;
+}
+
+.timeline-content {
+    padding-left: 10px;
+}
+
+.timeline-date {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #475569;
+    text-transform: uppercase;
+}
+
+.timeline-header strong {
+    color: var(--police-navy);
+    font-weight: 900;
+}
+
+.timeline-body {
+    font-size: 0.9rem;
+    color: #334155;
+    font-weight: 600;
+}
+
+/* ---------- REMOVE SOFT UI ---------- */
+* {
+    animation: none !important;
+    transition: none !important;
+}
+</style>
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <div>
+        <h1 class="h2">Update Evidence Custody</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'crimes:dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'crimes:fir_detail' evidence.fir.id %}">FIR {{ evidence.fir.fir_number }}</a></li>
+                <li class="breadcrumb-item active">Evidence Custody</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'crimes:fir_detail' evidence.fir.id %}" class="btn btn-sm btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Back to FIR
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Transfer Evidence Custody</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Current Custodian:</strong> {{ evidence.current_custodian.get_full_name }}
+                    <br>
+                    <strong>Evidence Bag:</strong> {{ evidence.evidence_bag_number }}
+                    <br>
+                    <strong>Description:</strong> {{ evidence.description|truncatechars:100 }}
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="custodian_id" class="form-label">Transfer To</label>
+                        <select class="form-select" id="custodian_id" name="custodian_id" required>
+                            <option value="">Select new custodian...</option>
+                            {% for user in available_users %}
+                            <option value="{{ user.id }}" 
+                                    {% if evidence.current_custodian.id == user.id %}selected{% endif %}>
+                                {{ user.get_full_name }} ({{ user.username }})
+                                {% if user.groups.all %}
+                                - {{ user.groups.first.name }}
+                                {% endif %}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="reason" class="form-label">Reason for Transfer</label>
+                        <textarea class="form-control" id="reason" name="reason" rows="3" 
+                                  placeholder="Enter reason for custody transfer..." required></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="transfer_location" class="form-label">Transfer Location (Optional)</label>
+                        <input type="text" class="form-control" id="transfer_location" name="transfer_location"
+                               placeholder="e.g., Evidence Room A, FSL Lab, Court Locker...">
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Chain of Custody Warning:</strong> All custody transfers are logged and audited. 
+                        Ensure proper handover procedures are followed.
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-exchange-alt"></i> Transfer Custody
+                        </button>
+                        <a href="{% url 'crimes:fir_detail' evidence.fir.id %}" class="btn btn-outline-secondary">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <!-- Chain of Custody History -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">Custody History</h6>
+            </div>
+            <div class="card-body">
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-point timeline-point-success"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-date">Today</div>
+                            <div class="timeline-header">
+                                <strong>Current: {{ evidence.current_custodian.get_full_name }}</strong>
+                            </div>
+                            <div class="timeline-body">
+                                Collected evidence
+                            </div>
+                        </div>
+                    </div>
+                    <!-- More timeline items would go here -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Evidence Details -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">Evidence Details</h6>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <tr>
+                        <th>Bag Number:</th>
+                        <td>{{ evidence.evidence_bag_number }}</td>
+                    </tr>
+                    <tr>
+                        <th>Type:</th>
+                        <td>{{ evidence.get_evidence_type_display }}</td>
+                    </tr>
+                    <tr>
+                        <th>Collected By:</th>
+                        <td>{{ evidence.collected_by.get_full_name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Collected On:</th>
+                        <td>{{ evidence.collected_date|date:"d/m/Y H:i" }}</td>
+                    </tr>
+                    <tr>
+                        <th>FSL Status:</th>
+                        <td>
+                            {% if evidence.sent_to_fsl %}
+                            <span class="badge bg-success">Sent to FSL</span>
+                            {% else %}
+                            <span class="badge bg-warning">In Station</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

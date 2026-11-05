@@ -1,0 +1,396 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+:root {
+    --police-blue: #0b1f3a;
+    --police-blue-dark: #08162b;
+    --police-gold: #c9a227;
+
+    --success: #065f46;
+    --warning: #92400e;
+
+    --border: #d1d5db;
+    --bg-light: #f1f5f9;
+
+    --text-dark: #111827;
+    --text-muted: #6b7280;
+}
+
+body {
+    background: var(--bg-light);
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+}
+
+/* ===== PAGE ===== */
+.trends-container {
+    min-height: 90vh;
+    padding: 2.5rem 1rem;
+}
+
+.content-wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* ===== HEADER ===== */
+.page-header {
+    background: white;
+    border: 1px solid var(--border);
+    border-left: 6px solid var(--police-blue);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.page-header h2 {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--police-blue);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.header-subtitle {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+/* ===== SUMMARY ===== */
+.stats-summary {
+    background: white;
+    border: 1px solid var(--border);
+    padding: 1.75rem;
+    margin-bottom: 2rem;
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+}
+
+.summary-item {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    padding: 1rem;
+    text-align: center;
+}
+
+.summary-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.summary-value {
+    margin-top: 0.4rem;
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--text-dark);
+}
+
+/* ===== TABS ===== */
+.tabs-container {
+    background: white;
+    border: 1px solid var(--border);
+    padding: 1.75rem;
+}
+
+.tabs {
+    display: flex;
+    gap: 0.75rem;
+    border-bottom: 2px solid var(--border);
+    margin-bottom: 1.5rem;
+}
+
+.tab {
+    padding: 0.6rem 1.2rem;
+    border: none;
+    background: white;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-transform: uppercase;
+    border-bottom: 3px solid transparent;
+}
+
+.tab.active {
+    color: var(--police-blue);
+    border-bottom-color: var(--police-blue);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* ===== TREND LIST ===== */
+.trend-header {
+    margin-bottom: 1rem;
+}
+
+.trend-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--police-blue);
+    text-transform: uppercase;
+}
+
+.trends-grid {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.trend-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    padding: 0.75rem 1rem;
+}
+
+.trend-date {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+.trend-count {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.count-value {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--police-blue);
+}
+
+.count-badge {
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid var(--police-blue);
+    color: var(--police-blue);
+}
+
+/* ===== ACTIONS ===== */
+.action-buttons {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 2px solid var(--border);
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 0.55rem 1.25rem;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn-primary {
+    background: var(--police-blue);
+    color: white;
+}
+
+.btn-secondary {
+    background: white;
+    color: var(--police-blue);
+    border: 1px solid var(--police-blue);
+}
+
+.btn:hover {
+    opacity: 0.9;
+}
+
+/* ===== EMPTY ===== */
+.empty-state {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 768px) {
+    .tabs {
+        flex-direction: column;
+    }
+
+    .trend-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+</style>
+
+
+<div class="trends-container">
+    <div class="content-wrapper">
+        <div class="page-header">
+            <div class="header-icon-wrapper">📊</div>
+            <h2>Complaint Trends Analytics</h2>
+            <p class="header-subtitle">Comprehensive insights into complaint patterns and volumes</p>
+        </div>
+
+        <div class="stats-summary">
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <div class="summary-icon">📈</div>
+                    <div class="summary-label">Total Daily Entries</div>
+                    <div class="summary-value">{{ daily|length }}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-icon">📅</div>
+                    <div class="summary-label">Total Monthly Entries</div>
+                    <div class="summary-value">{{ monthly|length }}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-icon">🔥</div>
+                    <div class="summary-label">Peak Activity</div>
+                    <div class="summary-value">High</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-icon">📊</div>
+                    <div class="summary-label">Trend Direction</div>
+                    <div class="summary-value">↗️</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tabs-container">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('daily')">
+                    📅 Daily Trends
+                </button>
+                <button class="tab" onclick="switchTab('monthly')">
+                    📆 Monthly Trends
+                </button>
+            </div>
+
+            <!-- Daily Tab Content -->
+            <div class="tab-content active" id="dailyTab">
+                <div class="trend-header">
+                    <div class="trend-icon">📅</div>
+                    <h3 class="trend-title">Daily Complaint Volume</h3>
+                </div>
+
+                {% if daily %}
+                <div class="trends-grid">
+                    {% for d in daily %}
+                    <div class="trend-item">
+                        <div class="trend-date">
+                            <div class="date-icon">📆</div>
+                            <div class="date-text">{{ d.day }}</div>
+                        </div>
+                        <div class="trend-count">
+                            <div class="count-value">{{ d.count }}</div>
+                            <div class="count-badge">Complaints</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">📭</div>
+                    <p class="empty-text">No daily trend data available</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Monthly Tab Content -->
+            <div class="tab-content" id="monthlyTab">
+                <div class="trend-header">
+                    <div class="trend-icon">📆</div>
+                    <h3 class="trend-title">Monthly Complaint Volume</h3>
+                </div>
+
+                {% if monthly %}
+                <div class="trends-grid">
+                    {% for m in monthly %}
+                    <div class="trend-item">
+                        <div class="trend-date">
+                            <div class="date-icon">📊</div>
+                            <div class="date-text">{{ m.month|date:"F Y" }}</div>
+                        </div>
+                        <div class="trend-count">
+                            <div class="count-value">{{ m.count }}</div>
+                            <div class="count-badge">Complaints</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">📭</div>
+                    <p class="empty-text">No monthly trend data available</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="action-buttons" style="margin-top: 30px; padding-top: 25px; border-top: 2px solid #e2e8f0;">
+                <a href="#" class="btn btn-primary">
+                    <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                        <path d="M3 17h14M10 3v10m0 0l-4-4m4 4l4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Export Report
+                </a>
+                <a href="#" class="btn btn-secondary">
+                    <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                        <path d="M4 4h12M4 10h12M4 16h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    View Detailed Analytics
+                </a>
+                <a href="javascript:history.back()" class="btn btn-secondary">
+                    <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                        <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function switchTab(tabName) {
+        // Remove active class from all tabs and contents
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+        });
+
+        // Add active class to selected tab and content
+        event.target.classList.add('active');
+        document.getElementById(tabName + 'Tab').classList.add('active');
+    }
+</script>
+
+{% endblock %}

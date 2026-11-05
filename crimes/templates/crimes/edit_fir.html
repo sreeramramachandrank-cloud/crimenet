@@ -1,0 +1,102 @@
+{% extends 'crimes/base.html' %}
+
+{% block title %}Edit FIR {{ fir.fir_number }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+
+    <!-- PAGE HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-uppercase">
+                <i class="fas fa-edit me-2"></i>
+                Edit FIR – {{ fir.fir_number }}
+            </h2>
+            <p class="text-muted mb-0">
+                Police Station: {{ fir.police_station.name }} ({{ fir.police_station.code }})
+            </p>
+        </div>
+        <a href="{% url 'crimes:fir_detail' fir.id %}" class="btn btn-outline-secondary btn-sm">
+            <i class="fas fa-arrow-left"></i> Back to FIR
+        </a>
+    </div>
+
+    <!-- FORM CARD -->
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h5 class="mb-0 text-uppercase fw-bold">
+                FIR Details
+            </h5>
+        </div>
+
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                {% if form.errors %}
+                <div class="alert alert-danger">
+                    <strong>Please correct the errors below.</strong>
+                </div>
+                {% endif %}
+
+                <div class="row g-3">
+
+                    <!-- FIR NUMBER -->
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">FIR Number</label>
+                        {{ form.fir_number }}
+                    </div>
+
+                    <!-- CRIME CATEGORY -->
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Crime Category</label>
+                        {{ form.crime_category }}
+                    </div>
+
+                    <!-- PRIORITY -->
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Priority</label>
+                        {{ form.priority }}
+                    </div>
+
+                    <!-- INFORMANT NAME -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Informant Name</label>
+                        {{ form.informant_name }}
+                    </div>
+
+                    <!-- INFORMANT MOBILE -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Informant Mobile</label>
+                        {{ form.informant_mobile }}
+                    </div>
+
+                    <!-- INCIDENT DESCRIPTION -->
+                    <div class="col-md-12">
+                        <label class="form-label fw-bold">Incident Description</label>
+                        {{ form.incident_description }}
+                    </div>
+
+                    <!-- SEQUENCE OF EVENTS -->
+                    <div class="col-md-12">
+                        <label class="form-label fw-bold">Sequence of Events</label>
+                        {{ form.sequence_of_events }}
+                    </div>
+
+                </div>
+
+                <!-- ACTION BUTTONS -->
+                <div class="mt-4 d-flex justify-content-end gap-2">
+                    <a href="{% url 'crimes:fir_detail' fir.id %}" class="btn btn-outline-secondary">
+                        Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Update FIR
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

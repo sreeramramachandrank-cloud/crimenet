@@ -1,0 +1,327 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    :root {
+        --police-blue: #0b1f3a;
+        --police-blue-dark: #08162b;
+        --police-gold: #c9a227;
+
+        --danger: #7f1d1d;
+        --warning: #92400e;
+
+        --border: #d1d5db;
+        --bg-light: #f1f5f9;
+
+        --text-dark: #111827;
+        --text-muted: #6b7280;
+    }
+
+    body {
+        background: var(--bg-light);
+        font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+    }
+
+    .grant-access-container {
+        min-height: 90vh;
+        padding: 2.5rem 1rem;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+    }
+
+    .form-wrapper {
+        max-width: 700px;
+        width: 100%;
+    }
+
+    .form-card {
+        background: white;
+        border: 1px solid var(--border);
+        padding: 2.5rem;
+    }
+
+    /* ===== HEADER ===== */
+    .form-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 1.5rem;
+    }
+
+    .form-card h2 {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--police-blue);
+        margin-bottom: 0.4rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .form-subtitle {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+    }
+
+    /* ===== INFO CARDS ===== */
+    .info-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .info-card {
+        border: 1px solid var(--border);
+        padding: 1rem;
+        text-align: center;
+        background: #f9fafb;
+    }
+
+    .info-card-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .info-card-value {
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--police-blue);
+        margin-top: 0.25rem;
+    }
+
+    /* ===== FORM ===== */
+    .form-group {
+        margin-bottom: 1.75rem;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 800;
+        color: var(--text-dark);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5rem;
+    }
+
+    .required-indicator {
+        color: var(--danger);
+        margin-left: 0.25rem;
+    }
+
+    input[type="text"],
+    input[type="datetime-local"],
+    textarea {
+        width: 100%;
+        padding: 0.65rem 0.75rem;
+        border: 1px solid var(--border);
+        font-size: 0.9rem;
+        font-family: inherit;
+    }
+
+    textarea {
+        resize: vertical;
+        min-height: 120px;
+    }
+
+    input:focus,
+    textarea:focus {
+        outline: none;
+        border-color: var(--police-blue);
+    }
+
+    .input-helper {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-top: 0.35rem;
+    }
+
+    .char-counter {
+        font-size: 0.7rem;
+        color: #9ca3af;
+        text-align: right;
+        margin-top: 0.25rem;
+    }
+
+    /* ===== SUBMIT BUTTON ===== */
+    .submit-button {
+        width: 100%;
+        padding: 0.75rem;
+        background: var(--police-blue);
+        color: white;
+        border: 1px solid var(--police-blue);
+        font-size: 0.85rem;
+        font-weight: 800;
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 1rem;
+    }
+
+    .submit-button:hover {
+        background: var(--police-blue-dark);
+    }
+
+    /* ===== WARNING ===== */
+    .warning-notice {
+        margin-top: 2rem;
+        padding: 1.25rem;
+        background: #fffbeb;
+        border: 1px solid #facc15;
+        border-left: 6px solid #ca8a04;
+        font-size: 0.8rem;
+        color: var(--warning);
+    }
+
+    .warning-title {
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.4rem;
+    }
+
+    .warning-text {
+        margin: 0;
+        color: var(--text-dark);
+        line-height: 1.5;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 640px) {
+        .form-card {
+            padding: 2rem 1.5rem;
+        }
+
+        .form-card h2 {
+            font-size: 1.6rem;
+        }
+    }
+</style>
+
+
+<div class="grant-access-container">
+    <div class="form-wrapper">
+        <div class="form-card">
+            <div class="form-header">
+                <div class="header-icon">🔐</div>
+                <h2>Grant Investigation Access</h2>
+                <p class="form-subtitle">Authorize temporary access for investigative purposes</p>
+            </div>
+
+            <div class="info-cards">
+                <div class="info-card">
+                    <div class="info-card-icon">⏱️</div>
+                    <div class="info-card-label">Access Type</div>
+                    <div class="info-card-value">Temporary</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-icon">🔒</div>
+                    <div class="info-card-label">Security</div>
+                    <div class="info-card-value">High Level</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-card-icon">📊</div>
+                    <div class="info-card-label">Auto Logout</div>
+                    <div class="info-card-value">Enabled</div>
+                </div>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label>
+                        <span>Case Reference / FIR Number</span>
+                        <span class="required-indicator">*</span>
+                    </label>
+                    <div class="input-icon">
+                        <input type="text" name="case_reference" placeholder="e.g., FIR-2026-001234" required>
+                    </div>
+                    <div class="input-helper">
+                        Enter the official case reference or FIR number
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <span>Purpose of Investigation</span>
+                        <span class="required-indicator">*</span>
+                    </label>
+                    <textarea 
+                        name="purpose" 
+                        placeholder="Provide a detailed description of the investigation purpose..."
+                        required
+                        id="purposeTextarea"
+                        maxlength="500"></textarea>
+                    <div class="char-counter">
+                        <span id="charCount">0</span> / 500 characters
+                    </div>
+                    <div class="input-helper">
+                        Clearly describe the reason for granting access
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <span>Access Valid Until</span>
+                        <span class="required-indicator">*</span>
+                    </label>
+                    <input type="datetime-local" name="access_end" required id="accessEnd">
+                    <div class="input-helper">
+                        Investigator access will automatically expire at this time
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-button">
+                    Grant Access
+                </button>
+            </form>
+
+            <div class="warning-notice">
+                <div class="warning-icon">⚠️</div>
+                <div class="warning-content">
+                    <div class="warning-title">Important Security Notice</div>
+                    <p class="warning-text">
+                        The investigator will be automatically logged out after the access expiry time. 
+                        All access activities will be logged for audit purposes. Ensure you have proper 
+                        authorization before granting access.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Character counter for textarea
+    const textarea = document.getElementById('purposeTextarea');
+    const charCount = document.getElementById('charCount');
+
+    textarea.addEventListener('input', function() {
+        charCount.textContent = this.value.length;
+    });
+
+    // Set minimum datetime to current time
+    const accessEndInput = document.getElementById('accessEnd');
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    accessEndInput.min = now.toISOString().slice(0, 16);
+
+    // Form validation
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const accessEnd = new Date(accessEndInput.value);
+        const currentTime = new Date();
+
+        if (accessEnd <= currentTime) {
+            e.preventDefault();
+            alert('Access expiry time must be in the future!');
+            accessEndInput.focus();
+        }
+    });
+</script>
+
+{% endblock %}

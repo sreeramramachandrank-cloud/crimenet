@@ -1,0 +1,1447 @@
+{% extends 'crimes/base.html' %}
+
+{% block title %}FIR {{ fir.fir_number }} - CrimeNET{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <div>
+        <h1 class="h2">FIR: {{ fir.fir_number }}</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'crimes:dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'crimes:fir_list' %}">All FIRs</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ fir.fir_number }}</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <a href="{% url 'crimes:print_fir' fir.id %}" class="btn btn-sm btn-outline-secondary" target="_blank">
+                <i class="fas fa-print"></i> Print
+            </a>
+            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                <i class="fas fa-cog"></i> Actions
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'crimes:fir_edit' fir.id %}"><i class="fas fa-edit"></i> Edit FIR</a></li>
+                <li><a class="dropdown-item" href="{% url 'crimes:fir_share' fir.id %}"><i class="fas fa-share"></i> Share</a></li>
+                <li><a class="dropdown-item" href="{% url 'crimes:fir_generate_qr' fir.id %}"><i class="fas fa-qrcode"></i> Generate QR</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-danger" href="{% url 'crimes:fir_delete' fir.id %}"><i class="fas fa-trash"></i> Delete</a></li>
+            </ul>
+        </div>
+        <a href="{% url 'crimes:dashboard' %}" class="btn btn-sm btn-police">
+            <i class="fas fa-home"></i> Dashboard
+        </a>
+    </div>
+</div>
+
+<!-- Status & Priority Badges -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-1">Status</h6>
+                        <span class="status-badge status-{{ fir.status|lower }} fs-6">
+                            {{ fir.get_status_display }}
+                        </span>
+                    </div>
+                    <div>
+                        <h6 class="mb-1">Priority</h6>
+                        <span class="priority-badge priority-{{ fir.priority|lower }}">
+                            {{ fir.get_priority_display|slice:"3:" }}
+                        </span>
+                    </div>
+                    <div>
+                        <h6 class="mb-1">Station</h6>
+                        <span class="badge bg-secondary">{{ fir.police_station.code }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h6>Quick Actions</h6>
+                <div class="btn-group w-100">
+                    <a href="{% url 'crimes:add_witness' fir.id %}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-user-plus"></i> Add Witness
+                    </a>
+                    <a href="{% url 'crimes:add_evidence' fir.id %}" class="btn btn-sm btn-outline-success">
+                        <i class="fas fa-fingerprint"></i> Add Evidence
+                    </a>
+                    <a href="{% url 'crimes:add_investigation_update' fir.id %}" class="btn btn-sm btn-outline-warning">
+                        <i class="fas fa-clipboard-list"></i> Update Investigation
+                    </a>
+                    <a href="{% url 'crimes:fir_biometric' fir.id %}" class="btn btn-sm btn-outline-danger">
+                        <i class="fas fa-camera"></i> Capture Biometrics
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tabs Navigation -->
+<ul class="nav nav-tabs" id="firTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button">
+            <i class="fas fa-info-circle"></i> Overview
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="informant-tab" data-bs-toggle="tab" data-bs-target="#informant" type="button">
+            <i class="fas fa-user"></i> Informant
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="incident-tab" data-bs-toggle="tab" data-bs-target="#incident" type="button">
+            <i class="fas fa-map-marker-alt"></i> Incident
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="accused-tab" data-bs-toggle="tab" data-bs-target="#accused" type="button">
+            <i class="fas fa-user-secret"></i> Accused/Victim
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="investigation-tab" data-bs-toggle="tab" data-bs-target="#investigation" type="button">
+            <i class="fas fa-search"></i> Investigation
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="audit-tab" data-bs-toggle="tab" data-bs-target="#audit" type="button">
+            <i class="fas fa-history"></i> Audit Log
+        </button>
+    </li>
+</ul>
+
+<!-- Tab Content -->
+<div class="tab-content" id="firTabsContent">
+    <!-- Overview Tab -->
+    <div class="tab-pane fade show active" id="overview" role="tabpanel">
+        <div class="row mt-4">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Case Summary</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <table class="table table-sm">
+                                    <tr>
+                                        <th width="40%">FIR Number:</th>
+                                        <td><strong>{{ fir.fir_number }}</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Registered On:</th>
+                                        <td>{{ fir.date_registered|date:"d/m/Y" }} at {{ fir.time_registered|time:"H:i" }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Police Station:</th>
+                                        <td>{{ fir.police_station.name }} ({{ fir.police_station.code }})</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Officer In Charge:</th>
+                                        <td>{{ fir.officer_in_charge.get_full_name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Crime Category:</th>
+                                        <td>{{ fir.crime_category.section }} - {{ fir.crime_category.description }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <table class="table table-sm">
+                                    <tr>
+                                        <th width="40%">Status:</th>
+                                        <td>
+                                            <span class="status-badge status-{{ fir.status|lower }}">
+                                                {{ fir.get_status_display }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Priority:</th>
+                                        <td>
+                                            <span class="priority-badge priority-{{ fir.priority|lower }}">
+                                                {{ fir.get_priority_display|slice:"3:" }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Biometric Status:</th>
+                                        <td>
+                                            {% if fir.biometric_status == 'VERIFIED' %}
+                                            <span class="badge bg-success">{{ fir.get_biometric_status_display }}</span>
+                                            {% elif fir.biometric_status == 'MATCH_FOUND' %}
+                                            <span class="badge bg-danger">{{ fir.get_biometric_status_display }}</span>
+                                            {% else %}
+                                            <span class="badge bg-warning text-dark">{{ fir.get_biometric_status_display }}</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Witness Count:</th>
+                                        <td>{{ fir.witness_count }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Property Value:</th>
+                                        <td>₹{{ fir.property_value }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h6>Special Case Flags</h6>
+                            <div>
+                                {% if fir.is_sensitive %}
+                                <span class="badge bg-danger me-2">Sensitive</span>
+                                {% endif %}
+                                {% if fir.is_cyber_crime %}
+                                <span class="badge bg-info me-2">Cyber Crime</span>
+                                {% endif %}
+                                {% if fir.is_women_related %}
+                                <span class="badge bg-pink me-2">Women Related</span>
+                                {% endif %}
+                                {% if fir.is_sc_st %}
+                                <span class="badge bg-purple me-2">SC/ST Act</span>
+                                {% endif %}
+                                {% if fir.is_child_victim %}
+                                <span class="badge bg-warning me-2">Child Victim</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Incident Description -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Incident Description</h5>
+                    </div>
+                    <div class="card-body">
+                        <h6>Detailed Description:</h6>
+                        <p>{{ fir.incident_description|linebreaks }}</p>
+                        
+                        <h6 class="mt-3">Sequence of Events:</h6>
+                        <p>{{ fir.sequence_of_events|linebreaks }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Column -->
+            <div class="col-md-4">
+                <!-- Informant Photo -->
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">Informant Photo</h6>
+                    </div>
+                    <div class="card-body text-center">
+                        {% if fir.informant_photo %}
+                        <img src="{{ fir.informant_photo.url }}" alt="Informant Photo" class="img-fluid rounded" style="max-height: 200px;">
+                        {% else %}
+                        <div class="text-muted">
+                            <i class="fas fa-user-circle fa-5x"></i>
+                            <p class="mt-2">No photo uploaded</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Criminal Match (if any) -->
+                {% if fir.criminal_match %}
+                <div class="card mt-4 border-danger">
+                    <div class="card-header bg-danger text-white">
+                        <h6 class="mb-0"><i class="fas fa-exclamation-triangle"></i> Criminal Database Match</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-danger">
+                            <strong>Match Found!</strong> Informant matches criminal record.
+                        </div>
+                        <p><strong>Match Confidence:</strong> {{ fir.match_confidence }}%</p>
+                        <p><strong>Criminal ID:</strong> {{ fir.criminal_match.criminal_id }}</p>
+                        <a href="{% url 'crimes:criminal_detail' fir.criminal_match.id %}" class="btn btn-sm btn-danger">
+                            <i class="fas fa-external-link-alt"></i> View Criminal Record
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Recent Updates -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h6 class="mb-0">Recent Updates</h6>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            {% for update in fir.investigation_updates.all|slice:":3" %}
+                            <li class="mb-2">
+                                <small class="text-muted">{{ update.update_date|date:"d/m H:i" }}</small><br>
+                                <strong>{{ update.get_update_type_display }}</strong><br>
+                                <small>{{ update.description|truncatechars:50 }}</small>
+                            </li>
+                            {% empty %}
+                            <li class="text-muted">No updates yet</li>
+                            {% endfor %}
+                        </ul>
+                        <button type="button"
+        class="btn btn-sm btn-outline-primary w-100"
+        data-bs-toggle="tab"
+        data-bs-target="#investigation">
+    <i class="fas fa-search me-1"></i>
+    View All Updates
+</button>
+
+                    </div>
+                </div>
+                
+                <!-- QR Code -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h6 class="mb-0">FIR QR Code</h6>
+                    </div>
+                    <div class="card-body text-center">
+                        {% if fir.qr_code %}
+                        <img src="{{ fir.qr_code.url }}" alt="FIR QR Code" class="img-fluid" style="max-width: 150px;">
+                        {% else %}
+                        <div class="text-muted">
+                            <i class="fas fa-qrcode fa-5x"></i>
+                            <p class="mt-2">QR Code not generated</p>
+                        </div>
+                        {% endif %}
+                        <small class="text-muted">Scan to verify FIR authenticity</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Informant Tab -->
+    <div class="tab-pane fade" id="informant" role="tabpanel">
+        <div class="row mt-4">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Informant Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <table class="table table-sm">
+                                    <tr>
+                                        <th width="40%">Full Name:</th>
+                                        <td>{{ fir.informant_name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Father's Name:</th>
+                                        <td>{{ fir.informant_father_name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Age/Gender:</th>
+                                        <td>{{ fir.informant_age }} years / {{ fir.get_informant_gender_display }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Occupation:</th>
+                                        <td>{{ fir.informant_occupation }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Relation to Case:</th>
+                                        <td>{{ fir.get_relation_to_case_display }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <table class="table table-sm">
+                                    <tr>
+                                        <th width="40%">Mobile:</th>
+                                        <td>
+                                            {{ fir.informant_mobile }}
+                                            {% if fir.mobile_verified %}
+                                            <span class="badge bg-success ms-2">Verified</span>
+                                            {% else %}
+                                            <span class="badge bg-warning ms-2">Not Verified</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Email:</th>
+                                        <td>{{ fir.informant_email|default:"Not provided" }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Aadhaar:</th>
+                                        <td>
+                                            {{ fir.informant_aadhaar|default:"Not provided" }}
+                                            {% if fir.aadhaar_verified %}
+                                            <span class="badge bg-success ms-2">Verified</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Voter ID:</th>
+                                        <td>{{ fir.informant_voter_id|default:"Not provided" }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Driving License:</th>
+                                        <td>{{ fir.informant_driving_license|default:"Not provided" }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h6>Address</h6>
+                            <p>{{ fir.informant_address|linebreaks }}</p>
+                            <p>{{ fir.informant_district }}, {{ fir.informant_state }} - {{ fir.informant_pincode }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Biometric Details -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Biometric Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="text-center mb-3">
+                                    <h6>Photo Hash</h6>
+                                    <code class="d-block bg-light p-2 rounded">{{ fir.photo_hash|truncatechars:50 }}</code>
+                                    <small class="text-muted">SHA256 hash of informant photo</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="text-center mb-3">
+                                    <h6>Thumb Impression Hash</h6>
+                                    {% if fir.thumb_hash %}
+                                    <code class="d-block bg-light p-2 rounded">{{ fir.thumb_hash|truncatechars:50 }}</code>
+                                    <small class="text-muted">SHA256 hash of thumb impression</small>
+                                    {% else %}
+                                    <div class="text-muted">
+                                        <i class="fas fa-fingerprint fa-3x"></i>
+                                        <p class="mt-2">Not captured</p>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Column for Informant -->
+            <div class="col-md-4">
+                <!-- Thumb Impression -->
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">Thumb Impression</h6>
+                    </div>
+                    <div class="card-body text-center">
+                        {% if fir.thumb_impression %}
+                        <img src="{{ fir.thumb_impression.url }}" alt="Thumb Impression" class="img-fluid" style="max-height: 150px;">
+                        {% else %}
+                        <div class="text-muted">
+                            <i class="fas fa-fingerprint fa-5x"></i>
+                            <p class="mt-2">Thumb impression not captured</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Digital Signature -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h6 class="mb-0">Digital Signature</h6>
+                    </div>
+                    <div class="card-body text-center">
+                        {% if fir.digital_signature %}
+                        <div class="signature-preview bg-light p-3 rounded">
+                            <!-- Signature would be rendered here -->
+                            <i class="fas fa-signature fa-4x text-muted"></i>
+                            <p class="mt-2">Signature captured</p>
+                        </div>
+                        {% else %}
+                        <div class="text-muted">
+                            <i class="fas fa-signature fa-5x"></i>
+                            <p class="mt-2">Digital signature not captured</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Biometric Verification -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h6 class="mb-0">Biometric Verification</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-primary" type="button">
+                                <i class="fas fa-fingerprint"></i> Capture Biometrics
+                            </button>
+                            <button class="btn btn-warning" type="button">
+                                <i class="fas fa-search"></i> Verify Against Database
+                            </button>
+                            <button class="btn btn-success" type="button">
+                                <i class="fas fa-check-circle"></i> Mark as Verified
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Incident Tab -->
+    <div class="tab-pane fade" id="incident" role="tabpanel">
+        <div class="row mt-4">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Incident Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <table class="table table-sm">
+                                    <tr>
+                                        <th width="40%">Date of Incident:</th>
+                                        <td>{{ fir.incident_date|date:"d/m/Y" }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Time of Incident:</th>
+                                        <td>{{ fir.incident_time|time:"H:i" }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Date Reported:</th>
+                                        <td>{{ fir.date_registered|date:"d/m/Y" }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Delay in Reporting:</th>
+                                        <td>{{ fir.get_delay_in_reporting_display }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <table class="table table-sm">
+                                    <tr>
+                                        <th width="40%">Crime Category:</th>
+                                        <td>{{ fir.crime_category.section }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Other IPC Sections:</th>
+                                        <td>{{ fir.other_ipc_sections|default:"None" }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Local Act:</th>
+                                        <td>{{ fir.local_act|default:"None" }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>GPS Coordinates:</th>
+                                        <td>
+                                            {% if fir.incident_latitude and fir.incident_longitude %}
+                                            {{ fir.incident_latitude }}, {{ fir.incident_longitude }}
+                                            {% else %}
+                                            Not recorded
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <h6>Exact Location</h6>
+                            <p>{{ fir.incident_location|linebreaks }}</p>
+                            
+                            {% if fir.incident_landmark %}
+                            <h6 class="mt-3">Nearest Landmark</h6>
+                            <p>{{ fir.incident_landmark }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        {% if fir.delay_reason %}
+                        <div class="mt-4">
+                            <h6>Reason for Delay in Reporting</h6>
+                            <p>{{ fir.delay_reason|linebreaks }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Location Map -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Location Map</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="incidentMap" style="height: 400px; background-color: #f8f9fa; border-radius: 8px;">
+                            <div class="d-flex justify-content-center align-items-center h-100">
+                                <div class="text-center">
+                                    <i class="fas fa-map-marker-alt fa-4x text-muted mb-3"></i>
+                                    <p>Map will be displayed here if GPS coordinates are available</p>
+                                    {% if fir.incident_latitude and fir.incident_longitude %}
+                                    <button class="btn btn-police" onclick="loadMap()">
+                                        <i class="fas fa-map"></i> Load Map
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Column for Incident -->
+            <div class="col-md-4">
+                <!-- Crime Category Details -->
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0">Crime Category Details</h6>
+                    </div>
+                    <div class="card-body">
+                        <h5>{{ fir.crime_category.section }}</h5>
+                        <p class="mb-2">{{ fir.crime_category.description }}</p>
+                        <p><strong>Punishment:</strong> {{ fir.crime_category.punishment }}</p>
+                        <div class="mt-3">
+                            {% if fir.crime_category.is_cognizable %}
+                            <span class="badge bg-primary">Cognizable</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Non-Cognizable</span>
+                            {% endif %}
+                            
+                            {% if fir.crime_category.is_bailable %}
+                            <span class="badge bg-success ms-2">Bailable</span>
+                            {% else %}
+                            <span class="badge bg-danger ms-2">Non-Bailable</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Nearby Police Stations -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h6 class="mb-0">Nearby Police Stations</h6>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            {% for station in nearby_stations %}
+                            <li class="list-group-item">
+                                <strong>{{ station.code }}</strong> - {{ station.name }}<br>
+                                <small class="text-muted">{{ station.distance|floatformat:2 }} km away</small>
+                            </li>
+                            {% empty %}
+                            <li class="list-group-item text-muted">No nearby stations data</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Similar Cases -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h6 class="mb-0">Similar Cases</h6>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            {% for similar in similar_cases %}
+                            <li class="mb-2">
+                                <a href="{% url 'crimes:fir_detail' similar.id %}" class="text-decoration-none">
+                                    <strong>{{ similar.fir_number }}</strong><br>
+                                    <small>{{ similar.incident_date|date:"d/m/Y" }} - {{ similar.informant_name }}</small>
+                                </a>
+                            </li>
+                            {% empty %}
+                            <li class="text-muted">No similar cases found</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Accused/Victim Tab -->
+    <div class="tab-pane fade" id="accused" role="tabpanel">
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <!-- Accused Details -->
+                <div class="card">
+                    <div class="card-header bg-danger text-white">
+                        <h5 class="mb-0"><i class="fas fa-user-secret"></i> Accused Details</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if fir.accused_name %}
+                        <table class="table table-sm">
+                            <tr>
+                                <th width="40%">Name:</th>
+                                <td>{{ fir.accused_name }}</td>
+                            </tr>
+                            <tr>
+                                <th>Father's Name:</th>
+                                <td>{{ fir.accused_father_name|default:"Not provided" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Age/Gender:</th>
+                                <td>
+                                    {% if fir.accused_age %}{{ fir.accused_age }} years / {% endif %}
+                                    {{ fir.get_accused_gender_display|default:"Not provided" }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Occupation:</th>
+                                <td>{{ fir.accused_occupation|default:"Not provided" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Aadhaar:</th>
+                                <td>{{ fir.accused_aadhaar|default:"Not provided" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Mobile:</th>
+                                <td>{{ fir.accused_mobile|default:"Not provided" }}</td>
+                            </tr>
+                        </table>
+                        
+                        <div class="mt-3">
+                            <h6>Address</h6>
+                            <p>{{ fir.accused_address|linebreaks|default:"Not provided" }}</p>
+                        </div>
+                        
+                        <!-- Accused Photo -->
+                        <div class="mt-4 text-center">
+                            <h6>Accused Photo</h6>
+                            {% if fir.accused_photo %}
+                            <img src="{{ fir.accused_photo.url }}" alt="Accused Photo" class="img-fluid rounded" style="max-height: 150px;">
+                            {% else %}
+                            <div class="text-muted">
+                                <i class="fas fa-user-slash fa-3x"></i>
+                                <p class="mt-2">Photo not available</p>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% else %}
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-user-secret fa-4x mb-3"></i>
+                            <h5>Accused Details Not Available</h5>
+                            <p>Accused information has not been recorded yet.</p>
+                            <button class="btn btn-outline-danger">
+                                <i class="fas fa-plus"></i> Add Accused Details
+                            </button>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <!-- Victim Details -->
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="fas fa-user-injured"></i> Victim Details</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if fir.victim_name or fir.victim_condition %}
+                        <table class="table table-sm">
+                            <tr>
+                                <th width="40%">Name:</th>
+                                <td>{{ fir.victim_name|default:"Same as Informant" }}</td>
+                            </tr>
+                            <tr>
+                                <th>Age/Gender:</th>
+                                <td>
+                                    {% if fir.victim_age %}{{ fir.victim_age }} years / {% endif %}
+                                    {{ fir.get_victim_gender_display|default:"Not provided" }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Condition:</th>
+                                <td>{{ fir.victim_condition|default:"Not specified" }}</td>
+                            </tr>
+                        </table>
+                        
+                        {% if fir.victim_address %}
+                        <div class="mt-3">
+                            <h6>Victim Address</h6>
+                            <p>{{ fir.victim_address|linebreaks }}</p>
+                        </div>
+                        {% endif %}
+                        {% else %}
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-user-injured fa-4x mb-3"></i>
+                            <h5>Victim Details Not Specified</h5>
+                            <p>Victim is same as informant or details not recorded separately.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Property Details -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-gem"></i> Property Details</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if fir.property_involved %}
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle"></i> Property was stolen/damaged in this incident
+                        </div>
+                        
+                        <h6>Description:</h6>
+                        <p>{{ fir.property_description|linebreaks }}</p>
+                        
+                        <div class="mt-3">
+                            <h6>Estimated Value:</h6>
+                            <h4 class="text-danger">₹{{ fir.property_value }}</h4>
+                        </div>
+                        {% else %}
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-box-open fa-3x mb-3"></i>
+                            <h5>No Property Involved</h5>
+                            <p>No property was stolen or damaged in this incident.</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Witness Summary -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-users"></i> Witnesses ({{ fir.witnesses.count }})</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if fir.witnesses.exists %}
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Age</th>
+                                        <th>Mobile</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for witness in fir.witnesses.all|slice:":3" %}
+                                    <tr>
+                                        <td>{{ witness.name }}</td>
+                                        <td>{{ witness.age }}</td>
+                                        <td>{{ witness.mobile|default:"-" }}</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <a href="#" class="btn btn-sm btn-outline-primary w-100">
+                            View All Witnesses
+                        </a>
+                        {% else %}
+                        <div class="text-center text-muted py-3">
+                            <i class="fas fa-users-slash fa-3x mb-2"></i>
+                            <p>No witnesses recorded yet</p>
+                            <a href="{% url 'crimes:add_witness' fir.id %}" class="btn btn-sm btn-primary">
+                                <i class="fas fa-user-plus"></i> Add Witness
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Investigation Tab -->
+    <div class="tab-pane fade" id="investigation" role="tabpanel">
+        <div class="row mt-4">
+            <div class="col-md-8">
+                <!-- Investigation Updates -->
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Investigation Updates</h5>
+                        <a href="{% url 'crimes:add_investigation_update' fir.id %}" class="btn btn-sm btn-police">
+                            <i class="fas fa-plus"></i> Add Update
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        {% if fir.investigation_updates.exists %}
+                        <div class="timeline">
+                            {% for update in fir.investigation_updates.all %}
+                            <div class="timeline-item {% cycle '' 'timeline-item-right' %}">
+                                <div class="timeline-point {% cycle 'timeline-point-primary' 'timeline-point-success' 'timeline-point-warning' 'timeline-point-danger' %}"></div>
+                                <div class="timeline-content">
+                                    <div class="timeline-date">
+                                        {{ update.update_date|date:"d M Y, H:i" }}
+                                        <span class="badge bg-secondary ms-2">{{ update.get_update_type_display }}</span>
+                                    </div>
+                                    <div class="timeline-header">
+                                        <strong>{{ update.updated_by.get_full_name }}</strong>
+                                    </div>
+                                    <div class="timeline-body">
+                                        {{ update.description|linebreaks }}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="text-center text-muted py-5">
+                            <i class="fas fa-clipboard-list fa-4x mb-3"></i>
+                            <h5>No Investigation Updates</h5>
+                            <p>Start the investigation by adding the first update.</p>
+                            <a href="{% url 'crimes:add_investigation_update' fir.id %}" class="btn btn-police">
+                                <i class="fas fa-plus"></i> Add First Update
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Evidence Collected -->
+                <div class="card mt-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Evidence Collected</h5>
+                        <a href="{% url 'crimes:add_evidence' fir.id %}" class="btn btn-sm btn-police">
+                            <i class="fas fa-plus"></i> Add Evidence
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        {% if fir.evidences.exists %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Type</th>
+                                        <th>Description</th>
+                                        <th>Collected By</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for evidence in fir.evidences.all %}
+                                    <tr>
+                                        <td>
+                                            <span class="badge bg-info">{{ evidence.get_evidence_type_display }}</span>
+                                        </td>
+                                        <td>{{ evidence.description|truncatechars:50 }}</td>
+                                        <td>{{ evidence.collected_by.get_full_name }}</td>
+                                        <td>{{ evidence.collected_date|date:"d/m/Y" }}</td>
+                                        <td>
+                                            {% if evidence.sent_to_fsl %}
+                                            <span class="badge bg-success">Sent to FSL</span>
+                                            {% else %}
+                                            <span class="badge bg-warning">In Station</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-fingerprint fa-4x mb-3"></i>
+                            <h5>No Evidence Collected</h5>
+                            <p>Start collecting evidence for this case.</p>
+                            <a href="{% url 'crimes:add_evidence' fir.id %}" class="btn btn-police">
+                                <i class="fas fa-plus"></i> Add Evidence
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Column for Investigation -->
+            <div class="col-md-4">
+                <!-- Investigation Team -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Investigation Team</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <h6>Officer In Charge</h6>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar me-3">
+                                    <i class="fas fa-user-circle fa-2x"></i>
+                                </div>
+                                <div>
+                                    <strong>{{ fir.officer_in_charge.get_full_name }}</strong><br>
+                                    <small class="text-muted">{{ fir.officer_in_charge.email }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {% if fir.second_officer %}
+                        <div class="mb-3">
+                            <h6>Second Officer</h6>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar me-3">
+                                    <i class="fas fa-user-circle fa-2x"></i>
+                                </div>
+                                <div>
+                                    <strong>{{ fir.second_officer.get_full_name }}</strong><br>
+                                    <small class="text-muted">{{ fir.second_officer.email }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if fir.investigating_officer %}
+                        <div class="mb-3">
+                            <h6>Investigating Officer</h6>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar me-3">
+                                    <i class="fas fa-user-shield fa-2x"></i>
+                                </div>
+                                <div>
+                                    <strong>{{ fir.investigating_officer.get_full_name }}</strong><br>
+                                    <small class="text-muted">Assigned on: {{ fir.io_assigned_date|date:"d/m/Y" }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="mt-4">
+                            <button class="btn btn-outline-primary w-100">
+                                <i class="fas fa-user-plus"></i> Assign Team Member
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Investigation Status -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Investigation Status</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="progress mb-3" style="height: 25px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 60%;" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100">
+                                60% Complete
+                            </div>
+                        </div>
+                        
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                FIR Registered
+                                <span class="badge bg-success"><i class="fas fa-check"></i></span>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                Site Visit Completed
+                                <span class="badge bg-success"><i class="fas fa-check"></i></span>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                Witness Statements
+                                <span class="badge bg-warning">2/4</span>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                Evidence Collected
+                                <span class="badge bg-warning">3/5</span>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                Suspect Identified
+                                <span class="badge bg-danger"><i class="fas fa-times"></i></span>
+                            </div>
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                Chargesheet Filed
+                                <span class="badge bg-danger"><i class="fas fa-times"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Next Steps -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Recommended Next Steps</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                Complete witness statements
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                Collect remaining evidence
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-exclamation-circle text-warning me-2"></i>
+                                Identify suspect(s)
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-clock text-secondary me-2"></i>
+                                Prepare chargesheet
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Audit Log Tab -->
+    <div class="tab-pane fade" id="audit" role="tabpanel">
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Audit Trail</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Timestamp</th>
+                                        <th>Action</th>
+                                        <th>User</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for log in fir.audit_logs.all %}
+                                    <tr>
+                                        <td>{{ log.timestamp|date:"d/m/Y H:i:s" }}</td>
+                                        <td>
+                                            <span class="badge bg-info">{{ log.get_action_display }}</span>
+                                        </td>
+                                        <td>{{ log.user.get_full_name|default:log.user.username }}</td>
+                                        <td>{{ log.description }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted py-4">
+                                            <i class="fas fa-history fa-3x mb-3"></i>
+                                            <h5>No Audit Logs</h5>
+                                            <p>No activity has been logged for this FIR yet.</p>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Activity Statistics -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Activity Statistics</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3 text-center">
+                                <div class="display-4">{{ fir.audit_logs.count }}</div>
+                                <small class="text-muted">Total Activities</small>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <div class="display-4">{{ fir.investigation_updates.count }}</div>
+                                <small class="text-muted">Investigation Updates</small>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <div class="display-4">{{ fir.evidences.count }}</div>
+                                <small class="text-muted">Evidence Items</small>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <div class="display-4">{{ fir.witnesses.count }}</div>
+                                <small class="text-muted">Witnesses</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Initialize DataTables
+        $('.data-table').DataTable({
+            "order": [[0, 'desc']],
+            "pageLength": 10
+        });
+        
+        // Tab click tracking
+        $('button[data-bs-toggle="tab"]').on('click', function(e) {
+            const tabId = $(this).attr('data-bs-target');
+            // You could log tab changes here if needed
+        });
+        
+        // Map loading function
+        window.loadMap = function() {
+            const mapElement = document.getElementById('incidentMap');
+            if (mapElement) {
+                mapElement.innerHTML = `
+                    <div class="text-center p-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading map...</span>
+                        </div>
+                        <p class="mt-3">Loading map...</p>
+                    </div>
+                `;
+                
+                // Simulate map loading
+                setTimeout(() => {
+                    mapElement.innerHTML = `
+                        <div class="text-center p-5">
+                            <i class="fas fa-map-marked-alt fa-5x text-primary mb-3"></i>
+                            <h5>Map would be displayed here</h5>
+                            <p class="text-muted">Showing location: ${ {% if fir.incident_latitude %}{{ fir.incident_latitude }}, {{ fir.incident_longitude }}{% endif %} }</p>
+                            <small class="text-muted">(Map integration requires Google Maps/OpenStreetMap API)</small>
+                        </div>
+                    `;
+                }, 1500);
+            }
+        };
+    });
+</script>
+
+<style>
+/* =====================================================
+   KERALA POLICE – FIR DETAIL VIEW (CCTNS STYLE)
+===================================================== */
+:root {
+    --kp-primary: #0b2545;
+    --kp-secondary: #133e7c;
+    --kp-border: #d1d5db;
+    --kp-bg: #f8fafc;
+
+    --kp-success: #166534;
+    --kp-danger: #991b1b;
+    --kp-warning: #b45309;
+    --kp-info: #075985;
+}
+
+/* =====================================================
+   GLOBAL
+===================================================== */
+body {
+    background-color: var(--kp-bg);
+    font-family: "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+/* =====================================================
+   HEADINGS
+===================================================== */
+h1.h2 {
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--kp-primary);
+}
+
+h5, h6 {
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.6px;
+    color: var(--kp-primary);
+}
+
+/* =====================================================
+   CARDS
+===================================================== */
+.card {
+    border-radius: 6px;
+    border: 1px solid var(--kp-border);
+    box-shadow: none;
+}
+
+.card-header {
+    background-color: #f1f5f9;
+    border-bottom: 1px solid var(--kp-border);
+    padding: 10px 16px;
+}
+
+.card-header h5,
+.card-header h6 {
+    margin: 0;
+}
+
+/* =====================================================
+   TABLES (FIR DATA)
+===================================================== */
+.table {
+    font-size: 0.8rem;
+}
+
+.table th {
+    font-weight: 700;
+    color: #1f2937;
+    width: 40%;
+}
+
+.table td {
+    color: #111827;
+}
+
+/* =====================================================
+   STATUS & PRIORITY BADGES
+===================================================== */
+.status-badge,
+.priority-badge {
+    font-weight: 800;
+    font-size: 0.75rem;
+    padding: 6px 10px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-registered { background:#e0f2fe; color:#075985; }
+.status-investigation { background:#fef3c7; color:#92400e; }
+.status-closed { background:#dcfce7; color:#166534; }
+
+.priority-high { background:#fee2e2; color:#991b1b; }
+.priority-medium { background:#fef3c7; color:#92400e; }
+.priority-low { background:#dcfce7; color:#166534; }
+
+/* =====================================================
+   NAV TABS
+===================================================== */
+.nav-tabs {
+    border-bottom: 2px solid var(--kp-primary);
+}
+
+.nav-tabs .nav-link {
+    font-weight: 800;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: #475569;
+    border: none;
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--kp-primary);
+    border-bottom: 3px solid var(--kp-primary);
+    background: transparent;
+}
+
+/* =====================================================
+   BUTTONS
+===================================================== */
+.btn {
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+
+.btn-police {
+    background-color: var(--kp-primary);
+    color: #ffffff;
+    border: none;
+}
+
+.btn-police:hover {
+    background-color: var(--kp-secondary);
+    color: #ffffff;
+}
+
+.btn-outline-primary {
+    border-color: var(--kp-primary);
+    color: var(--kp-primary);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--kp-primary);
+    color: #ffffff;
+}
+
+/* =====================================================
+   ALERTS
+===================================================== */
+.alert {
+    font-size: 0.8rem;
+    border-radius: 4px;
+}
+
+.alert-danger {
+    background:#fee2e2;
+    border:1px solid #fecaca;
+    color:#7f1d1d;
+}
+
+/* =====================================================
+   TIMELINE (INVESTIGATION)
+===================================================== */
+.timeline::before {
+    background-color: var(--kp-border);
+}
+
+.timeline-content {
+    border: 1px solid var(--kp-border);
+    box-shadow: none;
+    border-radius: 6px;
+    font-size: 0.8rem;
+}
+
+.timeline-date {
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+/* =====================================================
+   BADGES
+===================================================== */
+.badge {
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+/* =====================================================
+   QR / IMAGE BOXES
+===================================================== */
+img {
+    border: 1px solid var(--kp-border);
+    border-radius: 4px;
+}
+
+/* =====================================================
+   AVATAR
+===================================================== */
+.avatar {
+    background-color: #e5e7eb;
+}
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+@media (max-width: 768px) {
+    .nav-tabs {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+    }
+
+    h1.h2 {
+        font-size: 1.1rem;
+    }
+}
+</style>
+
+{% endblock %}
+{% endblock %}
